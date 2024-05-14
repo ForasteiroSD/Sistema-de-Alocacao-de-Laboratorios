@@ -35,7 +35,7 @@ model laboratorio {
   televisao Int?
   ar_contidionado Int?
   outro String?
-  responsavel user @relation(fields: [responsavel_id], references: [id])
+  responsavel user @relation(fields: [responsavel_id], references: [id], onUpdate: Cascade)
   responsavel_id String
   reservas reserva[]
 }
@@ -47,9 +47,9 @@ model reserva {
   hora_inicio String?
   hora_fim String?
   tipo String
-  laboratorio laboratorio @relation(fields: [laboratorio_id], references: [id])
+  laboratorio laboratorio @relation(fields: [laboratorio_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   laboratorio_id String
-  usuario user @relation(fields: [user_id], references: [id])
+  usuario user @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   user_id String
   horarios horarios_reservas[]
 }
@@ -59,6 +59,6 @@ model horarios_reservas {
   dia_semana String
   hora_inicio String
   hora_fim String
-  reserva reserva @relation(fields: [reserva_id], references: [id])
+  reserva reserva @relation(fields: [reserva_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   reserva_id String
 }
