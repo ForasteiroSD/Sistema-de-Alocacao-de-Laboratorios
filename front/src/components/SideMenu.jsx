@@ -7,21 +7,21 @@ import { PiNotepad } from "react-icons/pi";
 import NavigatorButtom from './NavigatorButtom'
 
 /* Css */
-import './NavBar.css'
+import './SideMenu.css'
 
-export default function NavBar() {
+export default function SideMenu() {
     return (
-        <nav className='NavBar'>
+        <div className='SideMenu'>
             <div className='flex h'>
                 <img src="../../public/logos/Logo-White.png" alt="Logo LabHub" className='logo'/>
             </div>
             <hr />
 
-            <section className='flex c NavButtons'>
+            <nav className='flex c NavButtons'>
                 <NavigatorButtom icon={<HiHome className="Icons" />} name={'Página Inicial'} link={'/'} start={true}/>
                 <NavigatorButtom icon={<FaComputer className="Icons" />} name={'Laboratorios'} link={'/laboratorios'}/>
                 <NavigatorButtom icon={<PiNotepad className="Icons" />} name={'Reservas'} link={'/reservas'}/>
-            </section>
-        </nav>
+            </nav>
+        </div>
     )
 }

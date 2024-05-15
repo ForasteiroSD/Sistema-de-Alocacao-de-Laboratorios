@@ -1,20 +1,20 @@
-.NavBar {
+.SideMenu {
     width: 18rem;
     height: 100vh;
     background-color: #343434;
 }
 
-.NavBar .logo {
+.SideMenu .logo {
     width: 15rem;
     margin: 1rem 0;
 }
 
-.NavBar hr {
+.SideMenu hr {
     border: white solid 1px;
     border-radius: 10px;
     margin: 0 1rem;
 }
 
-.NavBar .NavButtons {
+.SideMenu .NavButtons {
     margin-top: 2.5rem;
 }

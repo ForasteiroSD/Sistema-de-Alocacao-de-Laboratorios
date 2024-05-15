@@ -2,7 +2,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 /* Components */
-import NavBar from "./components/NavBar";
+import SideMenu from "./components/SideMenu";
 
 /* Pages */
 import MainPage from './pages/MainPage'
@@ -11,13 +11,20 @@ import MainPage from './pages/MainPage'
 import './App.css'
 
 function App() {
+  const logged = true;
 
   return (
     <>
       <Router>
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-        </Routes>
+        <section className="flex">
+          {logged ? <SideMenu /> : null}
+
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/laboratorios" element={<MainPage />} />
+            <Route path="/reservas" element={<MainPage />} />
+          </Routes>
+        </section>
       </Router>
     </>
   )

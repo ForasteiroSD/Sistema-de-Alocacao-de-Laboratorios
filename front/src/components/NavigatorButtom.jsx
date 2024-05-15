@@ -11,9 +11,11 @@ export default function NavigatorButtom({icon, name, link, start}) {
         <div className='flex NavigatorButtom'>
             {icon}
             <Link to={link} className="Link">
+            {/* <a href={link}> */}
                 <label htmlFor={link} name='Url'>
                     {name}
                 </label>
+            {/* </a> */}
             </Link>
         </div>
     </div>
