@@ -1,4 +1,31 @@
-#root {
+@font-face {
+  font-family: Actor;
+  src: url(../../public/fonts/Actor-Regular.ttf);
+}
+
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.flex {
+  display: flex;
+}
+
+.v {
+  align-items: center;
+}
+
+.h {
+  justify-content: center;
+}
+
+.c {
+  flex-direction: column;
+}
+
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -39,4 +66,4 @@
 
 .read-the-docs {
   color: #888;
-}
+} */
