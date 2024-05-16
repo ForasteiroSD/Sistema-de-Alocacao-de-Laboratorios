@@ -29,7 +29,7 @@ export default function SideMenu() {
             <div className='flex h'>
                 <img src="../../public/logos/Logo-White.png" alt="Logo LabHub" className='logo'/>
             </div>
-            <hr />
+            <hr className="logoHr" />
 
             <nav className='flex c NavButtons'>
                 {links.map((link) => (

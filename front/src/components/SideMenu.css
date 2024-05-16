@@ -87,9 +87,22 @@
     z-index: 1;
 }
 
-/* @media (max-width: 1250px) {
+@media (max-width: 1250px) {
     .SideMenu {
-        transform: translateX(-18rem);
+        transform: translateX(-100%);
         position: fixed;
     }
-} */
+
+    .SideMenu .logo {
+        width: 12rem;
+        margin: 1rem 0 1rem 3.3rem;
+    }
+
+    .SideMenu .logoHr {
+        display: none;
+    }
+
+    .SideMenu .NavButtons {
+        margin-top: 0rem;
+    }
+}
