@@ -10,13 +10,12 @@ export default function NavigatorButtom({icon, name, link, id, isActive, setActi
     <div>
         {isActive == id && (
             <motion.div layoutId="SelectedMenuButton" transition={{type: 'spring', duration: .5}} className="SelectedMenuButton" />
-            // <motion.div layoutId="SelectedMenuButton" className="SelectedMenuButton" />
         )}
 
-        <div className="flex NavigatorButtom" style={isActive == id ? {'color': '#22b1b1'} : null}>
+        <div className="flex v NavigatorButtom" style={isActive == id ? {'color': 'var(--menuBlue)'} : null}>
             {icon}
 
-            <Link to={link} className="Link" style={isActive == id ? {'color': '#22b1b1'} : null} onClick={() => setActive(id)}>
+            <Link to={link} className="Link" style={isActive == id ? {'color': 'var(--menuBlue)'} : null} onClick={() => setActive(id)}>
                 {name}
             </Link>
         </div>

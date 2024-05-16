@@ -3,6 +3,22 @@
   src: url(../../public/fonts/Actor-Regular.ttf);
 }
 
+@font-face {
+  font-family: BakBak;
+  src: url(../../public/fonts/BakBak-Regular.otf);
+}
+
+@font-face {
+  font-family: Antic;
+  src: url(../../public/fonts/Antic-Regular.ttf);
+}
+
+:root {
+  --menuBlue: #22b1b1;
+  --buttonBlue: #4F8F8F;
+  --white: #D9D9D9;
+  --gray: #343434;
+}
 
 * {
   padding: 0;

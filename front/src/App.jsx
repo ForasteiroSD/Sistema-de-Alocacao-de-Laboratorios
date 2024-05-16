@@ -6,6 +6,9 @@ import SideMenu from "./components/SideMenu";
 
 /* Pages */
 import MainPage from './pages/MainPage'
+import Labs from './pages/Labs'
+import Reserves from './pages/Reserves'
+import Configs from './pages/Configs'
 
 /* Css */
 import './App.css'
@@ -21,8 +24,9 @@ function App() {
 
           <Routes>
             <Route path="/" element={<MainPage />} />
-            <Route path="/laboratorios" element={<MainPage />} />
-            <Route path="/reservas" element={<MainPage />} />
+            <Route path="/laboratorios" element={<Labs />} />
+            <Route path="/reservas" element={<Reserves />} />
+            <Route path="/configs" element={<Configs />} />
           </Routes>
         </section>
       </Router>

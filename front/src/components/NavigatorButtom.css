@@ -1,8 +1,8 @@
 .NavigatorButtom {
     background-color: transparent;
-    color: white;
+    color: var(--white);
     border: 0;
-    padding: 1.2rem 2.5rem;
+    padding: 0.5rem 2rem;
     text-align: left;
     gap: 2rem;
     font-family: Actor;
@@ -12,14 +12,13 @@
 }
 
 .NavigatorButtom .Icons {
-    transform: scale(2.5);
-    width: 1rem;
-    height: 1em;
+    width: 2.5rem;
+    height: 2.5em;
 }
 
 .NavigatorButtom .Link {
     text-decoration: none;
-    color: white;
+    color: var(--white);
     transition: color .5s;
 }
 
@@ -31,7 +30,7 @@
     border-top: 2px solid transparent;
     border-bottom: 2px solid transparent;
     border-right: 10px solid transparent;
-    border-image: linear-gradient(90deg, #22b1b1 , #D9D9D9);
+    border-image: linear-gradient(90deg, var(--menuBlue), var(--white));
     border-image-slice: 1;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
