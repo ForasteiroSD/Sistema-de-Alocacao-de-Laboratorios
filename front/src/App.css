@@ -1,4 +1,57 @@
-#root {
+@font-face {
+  font-family: Actor;
+  src: url(/fonts/Actor-Regular.ttf);
+}
+
+@font-face {
+  font-family: BakBak;
+  src: url(/fonts/BakBak-Regular.otf);
+}
+
+@font-face {
+  font-family: Antic;
+  src: url(/fonts/Antic-Regular.ttf);
+}
+
+@font-face {
+  font-family: Anton;
+  src: url(/fonts/Anton-Regular.ttf);
+}
+
+:root {
+  --menuBlue: #22b1b1;
+  --buttonBlue: #4F8F8F;
+  --white: #D9D9D9;
+  --gray: #343434;
+  --header: #EEEEEE;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.flex {
+  display: flex;
+}
+
+.v {
+  align-items: center;
+}
+
+.h {
+  justify-content: center;
+}
+
+.sb {
+  justify-content: space-between;
+}
+
+.c {
+  flex-direction: column;
+}
+
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -39,4 +92,4 @@
 
 .read-the-docs {
   color: #888;
-}
+} */

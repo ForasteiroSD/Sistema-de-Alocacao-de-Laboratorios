@@ -1,0 +1,87 @@
+.SideMenu {
+    min-width: 18rem;
+    height: 100vh;
+    background-color: var(--gray);
+}
+
+.SideMenu .logo {
+    width: 15rem;
+    margin: 1rem 0;
+}
+
+.SideMenu hr {
+    /* border: var(--white) solid 1px; */
+    color: var(--white);
+    border-radius: 10px;
+    margin: 0 1rem;
+    transition: transform .6s;
+}
+
+.SideMenu .NavButtons {
+    margin-top: 2rem;
+}
+
+.SideMenu .User {
+    gap: 1rem;
+    margin-left: 1.5rem;
+    padding: 1rem 0;
+}
+
+.SideMenu .User .UserImage {
+    width: 4.5rem;
+    height: 4.5rem;
+    color: var(--white);
+    transition: color .5s;
+}
+
+.SideMenu .User p {
+    font-family: BakBak;
+    font-size: 25px;
+    color: var(--white);
+    transition: color .5s;
+}
+
+.SideMenu .BottomMenu {
+    position: absolute;
+    bottom: 0;
+    width: 18rem;
+}
+
+.SideMenu .BottomMenu .link {
+    font-family: Antic;
+    font-size: 15px;
+    text-decoration: none;
+    color: var(--white);
+    transition: color .1s;
+}
+
+.SideMenu .BottomMenu .logout .link {
+    font-size: 19px;
+    padding: 1rem 0;
+}
+
+.SideMenu .BottomMenu .link:hover {
+    color: var(--buttonBlue);
+}
+
+.SideMenu .BottomMenu .SelectedMenuButton {
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    border-right: 10px solid transparent;
+    border-image: linear-gradient(90deg, var(--buttonBlue), var(--white));
+    border-image-slice: 1;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    mask:
+        linear-gradient(#fff 0 0) padding-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+        mask-composite: exclude;
+    /* background-origin: border-box; */
+    /* background-clip: content-box, border-box; */
+    /* color: #22b1b1; */
+    width: 16.5rem;
+    height: 6.4rem;
+    position: absolute;
+    z-index: 1;
+}
