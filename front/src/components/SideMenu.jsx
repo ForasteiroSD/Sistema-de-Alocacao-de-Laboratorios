@@ -19,6 +19,7 @@ const links = [
     {id: 'labs', icon: <FaComputer className="Icons" />, name: 'Laboratorios', link: '/laboratorios'},
     {id: 'reserves', icon: <PiNotepad className="Icons" />, name: 'Reservas', link: '/reservas'}
 ]
+const UserName = 'User tal'
 
 export default function SideMenu() {
     const [activeLink, setActiveLink] = useState(links[0].id);
@@ -44,7 +45,7 @@ export default function SideMenu() {
                     <FaUserCircle className="UserImage" style={activeLink == 'configs' ? {'color': 'var(--buttonBlue)'} : null} />
                     {/* <FaUserCircle className="UserImage" /> */}
                     <div className="flex h c">
-                        <p style={activeLink == 'configs' ? {'color': 'var(--buttonBlue)'} : null} >User tal</p>
+                        <p style={activeLink == 'configs' ? {'color': 'var(--buttonBlue)'} : null} >{UserName}</p>
                         <Link to={'/configs'} className="link" style={activeLink == 'configs' ? {'color': 'var(--buttonBlue)'} : null} onClick={() => setActiveLink('configs')}>Configurações</Link>
                     </div>
                 </div>

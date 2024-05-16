@@ -1,0 +1,23 @@
+.NextReserves {
+    width: 20rem;
+    border: solid var(--gray) 1px;
+    border-radius: 0.5rem;
+    box-shadow: 3px 3px 3px #34343450;
+}
+
+.NextReserves h3 {
+    width: 100%;
+    text-align: center;
+    padding: .5rem 0;
+    border-bottom: solid var(--gray) 1px;
+    font-family: Antic;
+    font-size: 20px;
+    color: var(--buttonBlue);
+}
+
+.NextReserves p {
+    font-family: Antic;
+    font-size: 18px;
+    color: var(--gray);
+    padding: .4rem 0;
+}

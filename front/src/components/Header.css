@@ -1,0 +1,9 @@
+header {
+    background-color: var(--header);
+    border-bottom: solid var(--gray) 1px;
+}
+
+header img {
+    width: 3.4rem;
+    padding: 1rem 0;
+}

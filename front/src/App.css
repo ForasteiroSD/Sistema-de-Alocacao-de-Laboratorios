@@ -1,16 +1,21 @@
 @font-face {
   font-family: Actor;
-  src: url(../../public/fonts/Actor-Regular.ttf);
+  src: url(/fonts/Actor-Regular.ttf);
 }
 
 @font-face {
   font-family: BakBak;
-  src: url(../../public/fonts/BakBak-Regular.otf);
+  src: url(/fonts/BakBak-Regular.otf);
 }
 
 @font-face {
   font-family: Antic;
-  src: url(../../public/fonts/Antic-Regular.ttf);
+  src: url(/fonts/Antic-Regular.ttf);
+}
+
+@font-face {
+  font-family: Anton;
+  src: url(/fonts/Anton-Regular.ttf);
 }
 
 :root {
@@ -18,6 +23,7 @@
   --buttonBlue: #4F8F8F;
   --white: #D9D9D9;
   --gray: #343434;
+  --header: #EEEEEE;
 }
 
 * {
@@ -35,6 +41,10 @@
 
 .h {
   justify-content: center;
+}
+
+.sb {
+  justify-content: space-between;
 }
 
 .c {
