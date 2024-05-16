@@ -1,5 +1,5 @@
 .MainInfo {
-    width: 15rem;
+    width: max(11rem, 19%);
     border: solid var(--gray) 1px;
     border-radius: 0.5rem;
     box-shadow: 3px 3px 3px #34343450;

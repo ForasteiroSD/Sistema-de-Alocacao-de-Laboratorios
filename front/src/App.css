@@ -23,7 +23,9 @@
   --buttonBlue: #4F8F8F;
   --white: #D9D9D9;
   --gray: #343434;
+  /* --header: #DDDDDD; */
   --header: #EEEEEE;
+  --background: #EEEEEE;
 }
 
 * {
@@ -49,6 +51,28 @@
 
 .c {
   flex-direction: column;
+}
+
+html {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: .5rem;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #b4b4b4; 
+  border-radius: 10px;
+  border: solid var(--background) .1rem;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #979797; 
 }
 
 /* #root {

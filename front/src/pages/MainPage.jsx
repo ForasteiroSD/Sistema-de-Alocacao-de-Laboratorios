@@ -18,6 +18,7 @@ const nextReserves = [
     {name: 'LDC2', date: '23/04/2024', begin: '17:30', duration: '2rs'},
     {name: 'LDC3', date: '24/04/2024', begin: '17:30', duration: '2rs'}
 ]
+const UserName = 'User tal'
 
 export default function MainPage() {
     return (
@@ -27,7 +28,7 @@ export default function MainPage() {
             <section className='content'>
                 <h1>Bem vindo ao LabHub</h1>
 
-                <p>Olá User Tal, seja bem vindo ao LabHub. Nosso objetivo é prover um método simples e fácil para cadastro, gerenciamento e alocação de laboratórios de informática ou de salas de aula. Para isso, o menu lateral pode te ajudar.</p>
+                <p>Olá {UserName}, seja bem vindo ao LabHub. Nosso objetivo é prover um método simples e fácil para cadastro, gerenciamento e alocação de laboratórios de informática ou de salas de aula. Para isso, o menu lateral pode te ajudar.</p>
                 <p>Para visualizar os laboratórios cadastrados e, se desejado, reservar algum deles, basta acessar o menu Laboratórios e filtrar pelos dados que deseja, ou simplesmente não preencher nenhum dado de filtro para visualizar todos os laboratórios.</p>
                 <p>Também é possível visualizar e, se necessário, atualizar os dados ou excluir uma reserva feita previamente através do menu Reservas.</p>
                 <br />
@@ -36,7 +37,7 @@ export default function MainPage() {
 
                 <h2>Informações Gerais:</h2>
                 <hr />
-                <div className="flex sb MainInfoContainer">
+                <div className="MainInfoContainer">
                     {mainInfo.map((info, i) => (
                         <MainInfo key={i} name={info.name} value={info.value} />
                     ))}
@@ -44,7 +45,7 @@ export default function MainPage() {
 
                 <h2>Minhas Próximas Reservas:</h2>
                 <hr />
-                <div className="flex sb MainInfoContainer">
+                <div className="MainInfoContainer">
                     {nextReserves.map((reserve, i) => (
                         <NextReserves key={i} name={reserve.name} date={reserve.date} begin={reserve.begin} duration={reserve.duration} />
                     ))}

@@ -1,12 +1,16 @@
 /* .MainPage {
-    flex-grow: 1;
+    overflow-y: hidden;
+    max-height: 100vh;
 } */
 
 .MainPage .content {
-    margin: 0 10%;
+    padding: 0 10%;
     text-align: justify;
     font-family: Antic;
     font-size: 19px;
+    overflow-y: scroll;
+    height: calc(100vh - 4rem); /* Full height - header height */
+    background-color: var(--background);
 }
 
 .MainPage .content h1 {
@@ -29,5 +33,13 @@
 }
 
 .MainPage .content .MainInfoContainer {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
     margin-top: 1.7rem;
+    gap: 1rem;
+}
+
+.MainPage .content .MainInfoContainer:last-child {
+    margin-bottom: 2rem;
 }

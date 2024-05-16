@@ -1,4 +1,5 @@
 .SideMenu {
+    /* min-width: 15.5%; */
     min-width: 18rem;
     height: 100vh;
     background-color: var(--gray);
@@ -85,3 +86,10 @@
     position: absolute;
     z-index: 1;
 }
+
+/* @media (max-width: 1250px) {
+    .SideMenu {
+        transform: translateX(-18rem);
+        position: fixed;
+    }
+} */
