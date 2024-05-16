@@ -6,7 +6,10 @@ const prisma = new PrismaClient();
 
 //Cadastrar usuário
 router.post("/user/create", async(req: Request, res: Response) => {
+
+    //Dados do usuário a ser criado
     const {nome, cpf, d_nas, telefone, email, senha, tipo} = req.body;
+    
     const date = new Date(d_nas);
 
     if(date.toString() === 'Invalid Date') {
@@ -15,7 +18,7 @@ router.post("/user/create", async(req: Request, res: Response) => {
     }
 
     try {
-        const user = await prisma.user.create({
+        await prisma.user.create({
             data: {
                 email: email,
                 cpf: cpf,
@@ -25,12 +28,13 @@ router.post("/user/create", async(req: Request, res: Response) => {
                 telefone: telefone,
                 tipo: tipo
             }
-        })
+        });
 
-        res.status(200).send({id: user.id, nome: nome, tipo: tipo})
+        res.status(200).send('Usuario criado');
+        return;
 
     } catch (error: any) {
-
+        
         if(error.code === 'P2002' && error.meta.target[0] === 'cpf') {
             res.status(409).send('CPF ja cadastrado');
             return;
@@ -48,7 +52,7 @@ router.post("/user/create", async(req: Request, res: Response) => {
 
 //Realizar login
 router.post("/user/login", async (req: Request, res: Response) => {
-
+    
     const { email, senha } = req.body;
 
     try {
@@ -66,7 +70,8 @@ router.post("/user/login", async (req: Request, res: Response) => {
             }
         });
 
-        res.status(200).send({id: user.id, nome: user.nome, tipo: user.tipo})
+        res.status(200).send({id: user.id, nome: user.nome, tipo: user.tipo});
+        return;
 
     } catch (error: any) {
 
@@ -83,6 +88,8 @@ router.post("/user/login", async (req: Request, res: Response) => {
 
 //Atualizar usuário
 router.patch("/user", async (req: Request, res: Response) => {
+
+    //Dados a serem atualizados
     const { id, nome, telefone, email, senha, novasenha, tipo } = req.body;
 
     try {
@@ -122,7 +129,7 @@ router.patch("/user", async (req: Request, res: Response) => {
 
 //Deletar usuário
 router.delete("/user", async (req: Request, res: Response) => {
-
+    
     const { id, senha } = req.body;
 
     try {
@@ -150,8 +157,6 @@ router.delete("/user", async (req: Request, res: Response) => {
 
     } catch (error: any) {
 
-        console.log(error);
-
         if(error.code === 'P2025') {
             res.status(404).send("Senha invalida");
             return;
@@ -166,6 +171,7 @@ router.delete("/user", async (req: Request, res: Response) => {
 //Ver usuários
 router.get("/users", async(req: Request, res: Response) => {
 
+    //Filtros de busca
     const { nome, cpf, email, tipo } = req.query;
 
     try {
@@ -185,7 +191,6 @@ router.get("/users", async(req: Request, res: Response) => {
                 })
             },
             select: {
-                id: true,
                 nome: true,
                 cpf: true,
                 email: true,
@@ -214,23 +219,32 @@ router.get("/users", async(req: Request, res: Response) => {
 //Recuperar dados de um usuário
 router.get("/user", async(req: Request, res: Response) => {
 
-    const { id, typeOnly } = req.query;
+    //Filtros para busca de usuário
+    //utilizar id e cpf separadamente
+    //typeOnly especifica que deseja retornar somente o tipo de usuário
+    const { id, cpf, typeOnly } = req.query;
 
 
     try {
-        const user = await prisma.user.findUniqueOrThrow({
+        const user = await prisma.user.findFirstOrThrow({
             where: {
-                id: String(id)
+                OR: [
+                    {
+                        id: String(id)
+                    },
+                    {
+                        cpf: String(cpf)
+                    }
+                ]
+                
             },
             select: {
                 ... (typeOnly? {
                     tipo: true
                 } : {
-                    id: true,
                     email: true,
                     cpf: true,
                     nome: true,
-                    senha: true,
                     data_nasc: true,
                     telefone: true,
                     tipo: true
@@ -252,40 +266,6 @@ router.get("/user", async(req: Request, res: Response) => {
         res.status(400).send('database off');
         return;
     }
-});
-
-
-//Recuperar tipo de usuário
-router.get("/usertype", async (req: Request, res: Response) => {
-
-    const { id } = req.query;
-
-    try {
-        const user = await prisma.user.findUniqueOrThrow({
-            where: {
-                id: String(id)
-            },
-            select: {
-                tipo: true
-            }
-        });
-
-        res.status(200).send(user.tipo);
-        return;
-
-
-    } catch (error: any) {
-        
-        if(error.code === 'P2025') {
-            res.status(404).send('Usuario inexistente');
-            return;
-        }
-
-        res.status(400).send('database off');
-        return;
-
-    }
-
 });
 
 export default router;
