@@ -28,7 +28,7 @@ model user {
 
 model laboratorio {
   id String @id @default(uuid())
-  nome String
+  nome String @unique
   capacidade Int
   projetor Int?
   quadro Int?

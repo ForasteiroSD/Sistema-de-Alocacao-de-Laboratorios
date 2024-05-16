@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from "cors";
 import user from "./routes/user";
+import labs from "./routes/labs"
 
 const app = express();
 app.use(cors());
@@ -25,3 +26,4 @@ app.listen(3000, "0.0.0.0", () => {
 });
 
 app.use(user);
+app.use(labs);

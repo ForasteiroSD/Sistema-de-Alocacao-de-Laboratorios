@@ -269,5 +269,3 @@ router.get("/user", async(req: Request, res: Response) => {
 });
 
 export default router;
-
-//Talvez ainda tenha que tratar pra verificar se a requisição que foi feita tenha sido por um usuário com permissão
