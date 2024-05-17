@@ -43,9 +43,9 @@ model laboratorio {
 model reserva {
   id String @id @default(uuid())
   data_inicio DateTime
-  data_fim DateTime?
+  data_fim DateTime
   hora_inicio String?
-  hora_fim String?
+  duracao String?
   tipo String
   laboratorio laboratorio @relation(fields: [laboratorio_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   laboratorio_id String
@@ -58,7 +58,7 @@ model horarios_reservas {
   id Int @id @default(autoincrement())
   dia_semana String
   hora_inicio String
-  hora_fim String
+  duracao String
   reserva reserva @relation(fields: [reserva_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   reserva_id String
 }
