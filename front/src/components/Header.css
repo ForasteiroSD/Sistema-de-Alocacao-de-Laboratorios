@@ -2,6 +2,7 @@ header {
     background-color: var(--header);
     border-bottom: solid var(--gray) 1px;
     height: 4rem;
+    width: calc(100vw - 18rem);
 }
 
 header img {
@@ -101,6 +102,10 @@ header .OpenCloseMenuButton:hover {
     header .OpenCloseMenuButton {
         color: var(--header);
     } */
+    
+    header {
+        width: 100vw;
+    }
 
     header .OpenCloseMenuButton {
         display: unset;

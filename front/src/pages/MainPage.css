@@ -1,9 +1,4 @@
-/* .MainPage {
-    overflow-y: hidden;
-    max-height: 100vh;
-} */
-
-.MainPage .content {
+.MainPage {
     padding: 0 10%;
     text-align: justify;
     font-family: Antic;
@@ -13,7 +8,7 @@
     background-color: var(--background);
 }
 
-.MainPage .content h1 {
+.MainPage h1 {
     margin: 4rem 0;
     font-family: Anton;
     text-align: center;
@@ -21,18 +16,18 @@
     font-size: 41px;
 }
 
-.MainPage .content h2 {
+.MainPage h2 {
     margin-top: 2.5rem;
     font-family: BakBak;
     color: var(--gray);
     font-size: 23px;
 }
 
-.MainPage .content hr {
+.MainPage hr {
     color: var(--gray);
 }
 
-.MainPage .content .MainInfoContainer {
+.MainPage .MainInfoContainer {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
@@ -40,6 +35,6 @@
     gap: 1rem;
 }
 
-.MainPage .content .MainInfoContainer:last-child {
+.MainPage .MainInfoContainer:last-child {
     margin-bottom: 2rem;
 }

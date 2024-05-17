@@ -25,17 +25,19 @@ export default function SideMenu() {
     const [activeLink, setActiveLink] = useState(links[0].id);
 
     return (
-        <div className='SideMenu'>
-            <div className='flex h'>
-                <img src="../../public/logos/Logo-White.png" alt="Logo LabHub" className='logo'/>
-            </div>
-            <hr className="logoHr" />
+        <div className='flex sb c SideMenu'>
+            <div>
+                <div className='flex h'>
+                    <img src="../../public/logos/Logo-White.png" alt="Logo LabHub" className='logo'/>
+                </div>
+                <hr className="logoHr" />
 
-            <nav className='flex c NavButtons'>
-                {links.map((link) => (
-                    <NavigatorButtom key={link.id} icon={link.icon} name={link.name} link={link.link} id={link.id} isActive={activeLink} setActive={setActiveLink} />
-                ))}
+                <nav className='flex c NavButtons'>
+                    {links.map((link) => (
+                        <NavigatorButtom key={link.id} icon={link.icon} name={link.name} link={link.link} id={link.id} isActive={activeLink} setActive={setActiveLink} />
+                    ))}
             </nav>
+            </div>
 
             <div className="BottomMenu">
                 {activeLink == 'configs' && (
