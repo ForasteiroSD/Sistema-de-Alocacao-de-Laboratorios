@@ -6,6 +6,7 @@ export default function Header() {
 
     const updateMenu = () => {
         const menu = document.querySelector('.SideMenu');
+        const input = document.querySelector('.InputMenuController');
         const spans = document.querySelectorAll('.MenuControllerSpan');
         
         if(!showingMenu) {
@@ -25,19 +26,20 @@ export default function Header() {
                 menu.style.transition = 'none';
             }, 300);
         }
+        input.checked = showingMenu;
         showingMenu = !showingMenu
     }
 
     return (
         <header className='flex h v'>
-            <label htmlFor="MenuController" className="MenuController" onMouseDown={updateMenu}>
-                <input id="MenuController" type="checkbox" />
+            <label htmlFor="MenuController" className="MenuController" onMouseUp={updateMenu}>
+                <input id="MenuController" type="checkbox" className='InputMenuController' />
                 <span className='MenuControllerSpan'></span>
                 <span className='MenuControllerSpan'></span>
                 <span className='MenuControllerSpan'></span>
             </label>
 
-            <img src="../../public/logos/Small-Logo-Dark.png" alt="Small Logo LabHub" />
+            <img src="/logos/Small-Logo-Dark.png" alt="Small Logo LabHub" />
         </header>
     )
 }

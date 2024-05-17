@@ -1,62 +1,62 @@
 .SideMenu {
     /* min-width: 15.5%; */
-    min-width: 18rem;
+    min-width: 288px;
     height: 100vh;
     background-color: var(--gray);
 }
 
 .SideMenu .logo {
-    width: 15rem;
-    margin: 1rem 0;
+    width: 240px;
+    margin: 16px 0;
 }
 
 .SideMenu hr {
     /* border: var(--white) solid 1px; */
     color: var(--white);
     border-radius: 10px;
-    margin: 0 1rem;
+    margin: 0 16px;
     transition: transform .6s;
 }
 
 .SideMenu .NavButtons {
-    margin-top: 2rem;
+    margin-top: 32px;
 }
 
 .SideMenu .User {
-    gap: 1rem;
-    margin-left: 1.5rem;
-    padding: 1rem 0;
+    gap: 16px;
+    margin-left: 24px;
+    padding: 16px 0;
 }
 
 .SideMenu .User .UserImage {
-    width: 4.5rem;
-    height: 4.5rem;
+    width: 72px;
+    height: 72px;
     color: var(--white);
     transition: color .5s;
 }
 
 .SideMenu .User p {
     font-family: BakBak;
-    font-size: 25px;
+    font-size: 1.5625rem;
     color: var(--white);
     transition: color .5s;
 }
 
 .SideMenu .BottomMenu {
-    width: 18rem;
+    width: 288px;
 }
 
 .SideMenu .BottomMenu .link {
     font-family: Antic;
-    font-size: 15px;
+    font-size: 0.9375rem;
     text-decoration: none;
     color: var(--white);
     transition: color .1s;
 }
 
 .SideMenu .BottomMenu .logout .link {
-    font-size: 19px;
-    padding: 1rem 0;
+    font-size: 1.1875rem;
+    padding: 16px 0;
 }
 
 .SideMenu .BottomMenu .link:hover {
@@ -79,8 +79,8 @@
     /* background-origin: border-box; */
     /* background-clip: content-box, border-box; */
     /* color: #22b1b1; */
-    width: 16.5rem;
-    height: 6.4rem;
+    width: 264px;
+    height: 1,2px;
     position: absolute;
     z-index: 1;
 }
@@ -93,7 +93,7 @@
 
     .SideMenu .logo {
         width: 12rem;
-        margin: 1rem 0 1rem 3.3rem;
+        margin: 16px 0 16px 53px;
     }
 
     .SideMenu .logoHr {
@@ -101,6 +101,6 @@
     }
 
     .SideMenu .NavButtons {
-        margin-top: 0rem;
+        margin-top: 0;
     }
 }

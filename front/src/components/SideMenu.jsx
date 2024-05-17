@@ -28,7 +28,7 @@ export default function SideMenu() {
         <div className='flex sb c SideMenu'>
             <div>
                 <div className='flex h'>
-                    <img src="../../public/logos/Logo-White.png" alt="Logo LabHub" className='logo'/>
+                    <img src="/logos/Logo-White.png" alt="Logo LabHub" className='logo'/>
                 </div>
                 <hr className="logoHr" />
 

@@ -1,27 +1,12 @@
 header {
     background-color: var(--header);
     border-bottom: solid var(--gray) 1px;
-    height: 4rem;
-    width: calc(100vw - 18rem);
+    height: 64px;
+    width: calc(100vw - 288px);
 }
 
 header img {
-    width: 3.4rem;
-}
-
-header .OpenCloseMenuButton {
-    position: absolute;
-    left: 1rem;
-    width: 2.3rem;
-    height: 2.3rem;
-    color: var(--gray);
-    cursor: pointer;
-    transition: transform .15s;
-    display: none;
-}
-
-header .OpenCloseMenuButton:hover {
-    transform: scale(1.03);
+    width: 54px;
 }
 
 .MenuController {
