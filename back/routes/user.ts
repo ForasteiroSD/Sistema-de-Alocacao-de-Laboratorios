@@ -12,8 +12,8 @@ interface nextReservas {
 function adicionaReservaSemanal(ordem_dias: any, prox_dia: number, dia: Date, reserva: any) {
 
     //acha proxima data da reserva
-    while(dia.getDay() !== ordem_dias[prox_dia].dia.dia) {
-        dia.setDate(dia.getDate()+1);
+    while(dia.getUTCDay() !== ordem_dias[prox_dia].dia.dia) {
+        dia.setUTCDate(dia.getUTCDate()+1);
     }
 
     //verifica se a data n ultrapassou o fim da reserva
@@ -21,11 +21,12 @@ function adicionaReservaSemanal(ordem_dias: any, prox_dia: number, dia: Date, re
 
     //constroi reserva
     let string_month = '';
-    if (dia.getMonth() <= 10) string_month = '0'+(dia.getMonth()+1);
-    else string_month += (dia.getMonth()+1);
+    if (dia.getUTCMonth() <= 10) string_month = '0'+(dia.getUTCMonth()+1);
+    else string_month += (dia.getUTCMonth()+1);
 
-    const string_data = `${dia.getDate()}/${string_month}/${dia.getFullYear()}`
+    const string_data = `${dia.getUTCDate()}/${string_month}/${dia.getUTCFullYear()}`
     const string_dia = `${(dia.toISOString()).split('T')[0]}T${ordem_dias[prox_dia].dia.horario}:00.000Z`
+
     let reserva_inserir : nextReservas = {
         date: string_data,
         begin: ordem_dias[prox_dia].dia.horario,
@@ -54,7 +55,7 @@ const dias_semana = [
     'Quarta',
     'Quinta',
     'Sexta',
-    'Sabádo'
+    'Sábado'
 ]
 
 //Cadastrar usuário
@@ -328,10 +329,8 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
     const { id } = req.body;
     let today = new Date();
     
-    today.setHours(-3, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
 
-    today.setDate(today.getDate()+1);
-    
     try {
         const user = await prisma.user.findUniqueOrThrow({
             where: {
@@ -398,7 +397,10 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
         for (let reserva of reservas) {
 
             let dia = new Date();
-            dia.setHours(0, 0, 0, 0);
+
+            if(dia < reserva.data_inicio) dia = reserva.data_inicio;
+
+            dia.setUTCHours(0, 0, 0, 0);
 
             //Reserva analisado é do tipo semanal
             if(reserva.tipo === 'Semanal') {
@@ -412,7 +414,7 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
                 //array com os proximos dias da reserva 
                 const ordem_dias = []
                 for(let i=0; i<dias_reserva.length; i++) {
-                    let dif = dias_reserva[i].dia - dia.getDay();
+                    let dif = dias_reserva[i].dia - dia.getUTCDay();
                     if(dif < 0) dif = 7 + dif;
 
                     ordem_dias.push({dia: dias_reserva[i], dif: dif});
@@ -463,10 +465,10 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
                         
                         //constroi reserva
                         let string_month = '';
-                        if (dia.getMonth() <= 10) string_month = '0'+(dia.getMonth()+1);
-                        else string_month += (dia.getMonth()+1);
+                        if (dia.getUTCMonth() <= 10) string_month = '0'+(dia.getUTCMonth()+1);
+                        else string_month += (dia.getUTCMonth()+1);
 
-                        const string_data = `${dia.getDate()}/${string_month}/${dia.getFullYear()}`
+                        const string_data = `${dia.getUTCDate()}/${string_month}/${dia.getUTCFullYear()}`
                         const string_dia = `${(dia.toISOString()).split('T')[0]}T${reserva.hora_inicio}:00.000Z`
                         let reserva_inserir : nextReservas = {
                             date: string_data,
@@ -478,7 +480,7 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
 
                         insereReserva(reserva_inserir, nextReservas);
                         
-                        dia.setDate(dia.getDate()+1)
+                        dia.setUTCDate(dia.getUTCDate()+1)
 
                         //verifica se a data n ultrapassou o fim da reserva
                         if(dia > reserva.data_fim) break;
@@ -491,10 +493,10 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
 
                         //constroi reserva
                         let string_month = '';
-                        if (dia.getMonth() <= 10) string_month = '0'+(dia.getMonth()+1);
-                        else string_month += (dia.getMonth()+1);
+                        if (dia.getUTCMonth() <= 10) string_month = '0'+(dia.getUTCMonth()+1);
+                        else string_month += (dia.getUTCMonth()+1);
 
-                        const string_data = `${dia.getDate()}/${string_month}/${dia.getFullYear()}` 
+                        const string_data = `${dia.getUTCDate()}/${string_month}/${dia.getUTCFullYear()}` 
                         const string_dia = `${(dia.toISOString()).split('T')[0]}T${reserva.hora_inicio}:00.000Z`
                         let reserva_inserir : nextReservas = {
                             date: string_data,
@@ -506,7 +508,7 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
 
                         insereReserva(reserva_inserir, nextReservas);
 
-                        dia.setDate(dia.getDate()+1);
+                        dia.setUTCDate(dia.getUTCDate()+1);
 
                         //verifica se a data n ultrapassou o fim da reserva
                         if(dia > reserva.data_fim) break;
@@ -518,10 +520,10 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
                 if(nextReservas.length < 3) {
                     //constroi reserva
                     let string_month = '';
-                    if (reserva.data_inicio.getMonth() <= 10) string_month = '0'+(reserva.data_inicio.getMonth()+1);
-                    else string_month += (reserva.data_inicio.getMonth()+1);
+                    if (reserva.data_inicio.getUTCMonth() <= 10) string_month = '0'+(reserva.data_inicio.getUTCMonth()+1);
+                    else string_month += (reserva.data_inicio.getUTCMonth()+1);
 
-                    const string_data = `${reserva.data_inicio.getDate()}/${string_month}/${reserva.data_inicio.getFullYear()}`
+                    const string_data = `${reserva.data_inicio.getUTCDate()}/${string_month}/${reserva.data_inicio.getUTCFullYear()}`
                     const string_dia = `${(reserva.data_inicio.toISOString()).split('T')[0]}T${reserva.hora_inicio}:00.000Z`
                     let reserva_inserir : nextReservas = {
                         date: string_data,
@@ -536,10 +538,10 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
                 } else {
                     //constroi reserva
                     let string_month = '';
-                    if (reserva.data_inicio.getMonth() <= 10) string_month = '0'+(reserva.data_inicio.getMonth()+1);
-                    else string_month += (reserva.data_inicio.getMonth()+1);
+                    if (reserva.data_inicio.getUTCMonth() <= 10) string_month = '0'+(reserva.data_inicio.getUTCMonth()+1);
+                    else string_month += (reserva.data_inicio.getUTCMonth()+1);
 
-                    const string_data = `${reserva.data_inicio.getDate()}/${string_month}/${reserva.data_inicio.getFullYear()}`
+                    const string_data = `${reserva.data_inicio.getUTCDate()}/${string_month}/${reserva.data_inicio.getUTCFullYear()}`
                     const string_dia = `${(reserva.data_inicio.toISOString()).split('T')[0]}T${reserva.hora_inicio}:00.000Z`
                     let reserva_inserir : nextReservas = {
                         date: string_data,
@@ -551,21 +553,20 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
 
                     insereReserva(reserva_inserir, nextReservas);
                 }
+
             }
         }
-
         res.send({mainInfo: mainInfo, nextReserves: nextReservas});
         return;
 
     } catch (error: any) {
-        console.log(error);
 
         if(error.code === 'P2025') {
             res.status(404).send('Usuario inexistente');
             return;
         }
 
-        res.send('erro');
+        res.status(400).send('database off');
         return;
     }
 
