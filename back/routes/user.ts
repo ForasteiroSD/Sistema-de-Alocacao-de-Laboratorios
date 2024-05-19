@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express'
 import { PrismaClient } from '@prisma/client'
+import { dias_semana } from '../index';
 
 interface nextReservas {
     name: String;
@@ -47,16 +48,6 @@ function insereReserva(reserva: nextReservas, nextReservas: nextReservas[]) {
 
 const router = Router();
 const prisma = new PrismaClient();
-
-const dias_semana = [
-    'Domingo',
-    'Segunda',
-    'Terça',
-    'Quarta',
-    'Quinta',
-    'Sexta',
-    'Sábado'
-]
 
 //Cadastrar usuário
 router.post("/user/create", async(req: Request, res: Response) => {

@@ -9,6 +9,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+export const dias_semana = [
+    'Domingo',
+    'Segunda',
+    'Terça',
+    'Quarta',
+    'Quinta',
+    'Sexta',
+    'Sábado'
+]
+
 // const whitelist = ['http://localhost:5173']; // lista das urls que podem acessar o back
 // app.use(cors({
 //     origin: function (origin, callback) {

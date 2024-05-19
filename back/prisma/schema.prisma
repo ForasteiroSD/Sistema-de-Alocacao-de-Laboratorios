@@ -34,6 +34,7 @@ model laboratorio {
   quadro Int?
   televisao Int?
   ar_contidionado Int?
+  computador Int?
   outro String?
   responsavel user @relation(fields: [responsavel_id], references: [id], onUpdate: Cascade)
   responsavel_id String
