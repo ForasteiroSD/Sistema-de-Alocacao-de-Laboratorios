@@ -52,7 +52,7 @@ export default function SideMenu() {
                     </div>
                 </div>
 
-                <hr style={activeLink == 'configs' ? {'transform': 'scaleX(0.01)'} : null} />
+                <hr style={activeLink == 'configs' ? {'transform': 'scaleX(0)'} : null} />
 
                 <div className="flex h logout">
                     <Link to={'/login'} className="link">Sair</Link>

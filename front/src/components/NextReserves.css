@@ -1,6 +1,6 @@
 .NextReserves {
-    width: min(320px, 90%);
-    min-width: 270px;
+    width: min(320px, 30%);
+    /* min-width: 270px; */
     border: solid var(--gray) 1px;
     border-radius: 8px;
     box-shadow: 3px 3px 3px #34343450;
@@ -20,5 +20,11 @@
     font-family: Antic;
     font-size: 1.125rem;
     color: var(--gray);
-    padding: 6px 0;
+    padding: 6px 8px;
+}
+
+@media (max-width: 599px) {
+    .NextReserves {
+        width: min(350px, 90%);
+    }
 }

@@ -22,7 +22,7 @@ const UserName = 'User tal'
 export default function MainPage() {
     return (
         <div className="PageWrapper">
-            <section className='MainPage'>
+            <section className='MainPage PageContent'>
             <h1>Bem vindo ao LabHub</h1>
 
             <p>Olá {UserName}, seja bem vindo ao LabHub. Nosso objetivo é prover um método simples e fácil para cadastro, gerenciamento e alocação de laboratórios de informática ou de salas de aula. Para isso, o menu lateral pode te ajudar.</p>
@@ -34,7 +34,7 @@ export default function MainPage() {
 
             <h2>Informações Gerais:</h2>
             <hr />
-            <div className="MainInfoContainer">
+            <div className="Container">
                 {mainInfo.map((info, i) => (
                     <MainInfo key={i} name={info.name} value={info.value} />
                 ))}
@@ -42,7 +42,7 @@ export default function MainPage() {
 
             <h2>Minhas Próximas Reservas:</h2>
             <hr />
-            <div className="MainInfoContainer">
+            <div className="Container">
                 {nextReserves.map((reserve, i) => (
                     <NextReserves key={i} name={reserve.name} date={reserve.date} begin={reserve.begin} duration={reserve.duration} />
                 ))}

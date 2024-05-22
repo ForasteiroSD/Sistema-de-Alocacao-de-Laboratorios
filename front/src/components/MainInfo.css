@@ -21,3 +21,21 @@
     color: var(--gray);
     padding: 3px;
 }
+
+@media (max-width: 853px) {
+    .MainInfo {
+        width: min(280px, 45%);
+    }
+}
+
+@media (max-width: 422px) {
+    .MainInfo {
+        width: 90%;
+    }
+}
+
+@media (max-width: 290px) {
+    .MainInfo {
+        width: 100%;
+    }
+}

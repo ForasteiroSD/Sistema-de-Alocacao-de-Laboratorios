@@ -1,33 +1,12 @@
-.MainPage {
-    padding: 0 10%;
-    text-align: justify;
-    font-family: Antic;
-    font-size: 1.1875rem;
-    overflow-y: scroll;
-    height: calc(100vh - 64px); /* Full height - header height */
-    background-color: var(--background);
-}
-
-.MainPage h1 {
-    margin: 4rem 0;
-    font-family: Anton;
-    text-align: center;
-    color: var(--gray);
-    font-size: 2.5625rem;
-}
-
 .MainPage h2 {
     margin-top: 40px;
     font-family: BakBak;
     color: var(--gray);
     font-size: 1.4375rem;
+    text-align: left;
 }
 
-.MainPage hr {
-    color: var(--gray);
-}
-
-.MainPage .MainInfoContainer {
+.MainPage .Container {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
@@ -35,30 +14,6 @@
     gap: 16px;
 }
 
-.MainPage .MainInfoContainer:last-child {
+.MainPage .Container:last-child {
     margin-bottom: 32px;
-}
-
-@media (max-width: 1400px) {
-    .MainPage {
-        padding: 0 5%;
-    }
-}
-
-@media (max-width: 1250px) {
-    .MainPage {
-        padding: 0 10%;
-    }
-}
-
-@media (max-width: 1000px) {
-    .MainPage {
-        padding: 0 5%;
-    }
-}
-
-@media (max-width: 400px) {
-    html {
-        font-size: .9rem;
-    }
 }
