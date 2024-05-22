@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 /* Components */
 import SideMenu from "./components/SideMenu";
+import Header from './components/Header';
 
 /* Pages */
 import MainPage from './pages/MainPage'
@@ -14,24 +15,27 @@ import Configs from './pages/Configs'
 import './App.css'
 
 function App() {
-  const logged = true;
+    const logged = true;
 
-  return (
-    <>
-      <Router>
-        <section className="flex">
-          {logged ? <SideMenu /> : null}
+    return (
+        <>
+            <Router>
+                <section className="flex">
+                    {logged ? <SideMenu /> : null}
 
-          <Routes>
-            <Route path="/" element={<MainPage />} />
-            <Route path="/laboratorios" element={<Labs />} />
-            <Route path="/reservas" element={<Reserves />} />
-            <Route path="/configs" element={<Configs />} />
-          </Routes>
-        </section>
-      </Router>
-    </>
-  )
+                    <div className="">
+                        {logged ? <Header /> : null}
+                        <Routes>
+                            <Route path="/" element={<MainPage />} />
+                            <Route path="/laboratorios" element={<Labs />} />
+                            <Route path="/reservas" element={<Reserves />} />
+                            <Route path="/configs" element={<Configs />} />
+                        </Routes>
+                    </div>
+                </section>
+            </Router>
+        </>
+    )
 }
 
 export default App

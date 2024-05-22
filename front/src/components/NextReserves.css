@@ -1,23 +1,30 @@
 .NextReserves {
-    width: 20rem;
+    width: min(320px, 30%);
+    /* min-width: 270px; */
     border: solid var(--gray) 1px;
-    border-radius: 0.5rem;
+    border-radius: 8px;
     box-shadow: 3px 3px 3px #34343450;
 }
 
 .NextReserves h3 {
     width: 100%;
     text-align: center;
-    padding: .5rem 0;
+    padding: 8px 0;
     border-bottom: solid var(--gray) 1px;
     font-family: Antic;
-    font-size: 20px;
+    font-size: 1.25rem;
     color: var(--buttonBlue);
 }
 
 .NextReserves p {
     font-family: Antic;
-    font-size: 18px;
+    font-size: 1.125rem;
     color: var(--gray);
-    padding: .4rem 0;
+    padding: 6px 8px;
+}
+
+@media (max-width: 599px) {
+    .NextReserves {
+        width: min(350px, 90%);
+    }
 }
