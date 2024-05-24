@@ -319,7 +319,9 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
     
     const { id } = req.body;
     let today = new Date();
-    
+
+    if(today.getUTCHours() < 3) today.setUTCDate(today.getUTCDate()-1)
+
     today.setUTCHours(0, 0, 0, 0);
 
     try {
@@ -389,11 +391,13 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
 
             let dia = new Date();
 
+            if(dia.getUTCHours() < 3) dia.setUTCDate(dia.getUTCDate()-1)
+                
             if(dia < reserva.data_inicio) dia = reserva.data_inicio;
-
+            
             dia.setUTCHours(0, 0, 0, 0);
 
-            //Reserva analisado é do tipo semanal
+            //Reserva analisada é do tipo semanal
             if(reserva.tipo === 'Semanal') {
                 
                 //array que possui todos os dias da semana da reserva com cada dia sendo um valor de 0 a 6
@@ -421,7 +425,7 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
                 //inserção de reservas caso tamanho seja menor q 3
                 if(nextReservas.length < 3) {
 
-                    while(nextReservas.length < 3) {
+                    while(nextReservas.length < 3 || dia < nextReservas[2].horario_total) {
                         let reserva_inserir = adicionaReservaSemanal(ordem_dias, prox_dia, dia, reserva);
 
                         if(!reserva_inserir) break;
@@ -430,7 +434,10 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
 
                         //passa para proximo dia da semana e verifica se deve voltar ao inicio
                         prox_dia++;
-                        if(prox_dia === ordem_dias.length) prox_dia = 0;
+                        if(prox_dia === ordem_dias.length) {
+                            dia.setUTCDate(dia.getUTCDate()+1);
+                            prox_dia = 0;
+                        }
                     }
 
                 } else {
@@ -449,10 +456,10 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
                 }
 
             } else if (reserva.tipo === 'Diária'){
-
+                
                 if(nextReservas.length < 3) {
 
-                    while(nextReservas.length < 3) {
+                    while(nextReservas.length < 3 || dia < nextReservas[2].horario_total) {
                         
                         //constroi reserva
                         let string_month = '';
@@ -508,42 +515,23 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
                 }
 
             } else {
-                if(nextReservas.length < 3) {
-                    //constroi reserva
-                    let string_month = '';
-                    if (reserva.data_inicio.getUTCMonth() <= 10) string_month = '0'+(reserva.data_inicio.getUTCMonth()+1);
-                    else string_month += (reserva.data_inicio.getUTCMonth()+1);
+                //Reserva única
+                //constroi reserva
+                let string_month = '';
+                if (reserva.data_inicio.getUTCMonth() <= 10) string_month = '0'+(reserva.data_inicio.getUTCMonth()+1);
+                else string_month += (reserva.data_inicio.getUTCMonth()+1);
 
-                    const string_data = `${reserva.data_inicio.getUTCDate()}/${string_month}/${reserva.data_inicio.getUTCFullYear()}`
-                    const string_dia = `${(reserva.data_inicio.toISOString()).split('T')[0]}T${reserva.hora_inicio}:00.000Z`
-                    let reserva_inserir : nextReservas = {
-                        date: string_data,
-                        begin: reserva.hora_inicio,
-                        duration: reserva.duracao + 'hrs',
-                        name: reserva.laboratorio.nome,
-                        horario_total: new Date(string_dia)
-                    }
-
-                    insereReserva(reserva_inserir, nextReservas);
-
-                } else {
-                    //constroi reserva
-                    let string_month = '';
-                    if (reserva.data_inicio.getUTCMonth() <= 10) string_month = '0'+(reserva.data_inicio.getUTCMonth()+1);
-                    else string_month += (reserva.data_inicio.getUTCMonth()+1);
-
-                    const string_data = `${reserva.data_inicio.getUTCDate()}/${string_month}/${reserva.data_inicio.getUTCFullYear()}`
-                    const string_dia = `${(reserva.data_inicio.toISOString()).split('T')[0]}T${reserva.hora_inicio}:00.000Z`
-                    let reserva_inserir : nextReservas = {
-                        date: string_data,
-                        begin: reserva.hora_inicio,
-                        duration: reserva.duracao + 'hrs',
-                        name: reserva.laboratorio.nome,
-                        horario_total: new Date(string_dia)
-                    }
-
-                    insereReserva(reserva_inserir, nextReservas);
+                const string_data = `${reserva.data_inicio.getUTCDate()}/${string_month}/${reserva.data_inicio.getUTCFullYear()}`
+                const string_dia = `${(reserva.data_inicio.toISOString()).split('T')[0]}T${reserva.hora_inicio}:00.000Z`
+                let reserva_inserir : nextReservas = {
+                    date: string_data,
+                    begin: reserva.hora_inicio,
+                    duration: reserva.duracao + 'hrs',
+                    name: reserva.laboratorio.nome,
+                    horario_total: new Date(string_dia)
                 }
+
+                insereReserva(reserva_inserir, nextReservas);
 
             }
         }
