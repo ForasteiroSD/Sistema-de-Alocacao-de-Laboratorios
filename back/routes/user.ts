@@ -10,6 +10,28 @@ interface nextReservas {
     horario_total: Date;
 }
 
+function constroiReserva(dia: Date, horario: string, duracao: string, lab: string) {
+
+    let string_month = '';
+    if (dia.getUTCMonth() <= 10) string_month = '0'+(dia.getUTCMonth()+1);
+    else string_month += (dia.getUTCMonth()+1);
+
+    let string_day = '';
+    if(dia.getUTCDate() <= 10) string_day = '0'+(dia.getUTCDate());
+    else string_day += dia.getUTCDate();
+
+    const string_data = `${string_day}/${string_month}/${dia.getUTCFullYear()}`
+    const string_dia = `${(dia.toISOString()).split('T')[0]}T${horario}:00.000Z`
+
+    return {
+        date: string_data,
+        begin: horario,
+        duration: duracao + 'hrs',
+        name: lab,
+        horario_total: new Date(string_dia)
+    }
+}
+
 function adicionaReservaSemanal(ordem_dias: any, prox_dia: number, dia: Date, reserva: any) {
 
     //acha proxima data da reserva
@@ -20,22 +42,8 @@ function adicionaReservaSemanal(ordem_dias: any, prox_dia: number, dia: Date, re
     //verifica se a data n ultrapassou o fim da reserva
     if(dia > reserva.data_fim) return null;
 
-    //constroi reserva
-    let string_month = '';
-    if (dia.getUTCMonth() <= 10) string_month = '0'+(dia.getUTCMonth()+1);
-    else string_month += (dia.getUTCMonth()+1);
-
-    const string_data = `${dia.getUTCDate()}/${string_month}/${dia.getUTCFullYear()}`
-    const string_dia = `${(dia.toISOString()).split('T')[0]}T${ordem_dias[prox_dia].dia.horario}:00.000Z`
-
-    let reserva_inserir : nextReservas = {
-        date: string_data,
-        begin: ordem_dias[prox_dia].dia.horario,
-        duration: ordem_dias[prox_dia].dia.duracao + 'hrs',
-        name: reserva.laboratorio.nome,
-        horario_total: new Date(string_dia)
-    }
-
+    let reserva_inserir: nextReservas = constroiReserva(dia, ordem_dias[prox_dia].dia.horario, ordem_dias[prox_dia].dia.duracao, reserva.laboratorio.nome)
+    
     return reserva_inserir;
 }
 
@@ -135,24 +143,31 @@ router.post("/user/login", async (req: Request, res: Response) => {
 router.patch("/user", async (req: Request, res: Response) => {
 
     //Dados a serem atualizados
-    const { id, nome, telefone, email, senha, novasenha, tipo } = req.body;
+    const { id, cpf, nome, telefone, email, senha, novasenha, tipo, adm } = req.body;
 
     try {
         await prisma.user.update({
             where: {
-                id: id,
-                senha: senha
+                ... (!adm? {
+                    id: id,
+                    senha: senha
+                } : {
+                    cpf: cpf
+                })
             },
             data: {
                 nome: nome,
                 telefone: telefone,
                 email: email,
-                senha: novasenha,
-                tipo: tipo
+                ... (adm? {
+                    tipo: tipo,
+                } : {
+                    senha: novasenha
+                })
             }
     });
 
-    res.status(200).send({nome: nome, tipo: tipo});
+    res.status(200).send({ nome: nome });
     return;
 
     } catch (error: any) {
@@ -267,8 +282,7 @@ router.post("/user/data", async(req: Request, res: Response) => {
     //Filtros para busca de usuário
     //utilizar id e cpf separadamente
     //typeOnly especifica que deseja retornar somente o tipo de usuário
-    const { id, cpf, typeOnly } = req.query;
-
+    const { id, cpf, typeOnly } = req.body;
 
     try {
         const user = await prisma.user.findFirstOrThrow({
@@ -415,130 +429,65 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
                     ordem_dias.push({dia: dias_reserva[i], dif: dif});
                 }
     
-                ordem_dias.sort((a, b) => {
-                    return a.dif - b.dif;
-                });
+                ordem_dias.sort((a, b) => 
+                    a.dif - b.dif
+                );
 
                 //variavel que define qual é o proximo dia do array ordem_dias
                 let prox_dia = 0;
 
-                //inserção de reservas caso tamanho seja menor q 3
-                if(nextReservas.length < 3) {
+                //inserção de reservas semanais
+                do {
+                    let reserva_inserir = adicionaReservaSemanal(ordem_dias, prox_dia, dia, reserva);
+                    
+                    //caso já tenha ultrapassado data final da reserva
+                    if(!reserva_inserir) break;
 
-                    while(nextReservas.length < 3 || dia < nextReservas[2].horario_total) {
-                        let reserva_inserir = adicionaReservaSemanal(ordem_dias, prox_dia, dia, reserva);
+                    //caso data da reserva seja maior do que as que já estão inseridas
+                    if(nextReservas.length == 3 && reserva_inserir.horario_total > nextReservas[2].horario_total) break;
+                    
+                    insereReserva(reserva_inserir, nextReservas);
 
-                        if(!reserva_inserir) break;
-
-                        insereReserva(reserva_inserir, nextReservas);
-
-                        //passa para proximo dia da semana e verifica se deve voltar ao inicio
-                        prox_dia++;
-                        if(prox_dia === ordem_dias.length) {
-                            dia.setUTCDate(dia.getUTCDate()+1);
-                            prox_dia = 0;
-                        }
+                    //passa para proximo dia da semana e verifica se deve voltar ao inicio
+                    prox_dia++;
+                    if(prox_dia === ordem_dias.length) {
+                        dia.setUTCDate(dia.getUTCDate()+1);
+                        prox_dia = 0;
                     }
 
-                } else {
-                    do {
-                        let reserva_inserir = adicionaReservaSemanal(ordem_dias, prox_dia, dia, reserva);
-                        
-                        if(!reserva_inserir || reserva_inserir.horario_total > nextReservas[2].horario_total) break;
-
-                        insereReserva(reserva_inserir, nextReservas);
-
-                        //passa para proximo dia da semana e verifica se deve voltar ao inicio
-                        prox_dia++;
-                        if(prox_dia === ordem_dias.length) prox_dia = 0;
-
-                    } while(true);
-                }
+                } while(true);
 
             } else if (reserva.tipo === 'Diária'){
                 
-                if(nextReservas.length < 3) {
+                do {
+                    if(nextReservas.length == 3 && dia > nextReservas[2].horario_total) break;
 
-                    while(nextReservas.length < 3 || dia < nextReservas[2].horario_total) {
-                        
-                        //constroi reserva
-                        let string_month = '';
-                        if (dia.getUTCMonth() <= 10) string_month = '0'+(dia.getUTCMonth()+1);
-                        else string_month += (dia.getUTCMonth()+1);
+                    let reserva_inserir: nextReservas = constroiReserva(dia, String(reserva.hora_inicio), String(reserva.duracao), reserva.laboratorio.nome)
 
-                        const string_data = `${dia.getUTCDate()}/${string_month}/${dia.getUTCFullYear()}`
-                        const string_dia = `${(dia.toISOString()).split('T')[0]}T${reserva.hora_inicio}:00.000Z`
-                        let reserva_inserir : nextReservas = {
-                            date: string_data,
-                            begin: reserva.hora_inicio,
-                            duration: reserva.duracao + 'hrs',
-                            name: reserva.laboratorio.nome,
-                            horario_total: new Date(string_dia)
-                        }
+                    insereReserva(reserva_inserir, nextReservas);
 
-                        insereReserva(reserva_inserir, nextReservas);
-                        
-                        dia.setUTCDate(dia.getUTCDate()+1)
+                    dia.setUTCDate(dia.getUTCDate()+1);
 
-                        //verifica se a data n ultrapassou o fim da reserva
-                        if(dia > reserva.data_fim) break;
-                    }
+                    //verifica se a data n ultrapassou o fim da reserva
+                    if(dia > reserva.data_fim) break;
 
-                } else {
-                    do {
-                        
-                        if(dia > nextReservas[2].horario_total) break;
-
-                        //constroi reserva
-                        let string_month = '';
-                        if (dia.getUTCMonth() <= 10) string_month = '0'+(dia.getUTCMonth()+1);
-                        else string_month += (dia.getUTCMonth()+1);
-
-                        const string_data = `${dia.getUTCDate()}/${string_month}/${dia.getUTCFullYear()}` 
-                        const string_dia = `${(dia.toISOString()).split('T')[0]}T${reserva.hora_inicio}:00.000Z`
-                        let reserva_inserir : nextReservas = {
-                            date: string_data,
-                            begin: reserva.hora_inicio,
-                            duration: reserva.duracao + 'hrs',
-                            name: reserva.laboratorio.nome,
-                            horario_total: new Date(string_dia)
-                        }
-
-                        insereReserva(reserva_inserir, nextReservas);
-
-                        dia.setUTCDate(dia.getUTCDate()+1);
-
-                        //verifica se a data n ultrapassou o fim da reserva
-                        if(dia > reserva.data_fim) break;
-
-                    } while(true);
-                }
+                } while(true);
 
             } else {
                 //Reserva única
-                //constroi reserva
-                let string_month = '';
-                if (reserva.data_inicio.getUTCMonth() <= 10) string_month = '0'+(reserva.data_inicio.getUTCMonth()+1);
-                else string_month += (reserva.data_inicio.getUTCMonth()+1);
-
-                const string_data = `${reserva.data_inicio.getUTCDate()}/${string_month}/${reserva.data_inicio.getUTCFullYear()}`
-                const string_dia = `${(reserva.data_inicio.toISOString()).split('T')[0]}T${reserva.hora_inicio}:00.000Z`
-                let reserva_inserir : nextReservas = {
-                    date: string_data,
-                    begin: reserva.hora_inicio,
-                    duration: reserva.duracao + 'hrs',
-                    name: reserva.laboratorio.nome,
-                    horario_total: new Date(string_dia)
-                }
+                let reserva_inserir: nextReservas = constroiReserva(reserva.data_inicio, String(reserva.hora_inicio), String(reserva.duracao), reserva.laboratorio.nome)
 
                 insereReserva(reserva_inserir, nextReservas);
 
             }
         }
+
         res.send({mainInfo: mainInfo, nextReserves: nextReservas});
         return;
 
     } catch (error: any) {
+
+        console.log(error)
 
         if(error.code === 'P2025') {
             res.status(404).send('Usuario inexistente');
