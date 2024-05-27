@@ -1,0 +1,20 @@
+.Table {
+    margin-top: 50px;
+}
+
+.Table .TableHeader {
+    border-bottom: solid var(--gray) 1px;
+}
+
+.Table .TableLine {
+    padding: 17px 0;
+    border-bottom: dotted #bbbbbb 1px;
+}
+
+.Table .TableLine p {
+    margin: 0;
+}
+
+.Table .TableItem {
+    text-align: center;
+}

@@ -1,0 +1,44 @@
+.Input input {
+    background-color: var(--background);
+    border: solid var(--gray) 1px;
+    padding: 13px;
+    border-radius: 6px;
+    width: 317px;
+    font-family: Antic;
+    font-size: 14px;
+}
+
+.Input label {
+    font-family: Antic;
+    font-size: 16px;
+    padding-bottom: 5px;
+}
+
+.Submit {
+    background-color: var(--buttonBlue);
+    border: 0;
+    color: var(--background);
+    padding: 13px;
+    text-align: center;
+    border-radius: 6px;
+    width: 345px;
+    cursor: pointer;
+    transition: background-color .17s;
+    font-family: Acme;
+    /* font-family: Antic; */
+    font-size: 16px;
+}
+
+.Submit:hover {
+    background-color: var(--selectedButtonBlue);
+}
+
+.Dropdown {
+    background-color: var(--background);
+    border: solid var(--gray) 1px;
+    padding: 13px;
+    border-radius: 6px;
+    width: 345px;
+    font-family: Antic;
+    font-size: 14px;
+}

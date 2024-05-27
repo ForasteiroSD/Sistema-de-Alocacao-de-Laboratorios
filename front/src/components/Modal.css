@@ -1,0 +1,47 @@
+.ModalImg {
+    position: absolute;
+    left: 0;
+    top: 15px;
+    z-index: 3;
+    width: 100vw;
+}
+
+.ModalImg img {
+    width: 130px;
+}
+
+.ModalBackGround {
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 2;
+}
+
+.ModalWrapper {
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    /* transition: opacity .3s; */
+    /* backdrop-filter: blur(2px); */
+    z-index: 2;
+}
+
+.ModalWrapper h1 {
+    font-size: 1.9rem;
+    margin: 1rem 0;
+}
+
+.Modal {
+    position: absolute;
+    background-color: var(--background);
+    border-radius: 13px;
+    gap: 12px;
+    padding: 12px 25px 0 25px;
+    /* transition: transform .15s; */
+    z-index: 3;
+}
