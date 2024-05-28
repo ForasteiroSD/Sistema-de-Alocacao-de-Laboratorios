@@ -1,5 +1,6 @@
 /* Packages */
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 /* Components */
 import SideMenu from "./components/SideMenu";
@@ -10,26 +11,33 @@ import MainPage from './pages/MainPage'
 import Labs from './pages/Labs'
 import Reserves from './pages/Reserves'
 import Configs from './pages/Configs'
-
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 /* Css */
 import './App.css'
 
 function App() {
-    const logged = true;
+    const [logged, setLogged] = useState(false);
 
     return (
         <>
             <Router>
-                <section className="flex">
-                    {logged ? <SideMenu /> : null}
-
+                <section >
+                    {!logged ? null : <SideMenu />}
+                    
                     <div className="">
-                        {logged ? <Header /> : null}
+                        {!logged ? null : <Header />} 
                         <Routes>
-                            <Route path="/" element={<MainPage />} />
-                            <Route path="/laboratorios" element={<Labs />} />
-                            <Route path="/reservas" element={<Reserves />} />
-                            <Route path="/configs" element={<Configs />} />
+                            <Route path="/login" element={<LoginPage />} />
+                            {logged && (
+                                <>
+                                    <Route path="/" element={<MainPage />} />
+                                    <Route path="/laboratorios" element={<Labs />} />
+                                    <Route path="/reservas" element={<Reserves />} />
+                                    <Route path="/configs" element={<Configs />} />
+                                    <Route path="/register" element={<RegisterPage />} />
+                                </>
+                            )}
                         </Routes>
                     </div>
                 </section>
@@ -38,4 +46,4 @@ function App() {
     )
 }
 
-export default App
+export default App;
