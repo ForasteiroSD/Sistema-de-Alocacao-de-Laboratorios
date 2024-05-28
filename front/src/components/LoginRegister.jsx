@@ -30,7 +30,7 @@ const LoginRegister = ({ isLogin }) => {
   }, [isLoginState]);
 
   const handleToggle = () => {
-    const phoneNumber = '5551999999999'; // Replace with the admin's phone number
+    const phoneNumber = '5551999999999';
     const message = 'Olá, gostaria de criar uma conta.';
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.location.href = whatsappUrl;
