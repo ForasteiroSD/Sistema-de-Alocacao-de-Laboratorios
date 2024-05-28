@@ -69,6 +69,7 @@ html {
 }
 
 h1 {
+    /* margin: 6vh 0; */
     margin: 4rem 0;
     font-family: Anton;
     text-align: center;
@@ -83,19 +84,19 @@ hr {
 
 /* width */
 ::-webkit-scrollbar {
-  width: .5rem;
+    width: .5rem;
 }
- 
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #b4b4b4; 
-  border-radius: 10px;
-  border: solid var(--background) .1rem;
+    background: #b4b4b4; 
+    border-radius: 10px;
+    border: solid var(--background) .1rem;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #979797; 
+    background: #979797; 
 }
 
 .PageContent {

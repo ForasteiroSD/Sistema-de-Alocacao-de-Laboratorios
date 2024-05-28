@@ -1,0 +1,25 @@
+.AlertWrapper {
+    left: 0;
+    position: absolute;
+    z-index: 3;
+    width: 100vw;
+    top: -12px
+}
+
+.Alert {
+    background-color: var(--background);
+    padding: 10px 15px;
+    gap: 5px;
+    border-radius: 10px;
+    border: solid var(--gray) 1px;
+}
+
+.Alert .Icon {
+    min-width: 30px;
+    min-height: 30px;
+}
+
+.Alert p {
+    margin: 0 !important;
+    font-size: 18px;
+}

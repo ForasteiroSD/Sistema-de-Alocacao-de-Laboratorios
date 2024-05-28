@@ -1,7 +1,8 @@
 /* Packages */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { VscSearch } from "react-icons/vsc";
 import { AnimatePresence } from "framer-motion";
+import Axios from "axios";
 
 /* Components */
 import Input from "../components/Input";
@@ -13,32 +14,73 @@ import './Users.css'
 
 /* Variables/Consts */
 const accoutTypes = [
-    {id: 'accoutType', value: null, name: 'Qualquer Tipo'},
-    {id: 'accoutType', value: 'adm', name: 'Administrador'},
-    {id: 'accoutType', value: 'resp', name: 'Responsável'},
-    {id: 'accoutType', value: 'user', name: 'Usuário'}
+    {value: '', name: 'Qualquer Tipo'},
+    {value: 'Administrador', name: 'Administrador'},
+    {value: 'Responsável', name: 'Responsável'},
+    {value: 'Usuário', name: 'Usuário'}
 ]
 const tableHeader = ['Nome', 'CPF', 'Email', 'Tipo de Conta']
-const userData = [
-    ['Bruno', '123.456.789-10', 'emaildobruno@gmail.com', 'Usuário'],
-    ['Diogo', '123.456.789-11', 'emaildodiogo@gmail.com', 'Administrador'],
-    ['Thiago', '123.456.789-12', 'emaildothiago@gmail.com', 'Responsável'],
-    ['Tamiris', '123.456.789-13', 'emaildatamiris@gmail.com', 'Responsável']
-]
 const searchButtonText = (
     <div className="flex h v" style={{gap: '5px'}}>
         <VscSearch style={{transform: 'scale(1.2)'}} />    
         <p style={{margin: '0'}}>Pesquisar</p>
     </div>
 )
+import { backUrl, nameMask, cpfMask } from "../GlobalVariables";
 
 export default function Users() {
     const [showNewUser, setShowNewUser] = useState(false);
+    const [users, setUsers] = useState([['Carregando Usuários...']]);
+    const [editable, setEditable] = useState(false);
 
-    const SearchUsers = (e) => {
-        e.preventDefault();
+    useEffect(() => {
+        SearchUsers();
+    }, [])
 
-        alert('teste');
+    const SearchUsers = async (e) => {
+        let nome;
+        let cpf;
+        let email;
+        let tipo;
+
+        if(e) {
+            e.preventDefault();
+            nome = document.querySelector('#nameSearch').value;
+            cpf = document.querySelector('#cpfSearch').value;
+            email = document.querySelector('#emailSearch').value;
+            tipo = document.querySelector('#accoutTypeSearch').value;
+        } else {
+            nome = '';
+            cpf = '';
+            email = '';
+            tipo = '';
+        }
+
+        try {
+            const response = (await Axios.get(backUrl + 'users?' + 
+                'nome=' + nome + '&' +
+                'cpf=' + cpf + '&' +
+                'email=' + email + '&' +
+                'tipo='  + tipo
+            )).data;
+            
+            let users = [];
+            
+            if(response.length > 0) {
+                response.forEach(user => {
+                    users.push([user.nome, user.cpf, user.email, user.tipo]);
+                });
+                setEditable(true);
+            } else {
+                users.push(['Nenhum usuário encontrado']);
+                setEditable(false);
+            }
+            
+            setUsers(users);
+        } catch {
+            setUsers('Desculpe, não foi possível realizar a pesquisa. Tente novamente mais tarde.')
+            setEditable(false);
+        }
     }
 
     return (
@@ -51,16 +93,16 @@ export default function Users() {
 
             <p>Filtros de pesquisa:</p>
             <form className="SearchForm">
-                <Input type={'text'} placeholder={'Nome'} id={'nome'} />
-                <Input type={'text'} placeholder={'CPF'} id={'cpf'} />
-                <Input type={'text'} placeholder={'Email'} id={'email'} />
-                <Input type={'dropdown'} values={accoutTypes} id={'tipo'} placeholder={'Tipo de Conta'} />
+                <Input type={'text'} placeholder={'Nome'} formatter={nameMask} id={'nameSearch'} />
+                <Input type={'text'} placeholder={'CPF'} formatter={cpfMask} id={'cpfSearch'} />
+                <Input type={'text'} placeholder={'Email'} id={'emailSearch'} />
+                <Input type={'dropdown'} values={accoutTypes} id={'accoutTypeSearch'} placeholder={'Tipo de Usuário'} />
                 <Input type={'submit'} placeholder={searchButtonText} callback={SearchUsers} />
             </form>
 
-            <Table header={tableHeader} usersData={userData}/>
+            <Table header={tableHeader} usersData={users} editable={editable}/>
 
-            <div className="flex h" style={{marginTop: '50px'}}>
+            <div className="flex h" style={{marginTop: '50px', marginBottom: '50px'}}>
                 <Input type={'submit'} placeholder={'Adicionar Novo Usuário'} callback={() => {setShowNewUser(true)}} />
             </div>
         </section>
