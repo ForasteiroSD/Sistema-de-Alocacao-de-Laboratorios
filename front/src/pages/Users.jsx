@@ -57,12 +57,14 @@ export default function Users() {
         }
 
         try {
-            const response = (await Axios.get(backUrl + 'users?' + 
-                'nome=' + nome + '&' +
-                'cpf=' + cpf + '&' +
-                'email=' + email + '&' +
-                'tipo='  + tipo
-            )).data;
+            const response = (await Axios.get(backUrl + 'users?' , {
+                params: {
+                    nome: nome,
+                    cpf: cpf,
+                    email: email,
+                    tipo: tipo
+                }
+            })).data;
             
             let users = [];
             

@@ -10,7 +10,7 @@
     background-color: var(--background);
     padding: 10px 15px;
     gap: 5px;
-    border-radius: 10px;
+    /* border-radius: 10px; */
     border: solid var(--gray) 1px;
 }
 
