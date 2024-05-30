@@ -1,5 +1,6 @@
 /* Packages */
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { useState } from "react";
 
 /* Components */
 import SideMenu from "./components/SideMenu";
@@ -11,12 +12,13 @@ import Labs from './pages/Labs'
 import Reserves from './pages/Reserves'
 import Configs from './pages/Configs'
 import Users from "./pages/Users";
+import LoginPage from "./pages/LoginPage"
 
 /* Css */
 import './App.css'
 
 function App() {
-    const logged = true;
+    const [logged, setlogged] = useState(true);
 
     return (
         <>
@@ -28,6 +30,7 @@ function App() {
                         {logged ? <Header /> : null}
                         <Routes>
                             <Route path="/" element={<MainPage />} />
+                            <Route path="/login" element={<LoginPage />}/>
                             <Route path="/laboratorios" element={<Labs />} />
                             <Route path="/reservas" element={<Reserves />} />
                             <Route path="/configs" element={<Configs />} />

@@ -12,7 +12,6 @@ export default function Input({type, label, placeholder, id, values, callback, f
         else input.type = 'text';
     }
 
-    //Params: type, placeholder(optional), id, values, required(optional)
     if(type == 'dropdown') {
         if(values) {
             return (
@@ -26,7 +25,6 @@ export default function Input({type, label, placeholder, id, values, callback, f
         }
     }
     
-    //Params: type, placeholder(optional), callback
     else if(type == 'submit') {
         return (
             <button className='Inputs Submit' type='submit' onClick={callback}>{placeholder}</button>
@@ -34,7 +32,6 @@ export default function Input({type, label, placeholder, id, values, callback, f
         )
     }
 
-    //Params: type, label(optional), placeholder(optional), id, maxDate(optional), required(optional)
     else if(type == 'date') {
         return (
             <div className='Inputs Input flex c'>
@@ -44,7 +41,6 @@ export default function Input({type, label, placeholder, id, values, callback, f
         )
     }
 
-    //Params: type, label(optional), placeholder(optional), id, formatter(optional), autoComplete(if type='password'), required(optional)
     else {
         return (
             <div className='Inputs Input flex c'>

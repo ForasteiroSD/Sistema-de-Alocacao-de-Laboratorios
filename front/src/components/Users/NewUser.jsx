@@ -15,13 +15,13 @@ import '../Modal.css';
 
 /* Variables/Consts */
 const accoutTypes = [
-    {value: 'Usuário', name: 'Usuário'},
-    {value: 'Responsável', name: 'Responsável'},
-    {value: 'Administrador', name: 'Administrador'}
+    { value: 'Usuário', name: 'Usuário' },
+    { value: 'Responsável', name: 'Responsável' },
+    { value: 'Administrador', name: 'Administrador' }
 ]
 import { backUrl, nameMask, cpfMask, phoneMask, getCurrentDate } from "../../GlobalVariables";
 
-export default function NewUser({CloseModal}) {
+export default function NewUser({ CloseModal }) {
     const [alertType, setAlertType] = useState('');
     const [message, setMessage] = useState('');
     const [alertState, setAlertState] = useState(false);
@@ -53,12 +53,12 @@ export default function NewUser({CloseModal}) {
                 senha: senha,
                 tipo: tipo
             })).data;
-    
+
             setAlert('Success', 'Usuário criado');
         } catch (e) {
             const erro = e.response.data;
-            
-            if(erro === 'CPF ja cadastrado') setAlert('Error', 'CPF ja cadastrado');
+
+            if (erro === 'CPF ja cadastrado') setAlert('Error', 'CPF ja cadastrado');
             else if (erro === 'Email ja cadastrado') setAlert('Error', 'Email ja cadastrado');
             else setAlert('Error', 'Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
         }
@@ -73,8 +73,8 @@ export default function NewUser({CloseModal}) {
         const cpf = document.querySelector('#cpf').value;
         const telefone = document.querySelector('#phone').value;
 
-        if(CPF.isValid(cpf)) {
-            if(telefone.length === 15) {
+        if (CPF.isValid(cpf)) {
+            if (telefone.length === 15) {
                 try {
                     z.string().email().parse(email);
                     if (senha.length < 8) setAlert('Warning', 'A senha deve ter no mínimo 8 caracteres')
@@ -82,23 +82,23 @@ export default function NewUser({CloseModal}) {
                     else CreateNewUser(sha256.hmac("lytuhiçjdswxafgqvbjanoikl", senha), email, cpf, telefone);
                 } catch (error) {
                     setAlert('Warning', 'Email inválido')
-                } 
+                }
             } else setAlert('Warning', 'Número de telefone inválido. (É necessário adicionar o DDD)')
         } else setAlert('Warning', 'CPF inválido');
     }
 
     return (
         <>
-            <motion.div key={'logo'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: {duration: 0.2} }} className='ModalImg flex h'>
+            <AnimatePresence>
+                {alertState && <Alert messageType={alertType} message={message} />}
+            </AnimatePresence>
+            <motion.div key={'logo'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }} className='ModalImg flex h'>
                 <img src="/logos/Logo-White.png" alt="Logo LabHub" />
-                <AnimatePresence>
-                    {alertState && <Alert messageType={alertType} message={message} />}
-                </AnimatePresence>
             </motion.div>
-            <motion.div key={'wrapper'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: {duration: 0.2} }} className='ModalBackGround' />
+            <motion.div key={'wrapper'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }} className='ModalBackGround' />
             <form onSubmit={validate} className='flex h v ModalWrapper' >
-                <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: {duration: 0.2} }} className='Modal flex c'>
-                <h1>Novo Usuário</h1>
+                <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: { duration: 0.2 } }} className='Modal flex c'>
+                    <h1>Novo Usuário</h1>
                     <Input type={'text'} placeholder={'Nome completo'} formatter={nameMask} id={'name'} required={true} />
                     <Input type={'text'} placeholder={'CPF'} formatter={cpfMask} id={'cpf'} required={true} />
                     <Input type={'date'} placeholder={'Data de Nascimento'} maxDate={getCurrentDate(18)} id={'birthday'} required={true} />
@@ -108,7 +108,7 @@ export default function NewUser({CloseModal}) {
                     <Input type={'password'} placeholder={'Confirmar Senha'} autoComplete={'off'} id={'confirmPassword'} required={true} />
                     <Input type={'dropdown'} values={accoutTypes} placeholder={'Tipo de Usuário'} id={'accoutType'} required={true} />
                     <Input type={'submit'} placeholder={'Cadastrar'} />
-                    <p className='CancelButton' onClick={() => {CloseModal(false)}}>Cancelar</p>
+                    <p className='CancelButton' onClick={() => { CloseModal(false) }}>Cancelar</p>
                 </motion.div>
             </form>
         </>
