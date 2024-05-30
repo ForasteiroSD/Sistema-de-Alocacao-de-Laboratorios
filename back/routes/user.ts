@@ -32,21 +32,6 @@ function constroiReserva(dia: Date, horario: string, duracao: string, lab: strin
     }
 }
 
-function adicionaReservaSemanal(ordem_dias: any, prox_dia: number, dia: Date, reserva: any) {
-
-    //acha proxima data da reserva
-    while(dia.getUTCDay() !== ordem_dias[prox_dia].dia.dia) {
-        dia.setUTCDate(dia.getUTCDate()+1);
-    }
-
-    //verifica se a data n ultrapassou o fim da reserva
-    if(dia > reserva.data_fim) return null;
-
-    let reserva_inserir: nextReservas = constroiReserva(dia, ordem_dias[prox_dia].dia.horario, ordem_dias[prox_dia].dia.duracao, reserva.laboratorio.nome)
-    
-    return reserva_inserir;
-}
-
 function insereReserva(reserva: nextReservas, nextReservas: nextReservas[]) {
     let pos = nextReservas.length;
     while(pos > 0 && reserva.horario_total < nextReservas[pos-1].horario_total) pos--;
@@ -438,10 +423,15 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
 
                 //inserção de reservas semanais
                 do {
-                    let reserva_inserir = adicionaReservaSemanal(ordem_dias, prox_dia, dia, reserva);
-                    
-                    //caso já tenha ultrapassado data final da reserva
-                    if(!reserva_inserir) break;
+                    //acha proxima data da reserva
+                    while(dia.getUTCDay() !== ordem_dias[prox_dia].dia.dia) {
+                        dia.setUTCDate(dia.getUTCDate()+1);
+                    }
+
+                    //verifica se a data n ultrapassou o fim da reserva
+                    if(dia > reserva.data_fim) break;
+
+                    let reserva_inserir: nextReservas = constroiReserva(dia, ordem_dias[prox_dia].dia.horario, ordem_dias[prox_dia].dia.duracao, reserva.laboratorio.nome)
 
                     //caso data da reserva seja maior do que as que já estão inseridas
                     if(nextReservas.length == 3 && reserva_inserir.horario_total > nextReservas[2].horario_total) break;
@@ -478,7 +468,6 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
                 let reserva_inserir: nextReservas = constroiReserva(reserva.data_inicio, String(reserva.hora_inicio), String(reserva.duracao), reserva.laboratorio.nome)
 
                 insereReserva(reserva_inserir, nextReservas);
-
             }
         }
 
@@ -497,7 +486,6 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
         res.status(400).send('database off');
         return;
     }
-
 
 });
 
