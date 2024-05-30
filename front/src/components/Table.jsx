@@ -4,7 +4,7 @@ import { FiEdit } from "react-icons/fi";
 /* Css */
 import './Table.css'
 
-export default function Table({header, usersData, editable}) {
+export default function Table({header, data, editable}) {
     return (
         <div className='Table'>
             {header && (
@@ -15,9 +15,9 @@ export default function Table({header, usersData, editable}) {
                 </div>
             )}
 
-            {usersData && (
+            {data && (
                 <div className='TableData'>
-                    {usersData.map((user, i) => (
+                    {data.map((user, i) => (
                         <div key={i} className='grid TableLine' style={{gridTemplateColumns: 'repeat(' + user.length + ', 1fr) .1fr'}}>
                             {user.map((info, j) => (
                                 <p key={j} className='TableItem'>{info}</p>

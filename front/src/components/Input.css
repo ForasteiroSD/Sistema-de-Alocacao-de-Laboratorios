@@ -62,12 +62,33 @@
 .Dropdown {
     background-color: var(--background);
     border: solid var(--gray) 1px;
-    padding: 13px;
     border-radius: 6px;
-    width: 100%;
-    height: 45px;
+    /* height: 17px; */
+    position: relative;
+}
+
+.Dropdown select {
+    background-color: var(--background);
     font-family: Antic;
     font-size: 14px;
+    appearance: none;
+    border: 0;
+    padding: 13px;
+    border-radius: 6px;
+    flex-grow: 1;
+}
+
+.Dropdown:has(select:focus) {
+    outline: solid var(--gray) 1px;
+}
+
+.Dropdown select:focus {
+    outline: none;
+}
+
+.DropdownArrow {
+    position: absolute;
+    right: 13px;
 }
 
 input:-webkit-autofill,

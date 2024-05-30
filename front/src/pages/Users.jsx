@@ -102,7 +102,7 @@ export default function Users() {
                 <Input type={'submit'} placeholder={searchButtonText} callback={SearchUsers} />
             </form>
 
-            <Table header={tableHeader} usersData={users} editable={editable}/>
+            <Table header={tableHeader} data={users} editable={editable}/>
 
             <div className="flex h" style={{marginTop: '50px', marginBottom: '50px'}}>
                 <Input type={'submit'} placeholder={'Adicionar Novo Usuário'} callback={() => {setShowNewUser(true)}} />
