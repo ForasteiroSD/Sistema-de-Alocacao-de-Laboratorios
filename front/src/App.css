@@ -111,17 +111,6 @@ hr {
     background-color: var(--background);
 }
 
-.CancelButton {
-    font-family: Actor;
-    font-size: 0.875rem;
-    color: var(--buttonBlue);
-    text-align: center;
-    cursor: pointer;
-    transition: color .1s;
-    margin: 0;
-    padding: 3px 0 5px 0;
-}
-
 .CancelButton:hover {
     color: var(--selectedButtonBlue);
 }
