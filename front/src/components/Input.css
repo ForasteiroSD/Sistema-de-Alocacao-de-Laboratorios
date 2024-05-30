@@ -89,6 +89,8 @@
 .DropdownArrow {
     position: absolute;
     right: 13px;
+    color: var(--gray);
+    transition: rotate .1s;
 }
 
 input:-webkit-autofill,
