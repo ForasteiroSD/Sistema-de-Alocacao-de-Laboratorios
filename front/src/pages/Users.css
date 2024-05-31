@@ -7,16 +7,20 @@
     display: flex;
 }
 
-.Users .SearchForm input {
+.Users .SearchForm .Input {
     width: initial;
 }
 
-.Users .SearchForm .Inputs  {
+.Users .SearchForm .InputBox {
     width: initial;
     flex-grow: 1;
 }
 
-.Users .SearchForm .Submit  {
+.Users .SearchForm .Submit {
     width: initial;
     flex-grow: .4;
+}
+
+.Users .SearchForm .Dropdown {
+    flex-grow: 1.3;
 }

@@ -45,3 +45,14 @@
     /* transition: transform .15s; */
     z-index: 3;
 }
+
+.CancelButton {
+    font-family: Actor;
+    font-size: 0.875rem;
+    color: var(--buttonBlue);
+    text-align: center;
+    cursor: pointer;
+    transition: color .1s;
+    margin: 0 !important;
+    padding: 3px 0 15px 0; /* Bottom paddin = 12px (gap) + 3px */
+}
