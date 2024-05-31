@@ -127,26 +127,25 @@ router.post("/user/login", async (req: Request, res: Response) => {
 //Atualizar usuário
 router.patch("/user", async (req: Request, res: Response) => {
 
-    //Dados a serem atualizados
-    const { id, cpf, nome, telefone, email, senha, novasenha, tipo, adm } = req.body;
+    //Dados de busca e a serem atualizados
+    //adm = true não precisa informar senha
+    //mudarSenha usado com adm, caso administrador queira trocar a senha também sem saber a anterior
+    const { id, nome, telefone, email, senha, novasenha, tipo, adm, mudarSenha } = req.body;
 
     try {
         await prisma.user.update({
             where: {
-                ... (!adm? {
-                    id: id,
+                id: id,
+                ... (!adm && {
                     senha: senha
-                } : {
-                    cpf: cpf
                 })
             },
             data: {
                 nome: nome,
                 telefone: telefone,
                 email: email,
-                ... (adm? {
-                    tipo: tipo,
-                } : {
+                tipo: tipo,
+                ... (adm && !mudarSenha || {
                     senha: novasenha
                 })
             }
@@ -175,7 +174,8 @@ router.patch("/user", async (req: Request, res: Response) => {
 //Deletar usuário
 router.delete("/user", async (req: Request, res: Response) => {
     
-    const { id, senha } = req.body;
+    //adm = true não precisa informar senha para excluir conta
+    const { id, senha, adm } = req.body;
 
     try {
 
@@ -193,7 +193,9 @@ router.delete("/user", async (req: Request, res: Response) => {
         await prisma.user.delete({
             where: {
                 id: String(id),
-                senha: senha
+                ... (!adm && {
+                    senha: senha
+                })
             }
         });
 
@@ -236,6 +238,7 @@ router.get("/users", async(req: Request, res: Response) => {
                 })
             },
             select: {
+                id: true,
                 nome: true,
                 cpf: true,
                 email: true,
@@ -260,27 +263,40 @@ router.get("/users", async(req: Request, res: Response) => {
     }
 });
 
+//Recuperar nomes do usuário responsáveis
+router.get("/users/responsavel", async(req: Request, res: Response) => {
+
+    try {
+        const users = await prisma.user.findMany({
+            where: {
+                tipo: 'Responsável'
+            },
+            select: {
+                nome: true,
+            }
+        });
+
+        res.status(200).send(users);
+        return;
+
+    } catch (error) {
+        res.status(400).send('database off');
+        return;
+    }
+})
+
 
 //Recuperar dados de um usuário
 router.post("/user/data", async(req: Request, res: Response) => {
 
     //Filtros para busca de usuário
-    //utilizar id e cpf separadamente
     //typeOnly especifica que deseja retornar somente o tipo de usuário
-    const { id, cpf, typeOnly } = req.body;
+    const { id, typeOnly } = req.body;
 
     try {
         const user = await prisma.user.findFirstOrThrow({
             where: {
-                OR: [
-                    {
-                        id: String(id)
-                    },
-                    {
-                        cpf: String(cpf)
-                    }
-                ]
-                
+                id: String(id)
             },
             select: {
                 ... (typeOnly? {
