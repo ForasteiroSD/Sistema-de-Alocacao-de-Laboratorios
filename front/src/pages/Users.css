@@ -1,0 +1,26 @@
+.Users p {
+    margin-bottom: 10px;
+}
+
+.Users .SearchForm {
+    gap: 15px;
+    display: flex;
+}
+
+.Users .SearchForm .Input {
+    width: initial;
+}
+
+.Users .SearchForm .InputBox {
+    width: initial;
+    flex-grow: 1;
+}
+
+.Users .SearchForm .Submit {
+    width: initial;
+    flex-grow: .4;
+}
+
+.Users .SearchForm .Dropdown {
+    flex-grow: 1.3;
+}

@@ -1,0 +1,101 @@
+.InputBox {
+    width: 345px;
+    cursor: text;
+}
+
+.Input {
+    background-color: var(--background);
+    border: solid var(--gray) 1px;
+    padding: 13px;
+    border-radius: 6px;
+    width: calc(100% - 2*13px);
+    height: 17px;
+}
+
+.Input:has(input:focus) {
+    outline: solid var(--gray) 1px;
+}
+
+.Input input {
+    font-family: Antic;
+    font-size: 14px;
+    background-color: var(--background);
+    border: 0;
+    height: 19px;
+}
+
+.Input input:focus {
+    outline: none;
+}
+
+.InputBox p {
+    font-family: Antic;
+    font-size: 16px;
+    margin-bottom: 5px !important;
+}
+
+.Input .SeePasswordButton {
+    color: var(--gray);
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+.Submit {
+    background-color: var(--buttonBlue);
+    border: 0;
+    color: var(--background);
+    padding: 13px;
+    text-align: center;
+    border-radius: 6px;
+    width: 345px;
+    cursor: pointer;
+    transition: background-color .17s;
+    font-family: Acme;
+    /* font-family: Antic; */
+    font-size: 16px;
+}
+
+.Submit:hover {
+    background-color: var(--selectedButtonBlue);
+}
+
+.Dropdown {
+    background-color: var(--background);
+    border: solid var(--gray) 1px;
+    border-radius: 6px;
+    /* height: 17px; */
+    position: relative;
+}
+
+.Dropdown select {
+    background-color: var(--background);
+    font-family: Antic;
+    font-size: 14px;
+    appearance: none;
+    border: 0;
+    padding: 13px;
+    border-radius: 6px;
+    flex-grow: 1;
+}
+
+.Dropdown:has(select:focus) {
+    outline: solid var(--gray) 1px;
+}
+
+.Dropdown select:focus {
+    outline: none;
+}
+
+.DropdownArrow {
+    position: absolute;
+    right: 13px;
+    color: var(--gray);
+    transition: rotate .1s;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px var(--background) inset !important;
+}

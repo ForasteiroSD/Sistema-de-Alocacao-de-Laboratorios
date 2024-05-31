@@ -1,0 +1,55 @@
+.login-register-container {
+  display: flex;
+  height: 100vh;
+}
+
+.login-register-container .left-half {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #446868;
+  align-items: center;
+}
+
+.login-register-container img {
+  width: 65%;
+}
+
+.login-register-container .right-half {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-register-container h2 {
+  font-weight: 500;
+}
+
+.login-register-container .acme {
+  font-family: Acme;
+}
+
+.login-register-container span {
+  color: #22B1B1;
+}
+
+.login-register-container form {
+  margin-top: 20px;
+}
+
+.login-register-container .form-group {
+  display: flex;
+  margin-bottom: 1rem;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.login-register-container .toggle-link {
+  text-align: center;
+  margin-top: 1em;
+  cursor: pointer;
+}

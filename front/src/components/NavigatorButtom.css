@@ -2,18 +2,18 @@
     background-color: transparent;
     color: var(--white);
     border: 0;
-    padding: 0.5rem 2rem;
+    padding: 13px 32px;
     text-align: left;
-    gap: 2rem;
+    gap: 16px;
     font-family: Actor;
-    font-size: 20px;
+    font-size: 1.25rem;
     position: relative;
     transition: color .5s;
 }
 
 .NavigatorButtom .Icons {
-    width: 2.5rem;
-    height: 2.5em;
+    width: 40px;
+    height: 40px;
 }
 
 .NavigatorButtom .Link {
@@ -42,7 +42,7 @@
     /* background-origin: border-box; */
     /* background-clip: content-box, border-box; */
     /* color: #22b1b1; */
-    width: 16.5rem;
-    height: 3.8rem;
+    width: 264px;
+    height: 61px;
     position: absolute;
 }

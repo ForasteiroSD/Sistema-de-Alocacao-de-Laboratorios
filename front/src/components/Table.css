@@ -1,0 +1,33 @@
+.Table {
+    margin-top: 50px;
+}
+
+.Table .TableHeader {
+    border-bottom: solid var(--gray) 1px;
+    padding-right: 8px;
+}
+
+.Table .TableData {
+    height: 435px;
+    /* height: 43.5vh; */
+    /* flex-grow: 0; */
+    /* height: 377px; */
+    /* height: 406px; */
+    overflow-y: scroll;
+}
+
+.Table .TableLine {
+    padding: 17px 0;
+    border-bottom: dotted #bbbbbb 1px;
+}
+
+.Table .TableLine p {
+    margin: 0;
+}
+
+.Table .TableItem {
+    text-align: center;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

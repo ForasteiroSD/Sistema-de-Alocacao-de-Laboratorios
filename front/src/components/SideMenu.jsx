@@ -2,9 +2,11 @@
 import { HiHome } from "react-icons/hi2";
 import { FaComputer } from "react-icons/fa6";
 import { PiNotepad } from "react-icons/pi";
+import { FaUser } from "react-icons/fa";
 import { FaUserCircle } from "react-icons/fa";
 import { Link } from 'react-router-dom'
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 
 /* Components */
 import NavigatorButtom from './NavigatorButtom'
@@ -17,25 +19,35 @@ import { useState } from "react";
 const links = [
     {id: 'mainpage', icon: <HiHome className="Icons" />, name: 'Página Inicial', link: '/'},
     {id: 'labs', icon: <FaComputer className="Icons" />, name: 'Laboratorios', link: '/laboratorios'},
-    {id: 'reserves', icon: <PiNotepad className="Icons" />, name: 'Reservas', link: '/reservas'}
+    {id: 'reserves', icon: <PiNotepad className="Icons" />, name: 'Reservas', link: '/reservas'},
+    {id: 'users', icon: <FaUser className="Icons" style={{transform: 'scale(0.9)'}} />, name: 'Usuários', link: '/users'}
 ]
 const UserName = 'User tal'
 
 export default function SideMenu() {
     const [activeLink, setActiveLink] = useState(links[0].id);
 
-    return (
-        <div className='SideMenu'>
-            <div className='flex h'>
-                <img src="../../public/logos/Logo-White.png" alt="Logo LabHub" className='logo'/>
-            </div>
-            <hr />
+    // Select corret menu option when opening the site
+    useEffect(() => {
+        links.forEach(link => {
+            if(window.location.href.includes(link.link)) setActiveLink(link.id);
+        });
+    }, [])
 
-            <nav className='flex c NavButtons'>
-                {links.map((link) => (
-                    <NavigatorButtom key={link.id} icon={link.icon} name={link.name} link={link.link} id={link.id} isActive={activeLink} setActive={setActiveLink} />
-                ))}
+    return (
+        <div className='flex sb c SideMenu'>
+            <div>
+                <div className='flex h'>
+                    <img src="/logos/Logo-White.png" alt="Logo LabHub" className='logo'/>
+                </div>
+                <hr className="logoHr" />
+
+                <nav className='flex c NavButtons'>
+                    {links.map((link) => (
+                        <NavigatorButtom key={link.id} icon={link.icon} name={link.name} link={link.link} id={link.id} isActive={activeLink} setActive={setActiveLink} />
+                    ))}
             </nav>
+            </div>
 
             <div className="BottomMenu">
                 {activeLink == 'configs' && (
@@ -50,7 +62,7 @@ export default function SideMenu() {
                     </div>
                 </div>
 
-                <hr style={activeLink == 'configs' ? {'transform': 'scaleX(0.01)'} : null} />
+                <hr style={activeLink == 'configs' ? {'transform': 'scaleX(0)'} : null} />
 
                 <div className="flex h logout">
                     <Link to={'/login'} className="link">Sair</Link>

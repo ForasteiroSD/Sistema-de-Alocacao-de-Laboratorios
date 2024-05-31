@@ -1,33 +1,19 @@
-/* .MainPage {
-    flex-grow: 1;
-} */
-
-.MainPage .content {
-    margin: 0 10%;
-    text-align: justify;
-    font-family: Antic;
-    font-size: 19px;
-}
-
-.MainPage .content h1 {
-    margin: 4rem 0;
-    font-family: Anton;
-    text-align: center;
-    color: var(--gray);
-    font-size: 41px;
-}
-
-.MainPage .content h2 {
-    margin-top: 2.5rem;
+.MainPage h2 {
+    margin-top: 40px;
     font-family: BakBak;
     color: var(--gray);
-    font-size: 23px;
+    font-size: 1.4375rem;
+    text-align: left;
 }
 
-.MainPage .content hr {
-    color: var(--gray);
+.MainPage .Container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-top: 27px;
+    gap: 16px;
 }
 
-.MainPage .content .MainInfoContainer {
-    margin-top: 1.7rem;
+.MainPage .Container:last-child {
+    margin-bottom: 32px;
 }
