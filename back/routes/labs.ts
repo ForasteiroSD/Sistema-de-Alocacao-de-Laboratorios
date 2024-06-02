@@ -1,6 +1,5 @@
 import { Request, Response, Router } from 'express'
 import { PrismaClient } from '@prisma/client'
-import { dias_semana } from '../index';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -13,7 +12,7 @@ router.get("/lab", async (req: Request, res: Response) => {
         
         const lab = await prisma.laboratorio.findUniqueOrThrow({
             where: {
-                nome: String(nome).toLocaleUpperCase()
+                nome: String(nome)
             },
             include: {
                 responsavel: true
@@ -48,34 +47,47 @@ router.get("/lab", async (req: Request, res: Response) => {
 
 });
 
-router.get('/lab/reservas', async (req: Request, res: Response) => {
+router.get('/lab/reservasdia', async (req: Request, res: Response) => {
 
     const { nome, dia } = req.query;
     let data = new Date(String(dia));
-
+    let data1 = new Date(String(dia));
+    data1.setUTCDate(data1.getUTCDate()+1)
+    
     data.setUTCHours(0, 0, 0, 0);
+    data1.setUTCHours(0, 0, 0, 0);
 
     try {
         
         const laboratorio = await prisma.laboratorio.findUniqueOrThrow({
             where: {
-                nome: String(nome).toLocaleUpperCase()
+                nome: String(nome)
             },
             include: {
                 reservas: {
                     where: {
-                        AND: {
-                            data_inicio: {
-                                lte: data
-                            },
-                            data_fim: {
-                                gte: data
+                        data_inicio: {
+                            lte: data
+                        },
+                        data_fim: {
+                            gte: data
+                        },
+                    },
+                    include: {
+                        dias: {
+                            where: {
+                                data_inicio: {
+                                    gte: data
+                                },
+                                data_fim: {
+                                    lte: data1
+                                },
                             }
                         }
                     },
-                    include: {
-                        horarios: true
-                    }
+                    orderBy: {
+                        data_inicio: 'asc'
+                    },
                 }
             }
         });
@@ -86,34 +98,24 @@ router.get('/lab/reservas', async (req: Request, res: Response) => {
         }
 
         const reservasHoje = []
-        for(let reserva of laboratorio.reservas) {
-            if(reserva.tipo === 'Semanal') {
+        for(const reservaInfo of laboratorio.reservas) {
+            for(const reserva of reservaInfo.dias) {
+                
+                let string_hora = '';
+                if(reserva.data_inicio.getUTCHours() < 10) string_hora = '0' + reserva.data_inicio.getUTCHours();
+                else string_hora += reserva.data_inicio.getUTCHours();
 
-                for(let dia of reserva.horarios) {
-                    if(dia.dia_semana === dias_semana[data.getUTCDay()]) {
-                        const string_dia = `${(data.toISOString()).split('T')[0]}T${dia.hora_inicio}:00.000Z`
-                        reservasHoje.push({
-                            begin: dia.hora_inicio,
-                            duration: dia.duracao + 'hrs',
-                            horario_total: new Date(string_dia)
-                        });
-                        break;
-                    }
-                }
+                let string_min = '';
+                if(reserva.data_inicio.getUTCMinutes() < 10) string_min = '0' + reserva.data_inicio.getUTCMinutes();
+                else string_min += reserva.data_inicio.getUTCMinutes();
 
-            } else {
-                const string_dia = `${(data.toISOString()).split('T')[0]}T${reserva.hora_inicio}:00.000Z`
-                    reservasHoje.push({
-                        begin: reserva.hora_inicio,
-                        duration: reserva.duracao + 'hrs',
-                        horario_total: new Date(string_dia)
+                reservasHoje.push({
+                    hora_inicio: `${string_hora}:${string_min}`,
+                    duracao: reserva.duracao
                 });
+
             }
         }
-
-        reservasHoje.sort((a, b) => {
-            return a.horario_total.getTime() - b.horario_total.getTime()
-        });
 
         res.status(200).send(reservasHoje);
         return;
