@@ -1,5 +1,4 @@
 /* Packages */
-import Axios from 'axios';
 import { sha256 } from "js-sha256";
 import { z } from "zod";
 import { cpf as CPF } from 'cpf-cnpj-validator';
@@ -10,6 +9,9 @@ import { useState } from 'react';
 import Input from '../Input';
 import Alert from '../Alert';
 
+/* Lib */
+import api from '../../lib/Axios'
+
 /* Css */
 import '../Modal.css';
 
@@ -19,7 +21,7 @@ const accoutTypes = [
     { value: 'Responsável', name: 'Responsável' },
     { value: 'Administrador', name: 'Administrador' }
 ]
-import { backUrl, nameMask, cpfMask, phoneMask, getCurrentDate } from "../../GlobalVariables";
+import { nameMask, cpfMask, phoneMask, getCurrentDate } from "../../GlobalVariables";
 
 export default function NewUser({ CloseModal }) {
     const [alertType, setAlertType] = useState('');
@@ -44,7 +46,7 @@ export default function NewUser({ CloseModal }) {
         const tipo = document.querySelector('#accoutType').value;
 
         try {
-            const response = (await Axios.post(backUrl + 'user/create', {
+            await api.post('user/create', {
                 nome: nome,
                 cpf: cpf,
                 d_nas: d_nas,
@@ -52,7 +54,7 @@ export default function NewUser({ CloseModal }) {
                 email: email,
                 senha: senha,
                 tipo: tipo
-            })).data;
+            });
 
             setAlert('Success', 'Usuário criado');
         } catch (e) {

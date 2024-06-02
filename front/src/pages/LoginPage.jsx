@@ -10,8 +10,8 @@ import Cookies from "js-cookie";
 import Input from '../components/Input';
 import Alert from '../components/Alert';
 
-/* Hooks */
-import callApi from '../hooks/api'
+/* Lib */
+import api from '../lib/Axios'
 
 /* Css */
 import './LoginPage.css';
@@ -58,18 +58,23 @@ const LoginPage = () => {
 
   };
 
+  //Fazer login
   const Login = async (senha, email) => {
-    //Fazer login
 
-    const response = await callApi('user/login', 'post', { email: email, senha: senha })
+    try {
+      const response = (await api.post('user/login', {
+        email: email,
+        senha: senha
+      })).data;
 
-    if (response === 'Usuário não cadastrado') {
-      setAlert('Error', 'Email ou senha incorretos')
-    } else if (response === 'database off') {
-      setAlert('Error', 'Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
-    } else {
       Cookies.set("id", response.id, { expires: 30 });
       // navigate('/');
+
+    } catch (e) {
+      const erro = e.response.data;
+
+      if (erro === 'Usuário não cadastrado') setAlert('Error', 'Email ou senha incorretos')
+      else setAlert('Error', 'Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
     }
 
   }

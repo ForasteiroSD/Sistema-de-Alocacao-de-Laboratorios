@@ -8,6 +8,9 @@ import { useState } from 'react';
 import Input from '../Input';
 import Alert from '../Alert';
 
+/* Lib */
+import api from '../../lib/Axios'
+
 /* Css */
 import '../Modal.css';
 
@@ -17,7 +20,7 @@ const accoutTypes = [
     {value: 'Responsável', name: 'Responsável'},
     {value: 'Administrador', name: 'Administrador'}
 ]
-import { backUrl, nameMask, phoneMask } from "../../GlobalVariables";
+import { nameMask, phoneMask } from "../../GlobalVariables";
 
 export default function UpdateUser({UserCpf}) {
     const [alertType, setAlertType] = useState('');
@@ -41,7 +44,7 @@ export default function UpdateUser({UserCpf}) {
     //     const tipo = document.querySelector('#accoutType').value;
 
     //     try {
-    //         const response = (await Axios.post(backUrl + 'user/create', {
+    //         const response = (await api.post('user/create', {
     //             nome: nome,
     //             cpf: cpf,
     //             d_nas: d_nas,

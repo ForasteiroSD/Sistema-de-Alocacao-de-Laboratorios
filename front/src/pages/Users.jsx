@@ -9,6 +9,9 @@ import Input from "../components/Input";
 import Table from "../components/Table";
 import NewUser from "../components/Users/NewUser";
 
+/* Lib */
+import api from "../lib/Axios";
+
 /* Css */
 import './Users.css'
 
@@ -26,7 +29,7 @@ const searchButtonText = (
         <p style={{margin: '0'}}>Pesquisar</p>
     </div>
 )
-import { backUrl, nameMask, cpfMask } from "../GlobalVariables";
+import { nameMask, cpfMask } from "../GlobalVariables";
 
 export default function Users() {
     const [showNewUser, setShowNewUser] = useState(false);
@@ -57,7 +60,7 @@ export default function Users() {
         }
 
         try {
-            const response = (await Axios.get(backUrl + 'users?' , {
+            const response = (await api.get('users?' , {
                 params: {
                     nome: nome,
                     cpf: cpf,

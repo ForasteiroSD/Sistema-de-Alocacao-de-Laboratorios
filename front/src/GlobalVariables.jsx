@@ -1,5 +1,3 @@
-export const backUrl = 'http://localhost:3000/';
-
 export const nameMask = (inputId) => {
     const input = document.querySelector('#' + inputId);
     const formattedValue = input.value.toLowerCase().replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())
