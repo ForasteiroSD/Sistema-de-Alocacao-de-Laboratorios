@@ -19,7 +19,6 @@ import { UserProvider, UserContext } from './context/UserContext';
 /* Css */
 import './App.css';
 
-// Component to handle private routes
 function PrivateRoute({ element }) {
   return (
     <UserContext.Consumer>
@@ -30,7 +29,6 @@ function PrivateRoute({ element }) {
   );
 }
 
-// Component to handle public routes
 function PublicRoute({ element }) {
   return (
     <UserContext.Consumer>
