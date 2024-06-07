@@ -53,3 +53,29 @@
   margin-top: 1em;
   cursor: pointer;
 }
+
+@media (max-width: 768px) {
+  .login-register-container {
+    flex-direction: column;
+  }
+
+  .left-half, .right-half {
+    flex: none;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .left-half {
+    display: none; /* Hide the logo section on smaller screens */
+  }
+
+  .right-half .content {
+    width: 100%;
+    max-width: none;
+  }
+
+  .toggle-link {
+    text-align: center;
+    display: block;
+  }
+}

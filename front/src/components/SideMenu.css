@@ -57,6 +57,7 @@
 .SideMenu .BottomMenu .logout .link {
     font-size: 1.1875rem;
     padding: 16px 0;
+    color: var(--buttonBlue);
 }
 
 .SideMenu .BottomMenu .link:hover {
