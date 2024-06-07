@@ -1,17 +1,19 @@
-/* Packages */
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from "zod";
 import { sha256 } from "js-sha256";
-import { useState } from 'react';
-import { AnimatePresence } from "framer-motion";
 import Cookies from "js-cookie";
+import { AnimatePresence } from 'framer-motion'; // Certifique-se de importar o AnimatePresence corretamente
 
 /* Components */
 import Input from '../components/Input';
 import Alert from '../components/Alert';
 
 /* Lib */
-import api from '../lib/Axios'
+import api from '../lib/Axios';
+
+/* Context */
+import { UserContext } from '../context/UserContext';
 
 /* Css */
 import './LoginPage.css';
@@ -21,6 +23,7 @@ const LoginPage = () => {
   const [message, setMessage] = useState('');
   const [alertState, setAlertState] = useState(false);
   const navigate = useNavigate();
+  const { login } = useContext(UserContext);
 
   const setAlert = (type, message) => {
     setAlertType(type);
@@ -32,7 +35,7 @@ const LoginPage = () => {
       setMessage('');
       setAlertState(false);
     }, 5000);
-  }
+  };
 
   const handleToggle = () => {
     const phoneNumber = '5551999999999';
@@ -49,35 +52,29 @@ const LoginPage = () => {
 
     try {
       z.string().email().parse(email);
-      if (senha.length < 8) setAlert('Warning', 'A senha deve ter no mínimo 8 caracteres')
+      if (senha.length < 8) setAlert('Warning', 'A senha deve ter no mínimo 8 caracteres');
       else Login(sha256.hmac("lytuhiçjdswxafgqvbjanoikl", senha), email);
     } catch (error) {
-      console.log(error)
-      setAlert('Warning', 'Email inválido')
+      console.log(error);
+      setAlert('Warning', 'Email inválido');
     }
-
   };
 
-  //Fazer login
   const Login = async (senha, email) => {
-
     try {
       const response = (await api.post('user/login', {
         email: email,
         senha: senha
       })).data;
 
-      Cookies.set("id", response.id, { expires: 30 });
-      // navigate('/');
-
+      login({ id: response.id, nome: response.nome, tipo: response.tipo });
+      navigate('/');
     } catch (e) {
       const erro = e.response.data;
-
-      if (erro === 'Usuário não cadastrado') setAlert('Error', 'Email ou senha incorretos')
+      if (erro === 'Usuário não cadastrado') setAlert('Error', 'Email ou senha incorretos');
       else setAlert('Error', 'Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
     }
-
-  }
+  };
 
   return (
     <>
@@ -85,7 +82,7 @@ const LoginPage = () => {
         {alertState && <Alert messageType={alertType} message={message} />}
       </AnimatePresence>
       <div className="login-register-container">
-        <div className="left-half">
+        <div className="left-half ">
           <img src="/logos/Big-Logo-White.png" alt="logo" />
         </div>
         <div className="right-half">
