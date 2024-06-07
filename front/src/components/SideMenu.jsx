@@ -65,7 +65,6 @@ export default function SideMenu() {
                     <FaUserCircle className="UserImage" style={activeLink === 'configs' ? { 'color': 'var(--buttonBlue)' } : null} />
                     <div className="flex h c">
                         <p style={activeLink === 'configs' ? { 'color': 'var(--buttonBlue)' } : null}>{user?.nome || 'User'}</p>
-                        <p style={activeLink === 'configs' ? { 'color': 'var(--buttonBlue)' } : null}>{user?.tipo || 'Tipo'}</p>
                         <Link to={'/configs'} className="link" style={activeLink === 'configs' ? { 'color': 'var(--buttonBlue)' } : null} onClick={() => setActiveLink('configs')}>Configurações</Link>
                     </div>
                 </div>
@@ -73,7 +72,7 @@ export default function SideMenu() {
                 <hr style={activeLink === 'configs' ? { 'transform': 'scaleX(0)' } : null} />
 
                 <div className="flex h logout">
-                    <button onClick={handleLogout} className="link">Sair</button>
+                    <Link onClick={handleLogout} className="link">Sair</Link>
                 </div>
             </div>
         </div>

@@ -10,13 +10,14 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const userData = Cookies.get('user');
     if (userData) {
-      setUser(JSON.parse(userData));
+      setUser(userData);
     }
   }, []);
 
   const login = (userData) => {
     setUser(userData);
-    Cookies.set('user', JSON.stringify(userData), { expires: 30 });
+    console.log(userData)
+    Cookies.set('user', userData.id, { expires: 30 });
   };
 
   const logout = () => {

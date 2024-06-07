@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from "zod";
 import { sha256 } from "js-sha256";
-import Cookies from "js-cookie";
 import { AnimatePresence } from 'framer-motion'; // Certifique-se de importar o AnimatePresence corretamente
 
 /* Components */
