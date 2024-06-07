@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express'
 import { PrismaClient } from '@prisma/client'
+import { stringData } from '../index';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -100,17 +101,11 @@ router.get('/lab/reservasdia', async (req: Request, res: Response) => {
         const reservasHoje = []
         for(const reservaInfo of laboratorio.reservas) {
             for(const reserva of reservaInfo.dias) {
-                
-                let string_hora = '';
-                if(reserva.data_inicio.getUTCHours() < 10) string_hora = '0' + reserva.data_inicio.getUTCHours();
-                else string_hora += reserva.data_inicio.getUTCHours();
 
-                let string_min = '';
-                if(reserva.data_inicio.getUTCMinutes() < 10) string_min = '0' + reserva.data_inicio.getUTCMinutes();
-                else string_min += reserva.data_inicio.getUTCMinutes();
+                let string_aux1 = stringData(reserva.data_inicio, true);
 
                 reservasHoje.push({
-                    hora_inicio: `${string_hora}:${string_min}`,
+                    hora_inicio: string_aux1,
                     duracao: reserva.duracao
                 });
 

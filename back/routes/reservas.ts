@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import nodemailer from 'nodemailer';
 import { env } from 'node:process';
+import { stringData } from '../index';
 
 
 interface ResTeste {
@@ -63,8 +64,8 @@ function sendEmail(tipo: string, labName: string, userName: string, data_inicio:
         text2 += `<div><p style='margin: 0'>Data: ${data_inicio}</p><p style='margin: 0'>Horário: ${hora_inicio}</p><p style='margin: 0'>Duração: ${duracao}</p></div>`;
     } else if(tipo === 'Personalizada') {
         for(const dia of horarios) {
-            text1 += `Data: ${dia.data.toISOString().split('T')[0]}\nHorário: ${dia.hora_inicio}\nDuração: ${dia.duracao}\n\n`;
-            text2 += `<div><p style='margin: 0'>Data: ${dia.data.toISOString().split('T')[0]}</p><p style='margin: 0'>Horário: ${dia.hora_inicio}</p style='margin: 0'><p>Duração: ${dia.duracao}</p></div><br><br>`;
+            text1 += `Data: ${stringData(dia.data, false)}\nHorário: ${dia.hora_inicio}\nDuração: ${dia.duracao}\n\n`;
+            text2 += `<div><p style='margin: 0'>Data: ${stringData(dia.data, false)}</p><p style='margin: 0'>Horário: ${dia.hora_inicio}</p style='margin: 0'><p>Duração: ${dia.duracao}</p></div><br><br>`;
         }
     } else if(tipo === 'Semanal'){
         text1 += `Data Inicial: ${data_inicio}\nData Final: ${data_fim}\n\n`;
@@ -79,15 +80,15 @@ function sendEmail(tipo: string, labName: string, userName: string, data_inicio:
         text2 += `<p style='margin: 0'>Data Inicial: ${data_inicio}</p><p style='margin: 0'>Data Final: ${data_fim}</p><p style='margin: 0'>Horário: ${hora_inicio}</p><p style='margin: 0'>Duração: ${duracao}</p><br>`;
     }
 
-    text1 += `\nAcesse ${env.PAGE_LINK} para ver mais!\n\n\nLABHUB - Alocação de Laboratórios`;
-    text2 += `<br><br><p style='margin: 0'>Acesse <a href="${env.PAGE_LINK}">Lab Hub</a> para ver mais!</p><br><br>LABHUB - Alocação de Laboratórios`;
+    text1 += `\nAcesse ${env.PAGE_LINK} para ver mais!\n\n\nLabHub - Alocação de Laboratórios`;
+    text2 += `<br><br><p style='margin: 0'>Acesse <a href="${env.PAGE_LINK}">LabHub</a> para ver mais!</p><br><br>LabHub - Alocação de Laboratórios`;
 
     const mailOptions = {
-        from: `"Lab Hub Reservas" <${env.EMAIL_USER}>`,
+        from: `"LabHub Reservas" <${env.EMAIL_USER}>`,
         to: email,
-        subject: 'Lab Hub - Nova Reserva',
+        subject: 'LabHub - Nova Reserva',
         text: text1,
-        html: `<b>${text2}</b>`
+        html: text2
     };
 
     transport.sendMail(mailOptions, (error, info) => {
@@ -291,14 +292,8 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
                         //Horário conflitante entre reservas
                         if (verificaConflito(inicio1, fim1, reservaIns.inicio, reservaIns.fim)) {
-                            let string_aux1 = '';
-                            if(reserva.data_inicio.getUTCDate() < 10) string_aux1 = '0'+(reserva.data_inicio.getUTCDate());
-                            else string_aux1 += reserva.data_inicio.getUTCDate();
-                            
-                            let string_aux2 = '';
-                            if (reserva.data_inicio.getUTCMonth() <= 10) string_aux2 = '0'+(reserva.data_inicio.getUTCMonth()+1);
-                            else string_aux2 += (reserva.data_inicio.getUTCMonth()+1);
-                            res.status(400).send(`Conflito no dia ${string_aux1}/${string_aux2}/${reserva.data_inicio.getUTCFullYear()}`);
+                            let string = `Conflito no dia ${stringData(reserva.data_inicio, false)}`
+                            res.status(400).send(string)
                             return;
                         }
                         
@@ -417,25 +412,8 @@ router.get('/reservas/lab', async (req: Request, res: Response) => {
 
         for(const reserva of reservas) {
 
-            let string_aux1 = '';
-            if(reserva.data_inicio.getUTCDate() < 10) string_aux1 = '0'+(reserva.data_inicio.getUTCDate());
-            else string_aux1 += reserva.data_inicio.getUTCDate();
-            
-            let string_aux2 = '';
-            if (reserva.data_inicio.getUTCMonth() <= 10) string_aux2 = '0'+(reserva.data_inicio.getUTCMonth()+1);
-            else string_aux2 += (reserva.data_inicio.getUTCMonth()+1);
-            
-            string_aux1 = `${string_aux1}/${string_aux2}/${reserva.data_inicio.getUTCFullYear()}`
-
-            let string_aux3 = ''
-            if(reserva.data_fim.getUTCDate() < 10) string_aux3 = '0'+(reserva.data_fim.getUTCDate());
-            else string_aux3 += reserva.data_fim.getUTCDate();
-            
-            string_aux2 = '';
-            if (reserva.data_fim.getUTCMonth() <= 10) string_aux2 = '0'+(reserva.data_fim.getUTCMonth()+1);
-            else string_aux2 += (reserva.data_fim.getUTCMonth()+1);
-
-            string_aux2 = `${string_aux3}/${string_aux2}/${reserva.data_fim.getUTCFullYear()}`
+            let string_aux1 = stringData(reserva.data_inicio, false);
+            let string_aux2 = stringData(reserva.data_fim, false);
 
             reservasSend.push({
                 id: reserva.id,
@@ -504,25 +482,8 @@ router.post('/reservas/user', async (req: Request, res: Response) => {
 
         for(const reserva of reservas) {
 
-            let string_aux1 = '';
-            if(reserva.data_inicio.getUTCDate() < 10) string_aux1 = '0'+(reserva.data_inicio.getUTCDate());
-            else string_aux1 += reserva.data_inicio.getUTCDate();
-            
-            let string_aux2 = '';
-            if (reserva.data_inicio.getUTCMonth() <= 10) string_aux2 = '0'+(reserva.data_inicio.getUTCMonth()+1);
-            else string_aux2 += (reserva.data_inicio.getUTCMonth()+1);
-            
-            string_aux1 = `${string_aux1}/${string_aux2}/${reserva.data_inicio.getUTCFullYear()}`
-
-            let string_aux3 = ''
-            if(reserva.data_fim.getUTCDate() < 10) string_aux3 = '0'+(reserva.data_fim.getUTCDate());
-            else string_aux3 += reserva.data_fim.getUTCDate();
-            
-            string_aux2 = '';
-            if (reserva.data_fim.getUTCMonth() <= 10) string_aux2 = '0'+(reserva.data_fim.getUTCMonth()+1);
-            else string_aux2 += (reserva.data_fim.getUTCMonth()+1);
-
-            string_aux2 = `${string_aux3}/${string_aux2}/${reserva.data_fim.getUTCFullYear()}`
+            let string_aux1 = stringData(reserva.data_inicio, false);
+            let string_aux2 = stringData(reserva.data_fim, false);
 
             reservasSend.push({
                 id: reserva.id,
@@ -600,25 +561,8 @@ router.get('/reservas', async (req: Request, res: Response) => {
 
         for(const reserva of reservas) {
 
-            let string_aux1 = '';
-            if(reserva.data_inicio.getUTCDate() < 10) string_aux1 = '0'+(reserva.data_inicio.getUTCDate());
-            else string_aux1 += reserva.data_inicio.getUTCDate();
-            
-            let string_aux2 = '';
-            if (reserva.data_inicio.getUTCMonth() <= 10) string_aux2 = '0'+(reserva.data_inicio.getUTCMonth()+1);
-            else string_aux2 += (reserva.data_inicio.getUTCMonth()+1);
-            
-            string_aux1 = `${string_aux1}/${string_aux2}/${reserva.data_inicio.getUTCFullYear()}`
-
-            let string_aux3 = ''
-            if(reserva.data_fim.getUTCDate() < 10) string_aux3 = '0'+(reserva.data_fim.getUTCDate());
-            else string_aux3 += reserva.data_fim.getUTCDate();
-            
-            string_aux2 = '';
-            if (reserva.data_fim.getUTCMonth() <= 10) string_aux2 = '0'+(reserva.data_fim.getUTCMonth()+1);
-            else string_aux2 += (reserva.data_fim.getUTCMonth()+1);
-
-            string_aux2 = `${string_aux3}/${string_aux2}/${reserva.data_fim.getUTCFullYear()}`
+            let string_aux1 = stringData(reserva.data_inicio, false);
+            let string_aux2 = stringData(reserva.data_fim, false);
 
             reservasSend.push({
                 id: reserva.id,
@@ -657,16 +601,11 @@ router.get('/reserva', async (req: Request, res: Response) => {
         });
 
         if (reserva.tipo === 'Única' ||  reserva.tipo === 'Diária' ) {
-            let string_hora = '';
-            if(reserva.dias[0].data_inicio.getUTCHours() < 10) string_hora = '0' + reserva.dias[0].data_inicio.getUTCHours();
-            else string_hora += reserva.dias[0].data_inicio.getUTCHours();
-
-            let string_min = '';
-            if(reserva.dias[0].data_inicio.getUTCMinutes() < 10) string_min = '0' + reserva.dias[0].data_inicio.getUTCMinutes();
-            else string_min += reserva.dias[0].data_inicio.getUTCMinutes();
+            
+            let string_aux1 = stringData(reserva.dias[0].data_inicio, true);
             
             res.status(200).send({
-                hora_inicio: `${string_hora}:${string_min}`,
+                hora_inicio: string_aux1,
                 duracao: reserva.dias[0].duracao
             });
             return;
@@ -681,17 +620,11 @@ router.get('/reserva', async (req: Request, res: Response) => {
                 if(dias.indexOf(dia.data_inicio.getUTCDay()) !== -1) break;
                 dias.push(dia.data_inicio.getUTCDay());
 
-                let string_hora = '';
-                if(dia.data_inicio.getUTCHours() < 10) string_hora = '0' + dia.data_inicio.getUTCHours();
-                else string_hora += dia.data_inicio.getUTCHours();
-
-                let string_min = '';
-                if(dia.data_inicio.getUTCMinutes() < 10) string_min = '0' + dia.data_inicio.getUTCMinutes();
-                else string_min += dia.data_inicio.getUTCMinutes();
+                let string_aux1 = stringData(dia.data_inicio, true);
 
                 reservas.push({
                     dia: dias_semana[dia.data_inicio.getUTCDay()],
-                    hora_inicio: `${string_hora}:${string_min}`,
+                    hora_inicio: string_aux1,
                     duracao: dia.duracao
                 });
             }
@@ -704,25 +637,12 @@ router.get('/reserva', async (req: Request, res: Response) => {
             
             for(const dia of reserva.dias) {
 
-                let string_aux1 = '';
-                if(dia.data_inicio.getUTCDate() < 10) string_aux1 = '0'+(dia.data_inicio.getUTCDate());
-                else string_aux1 += dia.data_inicio.getUTCDate();
-                
-                let string_aux2 = '';
-                if (dia.data_inicio.getUTCMonth() <= 10) string_aux2 = '0'+(dia.data_inicio.getUTCMonth()+1);
-                else string_aux2 += (dia.data_inicio.getUTCMonth()+1);
-
-                let string_hora = '';
-                if(dia.data_inicio.getUTCHours() < 10) string_hora = '0' + dia.data_inicio.getUTCHours();
-                else string_hora += dia.data_inicio.getUTCHours();
-
-                let string_min = '';
-                if(dia.data_inicio.getUTCMinutes() < 10) string_min = '0' + dia.data_inicio.getUTCMinutes();
-                else string_min += dia.data_inicio.getUTCMinutes();
+                let string_aux1 = stringData(dia.data_inicio, false);
+                let string_aux2 = stringData(dia.data_inicio, true);
 
                 reservas.push({
                     data: `${string_aux1}/${string_aux2}/${dia.data_inicio.getUTCFullYear()}`,
-                    hora_inicio: `${string_hora}:${string_min}`,
+                    hora_inicio: string_aux2,
                     duracao: dia.duracao
                 })
             }

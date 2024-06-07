@@ -1,5 +1,7 @@
 import { Request, Response, Router } from 'express'
 import { PrismaClient } from '@prisma/client'
+import { env } from 'node:process';
+import { stringData } from '../index';
 
 interface nextReservas {
     name: String;
@@ -66,10 +68,8 @@ router.post("/user/login", async (req: Request, res: Response) => {
     try {
         const user = await prisma.user.findFirstOrThrow({
             where: {
-                AND: {
-                    email: email,
-                    senha: senha
-                }
+                email: email,
+                senha: senha
             },
             select: {
                 id: true,
@@ -83,13 +83,32 @@ router.post("/user/login", async (req: Request, res: Response) => {
 
     } catch (error: any) {
 
-        if (error.code === 'P2025') {
-            res.status(404).send('Usuário não cadastrado');
+        try {
+            const count = await prisma.user.count();
+            if (count === 0) {
+                const user = await prisma.user.create({
+                    data: {
+                        email: email,
+                        cpf: 'cpf',
+                        nome: 'adm1',
+                        senha: senha,
+                        data_nasc: new Date('2000-01-01'),
+                        telefone: 'telefone',
+                        tipo: 'Administrador'
+                    }
+                });
+
+                res.status(201).send({ id: user.id, nome: user.nome, tipo: user.tipo, first: true });
+                return;
+            }
+        } catch (error1) {
+            res.status(400).send('database off');
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(404).send('Usuário não cadastrado');
         return;
+
     }
 });
 
@@ -134,6 +153,37 @@ router.patch("/user", async (req: Request, res: Response) => {
             res.status(409).send('Email ja cadastrado');
             return;
         }
+
+        res.status(400).send('database off');
+        return;
+    }
+});
+
+//Atualizar primeiro usuário do sistema, utilizado somente logo após primeiro usuário fazer login
+router.patch("/user/first", async (req: Request, res: Response) => {
+
+    //Dados do primeiro adm do sistema
+    const { id, cpf, data_nasc, email, nome, senha, telefone, } = req.body;
+
+    try {
+        await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                cpf: cpf,
+                data_nasc: new Date(data_nasc),
+                email: email,
+                nome: nome,
+                senha: senha,
+                telefone: telefone
+            }
+        });
+
+        res.status(200).send({ nome: nome });
+        return;
+
+    } catch (error: any) {
 
         res.status(400).send('database off');
         return;
@@ -261,7 +311,7 @@ router.post("/user/data", async (req: Request, res: Response) => {
 
     //Filtros para busca de usuário
     //typeOnly especifica que deseja retornar somente o tipo de usuário
-    const { id, typeOnly } = req.body;
+    const { id, saveContext } = req.body;
 
     try {
         const user = await prisma.user.findFirstOrThrow({
@@ -269,21 +319,18 @@ router.post("/user/data", async (req: Request, res: Response) => {
                 id: String(id)
             },
             select: {
-                ... (typeOnly ? {
-                    tipo: true
-                } : {
+                nome: true,
+                tipo: true,
+                ... (!saveContext && {
                     email: true,
                     cpf: true,
-                    nome: true,
                     data_nasc: true,
-                    telefone: true,
-                    tipo: true
+                    telefone: true
                 })
             }
         });
 
-        if (typeOnly) res.status(200).send(user.tipo);
-        else res.status(200).send(user);
+        res.status(200).send(user);
         return;
 
     } catch (error: any) {
@@ -361,30 +408,13 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
         for (const reservaInfo of reservas) {
             for (const reserva of reservaInfo.dias) {
 
-                let string_aux1 = '';
-                if (reserva.data_inicio.getUTCDate() < 10) string_aux1 = '0' + (reserva.data_inicio.getUTCDate());
-                else string_aux1 += reserva.data_inicio.getUTCDate();
-
-                let string_aux2 = '';
-                if (reserva.data_inicio.getUTCMonth() <= 10) string_aux2 = '0' + (reserva.data_inicio.getUTCMonth() + 1);
-                else string_aux2 += (reserva.data_inicio.getUTCMonth() + 1);
-
-                const data = `${string_aux1}/${string_aux2}/${reserva.data_inicio.getUTCFullYear()}`
-
-                string_aux1 = '';
-                if (reserva.data_inicio.getUTCHours() < 10) string_aux1 = '0' + (reserva.data_inicio.getUTCHours());
-                else string_aux1 += reserva.data_inicio.getUTCHours();
-
-                string_aux2 = '';
-                if (reserva.data_inicio.getUTCMinutes() < 10) string_aux2 = '0' + (reserva.data_inicio.getUTCMinutes());
-                else string_aux2 += (reserva.data_inicio.getUTCMinutes());
-
-                const begin = `${string_aux1}:${string_aux2}`
+                let string_aux1 = stringData(reserva.data_inicio, false);
+                let string_aux2 = stringData(reserva.data_inicio, true);
 
                 nextReservas.push({
                     name: reservaInfo.laboratorio.nome,
-                    date: data,
-                    begin: begin,
+                    date: string_aux1,
+                    begin: string_aux2,
                     duration: reserva.duracao,
                     dataTotal: reserva.data_inicio.getTime()
                 });
