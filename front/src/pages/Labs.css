@@ -1,0 +1,53 @@
+.PageContent {
+    padding: 20px;
+}
+
+.SearchForm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.flex.h {
+    display: flex;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .SearchForm {
+        flex-direction: column;
+    }
+
+    .flex.h {
+        flex-direction: column;
+    }
+}
+
+
+.Labs p {
+    margin-bottom: 10px;
+}
+
+.Labs .SearchForm {
+    gap: 15px;
+    display: flex;
+}
+
+.Labs .SearchForm .Input {
+    width: initial;
+}
+
+.Labs .SearchForm .InputBox {
+    width: initial;
+    flex-grow: 1;
+}
+
+.Labs .SearchForm .Submit {
+    width: initial;
+    flex-grow: .4;
+}
+
+.Labs .SearchForm .Dropdown {
+    flex-grow: 1.3;
+}
