@@ -81,7 +81,7 @@ export default function NewUser({ CloseModal }) {
                     z.string().email().parse(email);
                     if (senha.length < 8) setAlert('Warning', 'A senha deve ter no mínimo 8 caracteres')
                     else if (senha != confirmarSenha) setAlert('Warning', 'As senhas informadas são diferentes')
-                    else CreateNewUser(sha256.hmac("lytuhiçjdswxafgqvbjanoikl", senha), email, cpf, telefone);
+                    else CreateNewUser(sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha), email, cpf, telefone);
                 } catch (error) {
                     setAlert('Warning', 'Email inválido')
                 }

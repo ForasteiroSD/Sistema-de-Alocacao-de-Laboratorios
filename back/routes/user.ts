@@ -310,7 +310,7 @@ router.get("/users/responsavel", async (req: Request, res: Response) => {
 router.post("/user/data", async (req: Request, res: Response) => {
 
     //Filtros para busca de usuário
-    //typeOnly especifica que deseja retornar somente o tipo de usuário
+    //saveContext especifica que deseja retornar somente o tipo de usuário
     const { id, saveContext } = req.body;
 
     try {

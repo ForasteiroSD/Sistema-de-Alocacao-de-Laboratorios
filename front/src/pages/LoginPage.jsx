@@ -52,7 +52,7 @@ const LoginPage = () => {
     try {
       z.string().email().parse(email);
       if (senha.length < 8) setAlert('Warning', 'A senha deve ter no mínimo 8 caracteres');
-      else Login(sha256.hmac("lytuhiçjdswxafgqvbjanoikl", senha), email);
+      else Login(sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha), email);
     } catch (error) {
       console.log(error);
       setAlert('Warning', 'Email inválido');

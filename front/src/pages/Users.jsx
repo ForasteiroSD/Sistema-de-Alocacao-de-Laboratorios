@@ -2,7 +2,6 @@
 import { useState, useEffect, useContext } from "react";
 import { VscSearch } from "react-icons/vsc";
 import { AnimatePresence } from "framer-motion";
-import Axios from "axios";
 
 /* Components */
 import Input from "../components/Input";

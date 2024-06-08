@@ -4,6 +4,7 @@
     border: solid var(--gray) 1px;
     border-radius: 8px;
     box-shadow: 3px 3px 3px #34343450;
+    min-height: 110px;
 }
 
 .NextReserves h3 {

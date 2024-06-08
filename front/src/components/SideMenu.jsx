@@ -25,9 +25,29 @@ const links = [
     { id: 'users', icon: <FaUser className="Icons" style={{ transform: 'scale(0.9)' }} />, name: 'Usuários', link: '/users' }
 ];
 
+const linksAux = [
+    { id: 'mainpage', icon: <HiHome className="Icons" />, name: 'Página Inicial', link: '/' },
+    { id: 'labs', icon: <FaComputer className="Icons" />, name: 'Laboratórios', link: '/laboratorios' }
+];
+
+const admLinks = [
+    { id: 'reserves', icon: <PiNotepad className="Icons" />, name: 'Reservas', link: '/reservas' },
+    { id: 'users', icon: <FaUser className="Icons" style={{ transform: 'scale(0.9)' }} />, name: 'Usuários', link: '/users' }
+];
+
+const resLinks = [
+    { id: 'mylabs', icon: <FaComputer className="Icons" />, name: 'Meus Laboratórios', link: '/meuslaboratorios' },
+    { id: 'reserves', icon: <PiNotepad className="Icons" />, name: 'Minhas Reservas', link: '/minhasreservas' }
+];
+
+const userLinks = [
+    { id: 'reserves', icon: <PiNotepad className="Icons" />, name: 'Minhas Reservas', link: '/minhasreservas' }
+];
+
 export default function SideMenu() {
     const { user, logout } = useContext(UserContext);
     const [activeLink, setActiveLink] = useState(links[0].id);
+    // const [links, setLinks] = useState(linksAux);
     const navigate = useNavigate();
 
     // Select correct menu option when opening the site

@@ -28,7 +28,7 @@ const dias_semana = [
     'Quinta',
     'Sexta',
     'Sábado'
-]
+];
 
 function verificaConflito(inicio1: Number, fim1: Number, inicio2: Number, fim2: Number) {
 
@@ -41,8 +41,7 @@ function verificaConflito(inicio1: Number, fim1: Number, inicio2: Number, fim2: 
 }
 
 function sendEmail(tipo: string, labName: string, userName: string, data_inicio: string, data_fim: string, hora_inicio: string, duracao: string,
-    horarios: any, email: string
-) {
+    horarios: any, email: string) {
     const transport = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
@@ -361,7 +360,6 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
 });
 
-
 //Recuperar reservas de um laboratório
 router.get('/reservas/lab', async (req: Request, res: Response) => {
 
@@ -370,7 +368,7 @@ router.get('/reservas/lab', async (req: Request, res: Response) => {
     const dataSearch1 = new Date(String(data_inicio));
     dataSearch1.setUTCHours(0, 0, 0, 0);
 
-    const dataSearch2 = new Date(String(data_fim))
+    const dataSearch2 = new Date(String(data_fim));
     dataSearch2.setUTCHours(0, 0, 0, 0);
 
     try {

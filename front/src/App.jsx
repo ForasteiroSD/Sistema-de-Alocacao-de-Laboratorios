@@ -47,9 +47,9 @@ function App() {
           <UserContext.Consumer>
             {({ user }) => (
               <>
-                {user ? <SideMenu /> : null}
+                {user && <SideMenu />}
                 <div>
-                  {user ? <Header /> : null}
+                  {user && <Header />}
                   <Routes>
                     <Route path="/login" element={<PublicRoute element={<LoginPage />} />} />
                     <Route path="/" element={<PrivateRoute element={<MainPage />} />} />
