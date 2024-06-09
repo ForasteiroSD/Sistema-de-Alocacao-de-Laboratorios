@@ -8,14 +8,14 @@ import api from '../lib/Axios';
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({loading: true});
 
   useEffect(() => {
     const userData = Cookies.get('user');
 
     if (!userData) logout()
     else {
-      setUser({id: userData});
+      setUser({id: userData, loading: true});
       async function buscaDados() {
         try {
           const response = (await api.post('user/data', {
@@ -24,6 +24,7 @@ export const UserProvider = ({ children }) => {
           })).data;
 
           response.id = userData;
+          response.loading = false;
           setUser(response);
 
         } catch (error) {
@@ -36,6 +37,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
+    userData.loading = false;
     setUser(userData);
     Cookies.set('user', userData.id, { expires: 30 });
   };

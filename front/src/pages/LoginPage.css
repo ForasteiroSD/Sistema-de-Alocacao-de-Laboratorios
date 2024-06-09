@@ -51,9 +51,12 @@
 .login-register-container .toggle-link {
   text-align: center;
   margin-top: 1em;
-  cursor: pointer;
 }
 
+.login-register-container .toggle-link span{
+  cursor: pointer;
+}
+  
 @media (max-width: 768px) {
   .login-register-container {
     flex-direction: column;

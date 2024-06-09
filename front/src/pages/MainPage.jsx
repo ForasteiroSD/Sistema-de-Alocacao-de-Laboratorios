@@ -40,7 +40,7 @@ export default function MainPage() {
 
         }
         buscaDados();
-    }, [])
+    }, [user])
 
     return (
         <section className='MainPage PageContent'>
@@ -51,7 +51,7 @@ export default function MainPage() {
             <p>Também é possível visualizar e, se necessário, atualizar os dados ou excluir uma reserva feita previamente através do menu Reservas.</p>
             <br />
             <p>Esperamos que possa ter uma experiência agradável utilizando nosso site.</p>
-            <p>Caso necessário, é possível nos contatar através do email: contato@labhub.com</p>
+            <p>Caso necessário, é possível nos contatar através do email: labhubalocacaodelaboratorios@gmail.com</p>
 
             <h2>Informações Gerais:</h2>
             <hr />

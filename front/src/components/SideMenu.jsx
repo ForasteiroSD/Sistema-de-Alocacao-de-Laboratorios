@@ -4,7 +4,7 @@ import { FaComputer } from "react-icons/fa6";
 import { PiNotepad } from "react-icons/pi";
 import { FaUser } from "react-icons/fa";
 import { FaUserCircle } from "react-icons/fa";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from "framer-motion";
 import { useEffect, useContext, useState } from "react";
 
@@ -46,16 +46,18 @@ const userLinks = [
 
 export default function SideMenu() {
     const { user, logout } = useContext(UserContext);
-    const [activeLink, setActiveLink] = useState(links[0].id);
-    // const [links, setLinks] = useState(linksAux);
+    const [activeLink, setActiveLink] = useState();
+    const location = useLocation();
     const navigate = useNavigate();
-
+    // const [links, setLinks] = useState(linksAux);
+    
     // Select correct menu option when opening the site
     useEffect(() => {
+        if(location.pathname === '/configs') setActiveLink('configs');
         links.forEach(link => {
-            if (window.location.href.includes(link.link)) setActiveLink(link.id);
+            if (location.pathname === link.link) setActiveLink(link.id);
         });
-    }, []);
+    }, [location]);
 
     const handleLogout = () => {
         logout();

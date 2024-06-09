@@ -37,10 +37,18 @@ const LoginPage = () => {
   };
 
   const handleToggle = () => {
-    const phoneNumber = '5551999999999';
-    const message = 'Olá, gostaria de criar uma conta.';
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    window.location.href = whatsappUrl;
+    // const phoneNumber = '5551999999999';
+    // const message = 'Olá, gostaria de criar uma conta.';
+    // const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    // window.location.href = whatsappUrl;
+
+    const recipient = 'labhubalocacaodelaboratorios@gmail.com';
+    const subject = 'Criar nova conta';
+    const body = 'Olá, desejo criar uma nova conta para meu uso pessoal.';
+
+    const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailtoLink;
   };
 
   const validate = (e) => {
@@ -54,7 +62,6 @@ const LoginPage = () => {
       if (senha.length < 8) setAlert('Warning', 'A senha deve ter no mínimo 8 caracteres');
       else Login(sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha), email);
     } catch (error) {
-      console.log(error);
       setAlert('Warning', 'Email inválido');
     }
   };
@@ -96,8 +103,8 @@ const LoginPage = () => {
               </div>
               <Input type={'submit'} placeholder={'Entrar'} />
             </form>
-            <p onClick={handleToggle} className="toggle-link acme">
-              Não tem uma conta? <span>Contate um administrador</span>
+            <p className="toggle-link acme">
+              Não tem uma conta? <span onClick={handleToggle}>Contate um administrador</span>
             </p>
           </div>
         </div>

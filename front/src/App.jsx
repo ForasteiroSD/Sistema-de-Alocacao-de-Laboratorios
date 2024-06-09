@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
 
 /* Components */
 import SideMenu from "./components/SideMenu";
@@ -19,23 +19,18 @@ import { UserProvider, UserContext } from './context/UserContext';
 /* Css */
 import './App.css';
 
-function PrivateRoute({ element }) {
+function Minhas() {
   return (
-    <UserContext.Consumer>
-      {({ user }) => (
-        user ? element : <Navigate to="/login" />
-      )}
-    </UserContext.Consumer>
-  );
+    <h1>Minhas</h1>
+  )
 }
 
-function PublicRoute({ element }) {
+function NotFound() {
   return (
-    <UserContext.Consumer>
-      {({ user }) => (
-        user ? <Navigate to="/" /> : element
-      )}
-    </UserContext.Consumer>
+    <div className='flex v h c PageContent'>
+      <h1>Página Não Encontrada</h1>
+      <h3><Link to='/' style={{ textDecoration: 'none'}}>Clique para voltar para página principal</Link></h3>
+    </div>
   );
 }
 
@@ -51,12 +46,40 @@ function App() {
                 <div>
                   {user && <Header />}
                   <Routes>
-                    <Route path="/login" element={<PublicRoute element={<LoginPage />} />} />
-                    <Route path="/" element={<PrivateRoute element={<MainPage />} />} />
-                    <Route path="/laboratorios" element={<PrivateRoute element={<Labs />} />} />
-                    <Route path="/reservas" element={<PrivateRoute element={<Reserves />} />} />
-                    <Route path="/configs" element={<PrivateRoute element={<Configs />} />} />
-                    <Route path="/users" element={<PrivateRoute element={<Users />} />} />
+
+                    {user ?
+                      <>
+                        <Route path="/" element={<MainPage />} />
+                        <Route path="/laboratorios" element={<Labs />} />
+                        <Route path="/configs" element={<Configs />} />
+                        <Route path="/login" element={<Navigate to={'/'} />} />
+
+                        {user?.tipo === 'Administrador' ? (
+                          <>
+                            <Route path="/reservas" element={<Reserves />} />
+                            <Route path="/users" element={<Users />} />
+                          </>
+                        ) : (
+                          <>
+                            {user?.tipo === 'Responsável' && (
+                              <Route path="/meuslaboratorios" element={<Reserves />} />
+                            )}
+                            <Route path="/minhasreservas" element={<Minhas />} />
+                          </>
+                        )}
+
+                        {!user?.loading &&
+                          <Route path="*" element={<NotFound />} />
+                        }
+                      </>
+                      :
+                      <>
+                        <Route path="/login" element={<LoginPage />} />
+                        {!user?.loading &&
+                          <Route path="*" element={<Navigate to={'/login'} />} />
+                        }
+                      </>
+                    }
                   </Routes>
                 </div>
               </>
