@@ -9,16 +9,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-export const dias_semana = [
-    'Domingo',
-    'Segunda',
-    'Terça',
-    'Quarta',
-    'Quinta',
-    'Sexta',
-    'Sábado'
-]
-
 // const whitelist = ['http://localhost:5173']; // lista das urls que podem acessar o back
 // app.use(cors({
 //     origin: function (origin, callback) {
@@ -31,6 +21,31 @@ export const dias_semana = [
 //         }
 //     }
 // }));
+
+export function stringData(data: Date, time: boolean) {
+    if (!time) {
+        let string_aux1 = '';
+        if(data.getUTCDate() < 10) string_aux1 = '0'+(data.getUTCDate());
+        else string_aux1 += data.getUTCDate();
+        
+        let string_aux2 = '';
+        if (data.getUTCMonth() <= 10) string_aux2 = '0'+(data.getUTCMonth()+1);
+        else string_aux2 += (data.getUTCMonth()+1);
+
+        return `${string_aux1}/${string_aux2}/${data.getUTCFullYear()}`;
+
+    } else {
+        let string_hora = '';
+        if(data.getUTCHours() < 10) string_hora = '0' + data.getUTCHours();
+        else string_hora += data.getUTCHours();
+
+        let string_min = '';
+        if(data.getUTCMinutes() < 10) string_min = '0' + data.getUTCMinutes();
+        else string_min += data.getUTCMinutes();
+
+        return `${string_hora}:${string_min}`;
+    }
+}
 
 app.listen(3000, "0.0.0.0", () => {
     console.log("Server Online");

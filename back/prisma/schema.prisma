@@ -45,20 +45,18 @@ model reserva {
   id String @id @default(uuid())
   data_inicio DateTime
   data_fim DateTime
-  hora_inicio String?
-  duracao String?
   tipo String
   laboratorio laboratorio @relation(fields: [laboratorio_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   laboratorio_id String
   usuario user @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   user_id String
-  horarios horarios_reservas[]
+  dias dia[]
 }
 
-model horarios_reservas {
+model dia {
   id Int @id @default(autoincrement())
-  dia_semana String
-  hora_inicio String
+  data_inicio DateTime
+  data_fim DateTime
   duracao String
   reserva reserva @relation(fields: [reserva_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
   reserva_id String
