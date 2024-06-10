@@ -20,12 +20,13 @@ const accoutTypes = [
     {value: 'Responsável', name: 'Responsável'},
     {value: 'Administrador', name: 'Administrador'}
 ]
-import { nameMask, cpfMask, phoneMask, getCurrentDate } from "../../GlobalVariables";
+import { stringData, nameMask, phoneMask } from "../../GlobalVariables";
 
 export default function UpdateUser({CloseModal, UserId}) {
     const [alertType, setAlertType] = useState('');
     const [message, setMessage] = useState('');
     const [alertState, setAlertState] = useState(false);
+    const [userData, setuserData] = useState({cpf: '', data_nasc: ''});
 
     const setAlert = (type, message) => {
         setAlertType(type);
@@ -43,14 +44,10 @@ export default function UpdateUser({CloseModal, UserId}) {
         const response = (await api.post('user/data', {
             id: UserId
         })).data;
-
-        console.log(response.tipo);
+        
+        setuserData(response);
         
         document.querySelector('#name').value = response.nome;
-        // document.querySelector('#cpf').value = response.cpf;
-        // document.querySelector('#birthday').value = response.data_nasc.substr(0, 10);
-        // document.querySelector('#birthday').click();
-        // document.querySelector('#birthday').blur();
         document.querySelector('#phone').value = response.telefone;
         document.querySelector('#email').value = response.email;
         document.querySelector('#accoutType').value = response.tipo;
@@ -113,10 +110,13 @@ export default function UpdateUser({CloseModal, UserId}) {
             <motion.div key={'wrapper'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: {duration: 0.2} }} className='ModalBackGround' />
             <form onSubmit={validate} className='flex h v ModalWrapper' >
                 <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: {duration: 0.2} }} id='EditUserForm' className='Modal flex c'>
-                <h1>Alterar Usuário</h1>
+                    <h1>Alterar Usuário</h1>
+                    {/* <div className='flex v c'>
+
+                        <p>Data de nascimento: {userData.data_nasc.split('T')[0].replace('-', '/')}</p>
+                        <p>Cpf: {userData.cpf}</p>
+                    </div> */}
                     <Input type={'text'} placeholder={'Nome completo'} formatter={nameMask} id={'name'} required={true} />
-                    {/* <Input type={'text'} placeholder={'CPF'} formatter={cpfMask} id={'cpf'} required={true} /> */}
-                    {/* <Input type={'date'} placeholder={'Data de Nascimento'} maxDate={getCurrentDate(18)} id={'birthday'} required={true} /> */}
                     <Input type={'text'} placeholder={'Telefone'} formatter={phoneMask} id={'phone'} required={true} />
                     <Input type={'text'} placeholder={'Email'} id={'email'} required={true} />
                     <Input type={'password'} placeholder={'Senha'} id={'password'} required={true} />
