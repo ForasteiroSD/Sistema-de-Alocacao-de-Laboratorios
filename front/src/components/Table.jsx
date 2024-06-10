@@ -4,7 +4,7 @@ import { FiEdit } from "react-icons/fi";
 /* Css */
 import './Table.css'
 
-export default function Table({header, data, editable}) {
+export default function Table({header, data, editable, showUpdate, updateId}) {
     return (
         <div className='Table'>
             {header && (
@@ -18,13 +18,13 @@ export default function Table({header, data, editable}) {
             {data && (
                 <div className='TableData'>
                     {data.map((user, i) => (
-                        <div key={i} className='grid TableLine' style={{gridTemplateColumns: 'repeat(' + user.length + ', 1fr) .1fr'}}>
+                        <div key={i} className='grid TableLine' style={{gridTemplateColumns: 'repeat(' + (editable ? user.length-1 : user.length) + ', 1fr) .1fr'}}>
                             {user.map((info, j) => (
-                                <p key={j} className='TableItem'>{info}</p>
+                                ((j > 0 && editable) || !editable) && <p key={j} className='TableItem'>{info}</p>
                             ))}
                             {editable && (
                                 <div className="flex v">
-                                    <FiEdit style={{cursor: 'pointer'}}/>
+                                    <FiEdit style={{cursor: 'pointer'}} onClick={() => {updateId(user[0]); showUpdate(true)}}/>
                                 </div>
                             )}
                         </div>

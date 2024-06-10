@@ -8,6 +8,7 @@ import Axios from "axios";
 import Input from "../components/Input";
 import Table from "../components/Table";
 import NewUser from "../components/Users/NewUser";
+import UpdateUser from "../components/Users/UpdateUser";
 
 /* Css */
 import './Users.css'
@@ -32,29 +33,19 @@ export default function Users() {
     const [showNewUser, setShowNewUser] = useState(false);
     const [users, setUsers] = useState([['Carregando Usuários...']]);
     const [editable, setEditable] = useState(false);
+    const [showUpdateUser, setShowUpdateUser] = useState(false);
+    const [updateUserId, setUpdateUserId] = useState(false);
 
     useEffect(() => {
         SearchUsers();
     }, [])
 
     const SearchUsers = async (e) => {
-        let nome;
-        let cpf;
-        let email;
-        let tipo;
-
-        if(e) {
-            e.preventDefault();
-            nome = document.querySelector('#nameSearch').value;
-            cpf = document.querySelector('#cpfSearch').value;
-            email = document.querySelector('#emailSearch').value;
-            tipo = document.querySelector('#accoutTypeSearch').value;
-        } else {
-            nome = '';
-            cpf = '';
-            email = '';
-            tipo = '';
-        }
+        e && e.preventDefault();
+        const nome = document.querySelector('#nameSearch').value;
+        const cpf = document.querySelector('#cpfSearch').value;
+        const email = document.querySelector('#emailSearch').value;
+        const tipo = document.querySelector('#accoutTypeSearch').value;
 
         try {
             const response = (await Axios.get(backUrl + 'users?' , {
@@ -70,7 +61,7 @@ export default function Users() {
             
             if(response.length > 0) {
                 response.forEach(user => {
-                    users.push([user.nome, user.cpf, user.email, user.tipo]);
+                    users.push([user.id, user.nome, user.cpf, user.email, user.tipo]);
                 });
                 setEditable(true);
             } else {
@@ -91,6 +82,10 @@ export default function Users() {
                 {showNewUser && <NewUser CloseModal={setShowNewUser} />}
             </AnimatePresence>
 
+            <AnimatePresence>
+                {showUpdateUser && <UpdateUser CloseModal={setShowUpdateUser} UserId={updateUserId} />}
+            </AnimatePresence>
+
             <h1>Usuários do Sistema</h1>
 
             <p>Filtros de pesquisa:</p>
@@ -102,7 +97,7 @@ export default function Users() {
                 <Input type={'submit'} placeholder={searchButtonText} callback={SearchUsers} />
             </form>
 
-            <Table header={tableHeader} data={users} editable={editable}/>
+            <Table header={tableHeader} data={users} editable={editable} showUpdate={setShowUpdateUser} updateId={setUpdateUserId}/>
 
             <div className="flex h" style={{marginTop: '50px', marginBottom: '50px'}}>
                 <Input type={'submit'} placeholder={'Adicionar Novo Usuário'} callback={() => {setShowNewUser(true)}} />

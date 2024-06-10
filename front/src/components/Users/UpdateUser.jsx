@@ -2,7 +2,7 @@
 import Axios from 'axios';
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 /* Components */
 import Input from '../Input';
@@ -17,9 +17,9 @@ const accoutTypes = [
     {value: 'Responsável', name: 'Responsável'},
     {value: 'Administrador', name: 'Administrador'}
 ]
-import { backUrl, nameMask, phoneMask } from "../../GlobalVariables";
+import { backUrl, nameMask, cpfMask, phoneMask, getCurrentDate } from "../../GlobalVariables";
 
-export default function UpdateUser({UserCpf}) {
+export default function UpdateUser({CloseModal, UserId}) {
     const [alertType, setAlertType] = useState('');
     const [message, setMessage] = useState('');
     const [alertState, setAlertState] = useState(false);
@@ -36,46 +36,57 @@ export default function UpdateUser({UserCpf}) {
         }, 5000);
     }
 
-    // const UpdateUser = async (email, telefone) => {
-    //     const nome = document.querySelector('#name').value.toLowerCase().replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
-    //     const tipo = document.querySelector('#accoutType').value;
+    async function teste() {
+        const response = (await Axios.post(backUrl + 'user/data', {
+            id: UserId
+        }));
+        console.log(response);
+    }
 
-    //     try {
-    //         const response = (await Axios.post(backUrl + 'user/create', {
-    //             nome: nome,
-    //             cpf: cpf,
-    //             d_nas: d_nas,
-    //             telefone: telefone,
-    //             email: email,
-    //             senha: senha,
-    //             tipo: tipo
-    //         })).data;
+    useEffect(() => {
+        teste();
+    }, []);
+
+    const UpdateUser = async (email, telefone) => {
+        const nome = document.querySelector('#name').value.toLowerCase().replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
+        const tipo = document.querySelector('#accoutType').value;
+
+        try {
+            const response = (await Axios.post(backUrl + 'user/create', {
+                nome: nome,
+                cpf: cpf,
+                d_nas: d_nas,
+                telefone: telefone,
+                email: email,
+                senha: senha,
+                tipo: tipo
+            })).data;
     
-    //         setAlert('Success', 'Usuário criado');
-    //     } catch (e) {
-    //         const erro = e.response.data;
+            setAlert('Success', 'Usuário criado');
+        } catch (e) {
+            const erro = e.response.data;
             
-    //         if(erro === 'CPF ja cadastrado') setAlert('Error', 'CPF ja cadastrado');
-    //         else if (erro === 'Email ja cadastrado') setAlert('Error', 'Email ja cadastrado');
-    //         else setAlert('Error', 'Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
-    //     }
-    // }
+            if(erro === 'CPF ja cadastrado') setAlert('Error', 'CPF ja cadastrado');
+            else if (erro === 'Email ja cadastrado') setAlert('Error', 'Email ja cadastrado');
+            else setAlert('Error', 'Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
+        }
+    }
 
-    // const validate = (e) => {
-    //     e.preventDefault();
+    const validate = (e) => {
+        e.preventDefault();
 
-    //     const email = document.querySelector('#email').value;
-    //     const telefone = document.querySelector('#phone').value;
+        const email = document.querySelector('#email').value;
+        const telefone = document.querySelector('#phone').value;
 
-    //     if(telefone.length === 15) {
-    //         try {
-    //             z.string().email().parse(email);
-    //             CreateNewUser(email, telefone);
-    //         } catch (error) {
-    //             setAlert('Warning', 'Email inválido')
-    //         } 
-    //     } else setAlert('Warning', 'Número de telefone inválido. (É necessário adicionar o DDD)')
-    // }
+        if(telefone.length === 15) {
+            try {
+                z.string().email().parse(email);
+                CreateNewUser(email, telefone);
+            } catch (error) {
+                setAlert('Warning', 'Email inválido')
+            } 
+        } else setAlert('Warning', 'Número de telefone inválido. (É necessário adicionar o DDD)')
+    }
 
     return (
         <>
@@ -89,7 +100,7 @@ export default function UpdateUser({UserCpf}) {
             <form onSubmit={validate} className='flex h v ModalWrapper' >
                 <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: {duration: 0.2} }} className='Modal flex c'>
                 <h1>Alterar Usuário</h1>
-                <h3>Alterar Usuário</h3>
+                <h5>{UserId}</h5>
                     <Input type={'text'} placeholder={'Nome completo'} formatter={nameMask} id={'name'} required={true} />
                     <Input type={'text'} placeholder={'CPF'} formatter={cpfMask} id={'cpf'} required={true} />
                     <Input type={'date'} placeholder={'Data de Nascimento'} maxDate={getCurrentDate(18)} id={'birthday'} required={true} />
