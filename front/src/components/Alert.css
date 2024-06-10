@@ -12,6 +12,7 @@
     gap: 5px;
     /* border-radius: 10px; */
     border: solid var(--gray) 1px;
+    font-family: Antic;
 }
 
 .Alert .Icon {

@@ -104,8 +104,8 @@ router.post("/user/login", async (req: Request, res: Response) => {
         } catch (error1) {
             res.status(400).send('database off');
             return;
-        }
-
+            }
+            
         res.status(404).send('Usuário não cadastrado');
         return;
 

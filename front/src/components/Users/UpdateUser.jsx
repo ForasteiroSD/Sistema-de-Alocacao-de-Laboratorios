@@ -8,6 +8,9 @@ import { useEffect, useState } from 'react';
 import Input from '../Input';
 import Alert from '../Alert';
 
+/* Lib */
+import api from '../../lib/Axios'
+
 /* Css */
 import '../Modal.css';
 
@@ -17,7 +20,7 @@ const accoutTypes = [
     {value: 'Responsável', name: 'Responsável'},
     {value: 'Administrador', name: 'Administrador'}
 ]
-import { backUrl, nameMask, cpfMask, phoneMask, getCurrentDate } from "../../GlobalVariables";
+import { nameMask, cpfMask, phoneMask, getCurrentDate } from "../../GlobalVariables";
 
 export default function UpdateUser({CloseModal, UserId}) {
     const [alertType, setAlertType] = useState('');
@@ -36,15 +39,26 @@ export default function UpdateUser({CloseModal, UserId}) {
         }, 5000);
     }
 
-    async function teste() {
-        const response = (await Axios.post(backUrl + 'user/data', {
+    async function getUsersData() {
+        const response = (await api.post('user/data', {
             id: UserId
-        }));
-        console.log(response);
-    }
+        })).data;
+
+        console.log(response.tipo);
+        
+        document.querySelector('#name').value = response.nome;
+        // document.querySelector('#cpf').value = response.cpf;
+        // document.querySelector('#birthday').value = response.data_nasc.substr(0, 10);
+        // document.querySelector('#birthday').click();
+        // document.querySelector('#birthday').blur();
+        document.querySelector('#phone').value = response.telefone;
+        document.querySelector('#email').value = response.email;
+        document.querySelector('#accoutType').value = response.tipo;
+        document.querySelector('#accoutType').style.color = '#000000'
+        }
 
     useEffect(() => {
-        teste();
+        getUsersData();
     }, []);
 
     const UpdateUser = async (email, telefone) => {
@@ -98,12 +112,11 @@ export default function UpdateUser({CloseModal, UserId}) {
             </motion.div>
             <motion.div key={'wrapper'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: {duration: 0.2} }} className='ModalBackGround' />
             <form onSubmit={validate} className='flex h v ModalWrapper' >
-                <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: {duration: 0.2} }} className='Modal flex c'>
+                <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: {duration: 0.2} }} id='EditUserForm' className='Modal flex c'>
                 <h1>Alterar Usuário</h1>
-                <h5>{UserId}</h5>
                     <Input type={'text'} placeholder={'Nome completo'} formatter={nameMask} id={'name'} required={true} />
-                    <Input type={'text'} placeholder={'CPF'} formatter={cpfMask} id={'cpf'} required={true} />
-                    <Input type={'date'} placeholder={'Data de Nascimento'} maxDate={getCurrentDate(18)} id={'birthday'} required={true} />
+                    {/* <Input type={'text'} placeholder={'CPF'} formatter={cpfMask} id={'cpf'} required={true} /> */}
+                    {/* <Input type={'date'} placeholder={'Data de Nascimento'} maxDate={getCurrentDate(18)} id={'birthday'} required={true} /> */}
                     <Input type={'text'} placeholder={'Telefone'} formatter={phoneMask} id={'phone'} required={true} />
                     <Input type={'text'} placeholder={'Email'} id={'email'} required={true} />
                     <Input type={'password'} placeholder={'Senha'} id={'password'} required={true} />
