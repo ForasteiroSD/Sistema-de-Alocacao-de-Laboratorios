@@ -1,6 +1,5 @@
 import { Request, Response, Router } from 'express'
 import { PrismaClient } from '@prisma/client'
-import { env } from 'node:process';
 import { stringData } from '../index';
 
 interface nextReservas {

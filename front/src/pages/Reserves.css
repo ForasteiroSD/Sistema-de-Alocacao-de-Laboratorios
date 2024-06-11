@@ -1,0 +1,30 @@
+.Reserves {
+    position: relative;
+}
+
+.Reserves p {
+    margin-bottom: 10px;
+}
+
+.Reserves .SearchForm {
+    gap: 7px;
+    display: flex;
+}
+
+.Reserves .SearchForm .Input {
+    width: initial;
+}
+
+.Reserves .SearchForm .InputBox {
+    width: initial;
+    flex-grow: 1;
+}
+
+.Reserves .SearchForm .Submit {
+    width: initial;
+    flex-grow: .4;
+}
+
+.Reserves .SearchForm .Dropdown {
+    flex-grow: 1.3;
+}
