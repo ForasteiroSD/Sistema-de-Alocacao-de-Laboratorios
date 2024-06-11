@@ -10,7 +10,7 @@ header img {
 }
 
 .MenuController {
-    z-index: 2;
+    z-index: 3;
     left: 20px;
     position: absolute;
     width: 38px;
