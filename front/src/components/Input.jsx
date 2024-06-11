@@ -7,7 +7,7 @@ import { IoIosArrowDropdown } from "react-icons/io";
 /* Css */
 import './Input.css'
 
-export default function Input({type, label, placeholder, id, values, callback, formatter, maxDate, required }) {
+export default function Input({type, label, placeholder, id, values, callback, formatter, maxDate, required, readOnly }) {
     const [showButtonSeePassword, setShowButtonSeePassword] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
     const [inputOpened, setInputOpened] = useState(false);
@@ -62,7 +62,7 @@ export default function Input({type, label, placeholder, id, values, callback, f
             <div className="InputBox" onClick={() => {clickInput(id)}}>
                 {label ? <p>{label}</p> : null}
                 <div className='Input flex c'>
-                    <input placeholder={placeholder} ref={ref} onFocus={() => {ref.current.type = 'date'}} onBlur={() => {checkDate(id)}} id={id} max={maxDate} required={required}/>
+                    <input placeholder={placeholder} ref={ref} onFocus={() => {ref.current.type = 'date'}} onBlur={() => {checkDate(id)}} id={id} max={maxDate} required={required} readOnly={readOnly} />
                 </div>
             </div>
         )
@@ -94,9 +94,9 @@ export default function Input({type, label, placeholder, id, values, callback, f
                 {label ? <p>{label}</p> : null}
                 <div className='Input flex c'>
                     {formatter ? (
-                        <input type={type} placeholder={placeholder} onChange={() => formatter(id)} id={id} required={required}/>
+                        <input type={type} placeholder={placeholder} onChange={() => formatter(id)} id={id} required={required} readOnly={readOnly} />
                     ) : (
-                        <input type={type} placeholder={placeholder} id={id} required={required}/>
+                        <input type={type} placeholder={placeholder} id={id} required={required} readOnly={readOnly} />
                     )}
                 </div>
             </div>

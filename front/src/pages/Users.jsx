@@ -81,7 +81,7 @@ export default function Users() {
     }
 
     return (
-        <section className="Users PageContent">
+        <section className="Users PageContent flex c">
             <AnimatePresence>
                 {showNewUser && <NewUser CloseModal={setShowNewUser} />}
             </AnimatePresence>
