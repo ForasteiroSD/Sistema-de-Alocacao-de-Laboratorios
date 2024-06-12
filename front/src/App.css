@@ -31,6 +31,8 @@
   --gray: #343434;
   --header: #EEEEEE;
   --background: #EEEEEE;
+  --buttonRed: #8F4F4F;
+  --selectedButtonRed: #753e3e;
 }
 
 * {

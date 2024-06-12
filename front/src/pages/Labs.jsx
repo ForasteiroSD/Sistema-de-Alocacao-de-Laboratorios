@@ -88,7 +88,7 @@ export default function Labs() {
     };
 
     return (
-        <section className="Labs PageContent">
+        <section className="Labs PageContent flex c">
             <AnimatePresence>
                 {showNewLab && <NewLab CloseModal={setShowNewLab} />}
             </AnimatePresence>

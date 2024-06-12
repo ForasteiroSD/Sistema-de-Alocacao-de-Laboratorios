@@ -1,0 +1,43 @@
+.infoReserve {
+    padding: 0 5px 0 12px;
+    margin-bottom: 10px;
+    max-height: 555px;
+    width: 355px;
+    gap: 10px;
+    overflow-y: scroll;
+}
+
+.infoReserve .title{
+    font-size: .9em;
+    font-family: BakBak;
+}
+
+.infoReserve .subtitle {
+    font-size: .8em;
+    margin: 5px 0;
+}
+
+.infoReserve .boxDay .diaSemana {
+    font-size: .8em;
+    text-decoration: underline;
+    font-family: Actor;
+    margin: 0 0 5px;
+}
+
+.infoReserve .dashedLine {
+    margin-top: 5px;
+    border: 1px solid #DADADA;
+    border-style: dashed;
+}
+
+@media (max-height: 880px) {
+    .infoReserve {
+        max-height: 420px;
+    }
+}
+
+@media (max-height: 730px) {
+    .infoReserve {
+        max-height: 300px;
+    }
+}

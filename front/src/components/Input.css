@@ -55,10 +55,19 @@
     font-size: 16px;
 }
 
+
 .Submit:hover {
     background-color: var(--selectedButtonBlue);
 }
+    
+.SubmitExclude {
+    background-color: var(--buttonRed);
+}
 
+.SubmitExclude:hover {
+    background-color: var(--selectedButtonRed);
+}
+    
 .Dropdown {
     background-color: var(--background);
     border: solid var(--gray) 1px;
