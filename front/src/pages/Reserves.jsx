@@ -126,7 +126,7 @@ export default function Reserves() {
         <Input type={'submit'} placeholder={searchButtonText} callback={SearchReserves} />
       </form>
 
-      <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} updateId={setReservaId}/>
+      <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} Id={setReservaId}/>
 
     </section>
   );

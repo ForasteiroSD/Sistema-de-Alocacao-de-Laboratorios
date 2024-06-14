@@ -27,7 +27,6 @@ export default function UpdateUser({CloseModal, UserId}) {
     const [alertType, setAlertType] = useState('');
     const [message, setMessage] = useState('');
     const [alertState, setAlertState] = useState(false);
-    const [userData, setuserData] = useState({cpf: '', data_nasc: ''});
 
     const setAlert = (type, message) => {
         setAlertType(type);
@@ -45,8 +44,6 @@ export default function UpdateUser({CloseModal, UserId}) {
         const response = (await api.post('user/data', {
             id: UserId
         })).data;
-        
-        setuserData(response);
         
         document.querySelector('#name').value = response.nome;
         document.querySelector('#cpf').value = response.cpf;
@@ -134,7 +131,7 @@ export default function UpdateUser({CloseModal, UserId}) {
                     <Input type={'password'} placeholder={'Nova senha'} id={'password'} />
                     <Input type={'password'} placeholder={'Confirmar nova senha'} id={'confirmPassword'} />
                     <Input type={'dropdown'} values={accoutTypes} placeholder={'Tipo de Usuário'} id={'accoutType'} required={true} />
-                    <Input type={'submit'} placeholder={'Cadastrar'} />
+                    <Input type={'submit'} placeholder={'Salvar'} />
                     <p className='CancelButton' onClick={() => {CloseModal(false)}}>Cancelar</p>
                 </motion.div>
             </form>

@@ -112,7 +112,7 @@ hr {
     text-align: justify;
     font-family: Antic;
     font-size: 1.1875rem;
-    /* overflow-y: scroll; */
+    overflow-y: scroll;
     height: calc(100vh - 64px - 1px); /* Full height - header height - header border height*/
     background-color: var(--background);
 }

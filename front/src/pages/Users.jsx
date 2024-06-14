@@ -9,6 +9,7 @@ import Input from "../components/Input";
 import Table from "../components/Table";
 import NewUser from "../components/Users/NewUser";
 import UpdateUser from "../components/Users/UpdateUser";
+import Exclude from "../components/Exclude";
 
 /* Lib */
 import api from '../lib/Axios';
@@ -38,7 +39,8 @@ export default function Users() {
     const [users, setUsers] = useState([['Carregando Usuários...']]);
     const [editable, setEditable] = useState(false);
     const [showUpdateUser, setShowUpdateUser] = useState(false);
-    const [updateUserId, setUpdateUserId] = useState(false);
+    const [showExcludeUser, setShowExcludeUser] = useState(false);
+    const [userId, setUserId] = useState(false);
 
     useEffect(() => {
         SearchUsers();
@@ -87,7 +89,11 @@ export default function Users() {
             </AnimatePresence>
 
             <AnimatePresence>
-                {showUpdateUser && <UpdateUser CloseModal={setShowUpdateUser} UserId={updateUserId} />}
+                {showUpdateUser && <UpdateUser CloseModal={setShowUpdateUser} UserId={userId} />}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {showExcludeUser && <Exclude type={'User'} CloseModal={setShowExcludeUser} UserId={userId} />}
             </AnimatePresence>
 
             <h1>Usuários do Sistema</h1>
@@ -101,7 +107,7 @@ export default function Users() {
                 <Input type={'submit'} placeholder={searchButtonText} callback={SearchUsers} />
             </form>
 
-            <Table header={tableHeader} data={users} editable={editable} showUpdate={setShowUpdateUser} updateId={setUpdateUserId}/>
+            <Table header={tableHeader} data={users} editable={editable} showUpdate={setShowUpdateUser} showExclude={setShowExcludeUser} Id={setUserId}/>
 
             <div className="flex h" style={{marginTop: '50px', marginBottom: '50px'}}>
                 <Input type={'submit'} placeholder={'Adicionar Novo Usuário'} callback={() => {setShowNewUser(true)}} />
