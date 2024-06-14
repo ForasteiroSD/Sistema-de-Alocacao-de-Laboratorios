@@ -47,8 +47,8 @@ function sendEmail(tipo: string, labName: string, userName: string, data_inicio:
         port: 587,
         secure: false,
         auth: {
-          user: env.EMAIL_USER,
-          pass: env.EMAIL_PASS
+            user: env.EMAIL_USER,
+            pass: env.EMAIL_PASS
         },
         tls: {
             rejectUnauthorized: false
@@ -58,18 +58,18 @@ function sendEmail(tipo: string, labName: string, userName: string, data_inicio:
     let text1 = `Nova reserva ${tipo} feita no laboratório ${labName}\n\nDados da Reserva:\nUsuário: ${userName}\n`;
     let text2 = `<h1>Nova reserva ${tipo} feita no laboratório ${labName}</h1><h3>Dados da Reserva:</h3><p style='margin: 0'>Usuário: ${userName}</p>`
 
-    if(tipo === 'Única') {
+    if (tipo === 'Única') {
         text1 += `Data: ${data_inicio}\nHorário: ${hora_inicio}\nDuração: ${duracao}\n\n`;
         text2 += `<div><p style='margin: 0'>Data: ${data_inicio}</p><p style='margin: 0'>Horário: ${hora_inicio}</p><p style='margin: 0'>Duração: ${duracao}</p></div>`;
-    } else if(tipo === 'Personalizada') {
-        for(const dia of horarios) {
+    } else if (tipo === 'Personalizada') {
+        for (const dia of horarios) {
             text1 += `Data: ${stringData(dia.data, false)}\nHorário: ${dia.hora_inicio}\nDuração: ${dia.duracao}\n\n`;
             text2 += `<div><p style='margin: 0'>Data: ${stringData(dia.data, false)}</p><p style='margin: 0'>Horário: ${dia.hora_inicio}</p style='margin: 0'><p>Duração: ${dia.duracao}</p></div><br><br>`;
         }
-    } else if(tipo === 'Semanal'){
+    } else if (tipo === 'Semanal') {
         text1 += `Data Inicial: ${data_inicio}\nData Final: ${data_fim}\n\n`;
         text2 += `<div><p style='margin: 0'>Data Inicial: ${data_inicio}</p><p style='margin: 0'>Data Final: ${data_fim}</p><br>`;
-        for(const dia of horarios) {
+        for (const dia of horarios) {
             text1 += `Dia da semana: ${dia.dia_semana}\nHorário: ${dia.hora_inicio}\nDuração: ${dia.duracao}\n\n`;
             text2 += `<div><p style='margin: 0'>Dia da semana: ${dia.dia_semana}</p><p style='margin: 0'>Horário: ${dia.hora_inicio}</p><p style='margin: 0'>Duração: ${dia.duracao}</p></div><br>`;
         }
@@ -92,7 +92,7 @@ function sendEmail(tipo: string, labName: string, userName: string, data_inicio:
 
     transport.sendMail(mailOptions, (error, info) => {
         if (error) {
-          return console.log('Não foi possível enviar o email');
+            return console.log('Não foi possível enviar o email');
         }
     });
 }
@@ -135,25 +135,25 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
     let dataSearch1, dataSearch2;
 
-    if(tipo === 'Personalizada') {
+    if (tipo === 'Personalizada') {
 
-        for(let dia of horarios) {
+        for (let dia of horarios) {
             dia.data = new Date(dia.data);
         }
-    
-        horarios.sort((a: any, b: any) => 
+
+        horarios.sort((a: any, b: any) =>
             a.data.getTime() - b.data.getTime()
         );
 
         dataSearch1 = new Date(horarios[0].data);
-        dataSearch2 = new Date(horarios[horarios.length-1].data);
+        dataSearch2 = new Date(horarios[horarios.length - 1].data);
 
     } else {
 
         dataSearch1 = new Date(data_inicio);
         dataSearch1.setUTCHours(0, 0, 0, 0);
-    
-        dataSearch2 = data_fim? new Date(data_fim) : new Date(data_inicio)
+
+        dataSearch2 = data_fim ? new Date(data_fim) : new Date(data_inicio)
         dataSearch2.setUTCHours(0, 0, 0, 0);
         dataSearch2.setDate(dataSearch2.getDate());
 
@@ -185,7 +185,7 @@ router.post('/reserva', async (req: Request, res: Response) => {
         const dias_reserva: ResTeste[] = []
 
         const diaInicio = new Date(data_inicio);
-        const diaFim = data_fim? new Date(data_fim) : new Date(diaInicio)
+        const diaFim = data_fim ? new Date(data_fim) : new Date(diaInicio)
 
         diaInicio.setUTCHours(0, 0, 0, 0);
         diaFim.setUTCHours(0, 0, 0, 0);
@@ -193,19 +193,19 @@ router.post('/reserva', async (req: Request, res: Response) => {
         if (tipo === 'Semanal') {
 
             const dias_res_semana = []
-            for(let horario of horarios) {
-                dias_res_semana.push({dia: dias_semana.indexOf(horario.dia_semana), horario: horario.hora_inicio, duracao: horario.duracao})
+            for (let horario of horarios) {
+                dias_res_semana.push({ dia: dias_semana.indexOf(horario.dia_semana), horario: horario.hora_inicio, duracao: horario.duracao })
             }
-                
-            while(diaInicio.getTime() <= diaFim.getTime()) {
+
+            while (diaInicio.getTime() <= diaFim.getTime()) {
 
                 const dia_semana = diaInicio.getUTCDay();
 
-                for(let dia of dias_res_semana) {
+                for (let dia of dias_res_semana) {
 
-                    if(dia.dia === dia_semana) {
-                        const inicio = Number(dia.horario.split(':')[0]) + Number(dia.horario.split(':')[1])/60;
-                        const fim = inicio + Number(dia.duracao.split(':')[0]) + Number(dia.duracao.split(':')[1])/60;
+                    if (dia.dia === dia_semana) {
+                        const inicio = Number(dia.horario.split(':')[0]) + Number(dia.horario.split(':')[1]) / 60;
+                        const fim = inicio + Number(dia.duracao.split(':')[0]) + Number(dia.duracao.split(':')[1]) / 60;
                         dias_reserva.push({
                             dia: new Date(diaInicio),
                             inicio: inicio,
@@ -217,17 +217,17 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
                 }
 
-                diaInicio.setUTCDate(diaInicio.getUTCDate()+1);
+                diaInicio.setUTCDate(diaInicio.getUTCDate() + 1);
 
             }
 
 
         } else if (tipo === 'Diária') {
 
-            const inicio = Number(hora_inicio.split(':')[0]) + Number(hora_inicio.split(':')[1])/60;
-            const fim = inicio + Number(duracao.split(':')[0]) + Number(duracao.split(':')[1])/60;
+            const inicio = Number(hora_inicio.split(':')[0]) + Number(hora_inicio.split(':')[1]) / 60;
+            const fim = inicio + Number(duracao.split(':')[0]) + Number(duracao.split(':')[1]) / 60;
 
-            while(diaInicio.getTime() <= diaFim.getTime()) {
+            while (diaInicio.getTime() <= diaFim.getTime()) {
 
                 dias_reserva.push({
                     dia: new Date(diaInicio),
@@ -236,15 +236,15 @@ router.post('/reserva', async (req: Request, res: Response) => {
                     duracao: duracao
                 });
 
-                diaInicio.setUTCDate(diaInicio.getUTCDate()+1);
+                diaInicio.setUTCDate(diaInicio.getUTCDate() + 1);
             }
 
 
-        } else if(tipo === 'Única') {
+        } else if (tipo === 'Única') {
             //Reserva única
 
-            const inicio = Number(hora_inicio.split(':')[0]) + Number(hora_inicio.split(':')[1])/60;
-            const fim = inicio + Number(duracao.split(':')[0]) + Number(duracao.split(':')[1])/60;
+            const inicio = Number(hora_inicio.split(':')[0]) + Number(hora_inicio.split(':')[1]) / 60;
+            const fim = inicio + Number(duracao.split(':')[0]) + Number(duracao.split(':')[1]) / 60;
 
             dias_reserva.push({
                 dia: new Date(diaInicio),
@@ -256,10 +256,10 @@ router.post('/reserva', async (req: Request, res: Response) => {
         } else {
             //Reserva personalizada
 
-            for(const dia of horarios) {
+            for (const dia of horarios) {
 
-                const inicio = Number(dia.hora_inicio.split(':')[0]) + Number(dia.hora_inicio.split(':')[1])/60;
-                const fim = inicio + Number(dia.duracao.split(':')[0]) + Number(dia.duracao.split(':')[1])/60;
+                const inicio = Number(dia.hora_inicio.split(':')[0]) + Number(dia.hora_inicio.split(':')[1]) / 60;
+                const fim = inicio + Number(dia.duracao.split(':')[0]) + Number(dia.duracao.split(':')[1]) / 60;
 
                 dias_reserva.push({
                     dia: new Date(dia.data),
@@ -271,23 +271,23 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
         }
 
-        dias_reserva.sort((a, b) => 
+        dias_reserva.sort((a, b) =>
             b.dia.getTime() - a.dia.getTime()
         );
 
-        for(const reservaInfo of labReservas.reservas) {
+        for (const reservaInfo of labReservas.reservas) {
 
-            for(const reserva of reservaInfo.dias) {
+            for (const reserva of reservaInfo.dias) {
 
                 const dia = new Date(reserva.data_inicio);
                 dia.setUTCHours(0, 0, 0, 0);
 
-                for(const reservaIns of dias_reserva) {
+                for (const reservaIns of dias_reserva) {
 
                     if (reservaIns.dia.toISOString() === dia.toISOString()) {
 
-                        const inicio1 = reserva.data_inicio.getUTCHours() + reserva.data_inicio.getUTCMinutes()/60;
-                        const fim1 = reserva.data_fim.getUTCHours() + reserva.data_fim.getUTCMinutes()/60;
+                        const inicio1 = reserva.data_inicio.getUTCHours() + reserva.data_inicio.getUTCMinutes() / 60;
+                        const fim1 = reserva.data_fim.getUTCHours() + reserva.data_fim.getUTCMinutes() / 60;
 
                         //Horário conflitante entre reservas
                         if (verificaConflito(inicio1, fim1, reservaIns.inicio, reservaIns.fim)) {
@@ -295,27 +295,27 @@ router.post('/reserva', async (req: Request, res: Response) => {
                             res.status(400).send(string)
                             return;
                         }
-                        
+
                     }
 
-                    if(dia.getTime() > reservaIns.dia.getTime()) break;
+                    if (dia.getTime() > reservaIns.dia.getTime()) break;
 
                 }
             }
         }
 
         const reservas: ResIns[] = []
-        for(const reservaIns of dias_reserva.reverse()) {
+        for (const reservaIns of dias_reserva.reverse()) {
             const inicio = new Date(reservaIns.dia);
             let hora = Math.floor(reservaIns.inicio);
-            let min = (reservaIns.inicio - hora)*60;
+            let min = (reservaIns.inicio - hora) * 60;
             inicio.setUTCHours(hora, min, 0, 0);
 
             const fim = new Date(reservaIns.dia);
             hora = Math.floor(reservaIns.fim);
-            min = (reservaIns.fim - hora)*60;
+            min = (reservaIns.fim - hora) * 60;
             fim.setUTCHours(hora, min, 0, 0);
-            
+
             reservas.push({
                 data_inicio: inicio,
                 data_fim: fim,
@@ -348,7 +348,7 @@ router.post('/reserva', async (req: Request, res: Response) => {
         if (error.code === 'P2025') {
             res.status(404).send('Laboratorio Inexistente');
             return;
-        } else if(error.code === 'P2003') {
+        } else if (error.code === 'P2003') {
             res.status(404).send('Usuário Inexistente');
             return;
         }
@@ -372,7 +372,7 @@ router.get('/reservas/lab', async (req: Request, res: Response) => {
     dataSearch2.setUTCHours(0, 0, 0, 0);
 
     try {
-        
+
         const reservas = await prisma.reserva.findMany({
             where: {
                 ... (userName && {
@@ -408,7 +408,7 @@ router.get('/reservas/lab', async (req: Request, res: Response) => {
 
         const reservasSend = [];
 
-        for(const reserva of reservas) {
+        for (const reserva of reservas) {
 
             let string_aux1 = stringData(reserva.data_inicio, false);
             let string_aux2 = stringData(reserva.data_fim, false);
@@ -444,7 +444,7 @@ router.post('/reservas/user', async (req: Request, res: Response) => {
     dataSearch2.setUTCHours(0, 0, 0, 0);
 
     try {
-        
+
         const reservas = await prisma.reserva.findMany({
             where: {
                 ... (labName && {
@@ -478,7 +478,7 @@ router.post('/reservas/user', async (req: Request, res: Response) => {
 
         const reservasSend = [];
 
-        for(const reserva of reservas) {
+        for (const reserva of reservas) {
 
             let string_aux1 = stringData(reserva.data_inicio, false);
             let string_aux2 = stringData(reserva.data_fim, false);
@@ -514,7 +514,7 @@ router.get('/reservas', async (req: Request, res: Response) => {
     dataSearch2.setUTCHours(0, 0, 0, 0);
 
     try {
-        
+
         const reservas = await prisma.reserva.findMany({
             where: {
                 ... (userName && {
@@ -552,12 +552,15 @@ router.get('/reservas', async (req: Request, res: Response) => {
                         nome: true
                     }
                 }
+            },
+            orderBy: {
+                data_inicio: 'asc'
             }
         });
 
         const reservasSend = [];
 
-        for(const reserva of reservas) {
+        for (const reserva of reservas) {
 
             let string_aux1 = stringData(reserva.data_inicio, false);
             let string_aux2 = stringData(reserva.data_fim, false);
@@ -588,21 +591,37 @@ router.get('/reserva', async (req: Request, res: Response) => {
     const { id } = req.query;
 
     try {
-        
+
         const reserva = await prisma.reserva.findUniqueOrThrow({
             where: {
                 id: String(id)
             },
             include: {
-                dias: true
+                dias: true,
+                laboratorio: {
+                    select: {
+                        nome: true
+                    }
+                },
+                usuario: {
+                    select: {
+                        nome: true
+                    }
+                }
             }
         });
 
-        if (reserva.tipo === 'Única' ||  reserva.tipo === 'Diária' ) {
-            
+        if (reserva.tipo === 'Única' || reserva.tipo === 'Diária') {
+
             let string_aux1 = stringData(reserva.dias[0].data_inicio, true);
-            
+
+
             res.status(200).send({
+                usuario: reserva.usuario.nome,
+                laboratorio: reserva.laboratorio.nome,
+                tipo: reserva.tipo,
+                data_inicio: stringData(reserva.data_inicio, false),
+                data_fim: stringData(reserva.data_fim, false),
                 hora_inicio: string_aux1,
                 duracao: reserva.dias[0].duracao
             });
@@ -613,9 +632,9 @@ router.get('/reserva', async (req: Request, res: Response) => {
             const reservas = [];
             const dias: number[] = []
 
-            for(const dia of reserva.dias) {
+            for (const dia of reserva.dias) {
 
-                if(dias.indexOf(dia.data_inicio.getUTCDay()) !== -1) break;
+                if (dias.indexOf(dia.data_inicio.getUTCDay()) !== -1) break;
                 dias.push(dia.data_inicio.getUTCDay());
 
                 let string_aux1 = stringData(dia.data_inicio, true);
@@ -627,25 +646,39 @@ router.get('/reserva', async (req: Request, res: Response) => {
                 });
             }
 
-            res.status(200).send(reservas);
+            res.status(200).send({
+                usuario: reserva.usuario.nome,
+                laboratorio: reserva.laboratorio.nome,
+                tipo: reserva.tipo,
+                data_inicio: stringData(reserva.data_inicio, false),
+                data_fim: stringData(reserva.data_fim, false),
+                dias_semana: reservas
+            });
             return;
         } else {
-            
+
             const reservas = [];
-            
-            for(const dia of reserva.dias) {
+
+            for (const dia of reserva.dias) {
 
                 let string_aux1 = stringData(dia.data_inicio, false);
                 let string_aux2 = stringData(dia.data_inicio, true);
 
                 reservas.push({
-                    data: `${string_aux1}/${string_aux2}/${dia.data_inicio.getUTCFullYear()}`,
+                    data: string_aux1,
                     hora_inicio: string_aux2,
                     duracao: dia.duracao
                 })
             }
 
-            res.status(200).send(reservas);
+            res.status(200).send({
+                usuario: reserva.usuario.nome,
+                laboratorio: reserva.laboratorio.nome,
+                tipo: reserva.tipo,
+                data_inicio: stringData(reserva.data_inicio, false),
+                data_fim: stringData(reserva.data_fim, false),
+                horarios: reservas
+            });
             return;
         }
 

@@ -1,0 +1,11 @@
+.Days .dayCircle {
+    width: 31px;
+    height: 31px;
+    border-radius: 50%;
+    text-align: center;
+    border: 1px solid var(--gray);
+    font-family: Antic;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.1s;
+}

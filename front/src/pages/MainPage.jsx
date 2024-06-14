@@ -43,7 +43,7 @@ export default function MainPage() {
     }, [user])
 
     return (
-        <section className='MainPage PageContent'>
+        <section className='MainPage PageContent flex c'>
             <h1>Bem vindo ao LabHub</h1>
 
             <p>Olá {user?.nome || 'User'}, seja bem vindo ao LabHub. Nosso objetivo é prover um método simples e fácil para cadastro, gerenciamento e alocação de laboratórios de informática ou de salas de aula. Para isso, o menu lateral pode te ajudar.</p>

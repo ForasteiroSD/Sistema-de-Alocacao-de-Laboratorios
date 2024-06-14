@@ -7,7 +7,7 @@ import { IoIosArrowDropdown } from "react-icons/io";
 /* Css */
 import './Input.css'
 
-export default function Input({type, label, placeholder, id, values, callback, formatter, maxDate, required, readOnly }) {
+export default function Input({type, label, placeholder, id, values, callback, exclude=false, formatter, maxDate, required, readOnly }) {
     const [showButtonSeePassword, setShowButtonSeePassword] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
     const [inputOpened, setInputOpened] = useState(false);
@@ -49,10 +49,10 @@ export default function Input({type, label, placeholder, id, values, callback, f
         }
     }
     
-    //Params: type, placeholder(optional), callback
+    //Params: type, placeholder(optional), callback, exclude(optional)
     else if(type == 'submit') {
         return (
-            <button className='Submit' type='submit' onClick={callback}>{placeholder}</button>
+            <button className={`Submit ${exclude && 'SubmitExclude'}`} type='submit' onClick={callback}>{placeholder}</button>
         )
     }
 

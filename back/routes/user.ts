@@ -285,6 +285,9 @@ router.get("/users", async (req: Request, res: Response) => {
 //Recuperar nomes do usuário responsáveis
 router.get("/users/responsavel", async (req: Request, res: Response) => {
 
+    //Caso também queira retornar cpf dos responsáveis
+    const { cpf } = req.query;
+
     try {
         const users = await prisma.user.findMany({
             where: {
@@ -292,6 +295,9 @@ router.get("/users/responsavel", async (req: Request, res: Response) => {
             },
             select: {
                 nome: true,
+                ... (cpf && {
+                    cpf: true
+                })
             }
         });
 
@@ -309,7 +315,7 @@ router.get("/users/responsavel", async (req: Request, res: Response) => {
 router.post("/user/data", async (req: Request, res: Response) => {
 
     //Filtros para busca de usuário
-    //saveContext especifica que deseja retornar somente o tipo de usuário
+    //saveContext especifica que deseja retornar somente o nome e tipo de usuário
     const { id, saveContext } = req.body;
 
     try {

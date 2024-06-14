@@ -1,10 +1,12 @@
 /* Packages */
 import { useState, useEffect } from "react";
 import { VscSearch } from "react-icons/vsc";
+import { AnimatePresence } from "framer-motion";
 
 /* Components */
 import Input from "../components/Input";
 import Table from "../components/Table";
+import InfoReserve from "../components/Reserves/InfoReserve";
 
 /* Lib */
 import api from "../lib/Axios";
@@ -34,6 +36,9 @@ const searchButtonText = (
 export default function Reserves() {
   const [reservas, setReservas] = useState([['Carregando Reservas...']]);
   const [labNames, setLabNames] = useState();
+  const [editable, setEditable] = useState(false);
+  const [infoReserva, setInfoReserva] = useState(false);
+  const [reservaId, setReservaId] = useState(false);
 
   useEffect(() => {
     getData();
@@ -72,9 +77,6 @@ export default function Reserves() {
       tipo = document.querySelector('#tipoSearch').value;
     }
 
-    // data_inicial = new Date(data_inicial);
-    // data_final = new Date(data_inicial);
-
     try {
       const response = (await api.get('reservas', {
         params: {
@@ -90,34 +92,41 @@ export default function Reserves() {
 
       if (response.length > 0) {
         response.forEach(reserva => {
-          reservas.push([reserva.responsavel, reserva.lab, reserva.data_inicio, reserva.data_fim, reserva.tipo]);
+          reservas.push([reserva.id, reserva.responsavel, reserva.lab, reserva.data_inicio, reserva.data_fim, reserva.tipo]);
         });
+        setEditable(true);
       } else {
         reservas.push(['Nenhuma reserva encontrada']);
+        setEditable(false);
       }
 
       setReservas(reservas);
     } catch {
       setReservas([['Desculpe, não foi possível realizar a pesquisa. Tente novamente mais tarde.']]);
+      setEditable(false);
     }
   };
 
   return (
-    <section className="Reserves PageContent">
+    <section className="Reserves PageContent flex c">
+
+      <AnimatePresence>
+        {infoReserva && <InfoReserve CloseModal={setInfoReserva} ReserveId={reservaId} />}
+      </AnimatePresence>
 
       <h1>Reservas no Sistema</h1>
 
       <p>Filtros de pesquisa:</p>
-      <form className="SearchForm" onSubmit={SearchReserves}>
+      <form className="SearchForm">
         <Input type={'text'} placeholder={'Responsável'} formatter={nameMask} id={'respSearch'} />
         <Input type={'dropdown'} values={labNames} id={'labSearch'} placeholder={'Laboratório'} />
         <Input type={'date'} placeholder={'Data Inicial'} id={'dataISearch'} />
         <Input type={'date'} placeholder={'Data Final'} id={'dataFSearch'} />
         <Input type={'dropdown'} values={reservesTypes} id={'tipoSearch'} placeholder={'Tipo de Reserva'} />
-        <Input type={'submit'} placeholder={searchButtonText} />
+        <Input type={'submit'} placeholder={searchButtonText} callback={SearchReserves} />
       </form>
 
-      <Table header={tableHeader} data={reservas} editable={typeof reservas[0][0] !== 'string' ? true : false} />
+      <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} updateId={setReservaId}/>
 
     </section>
   );
