@@ -1,10 +1,11 @@
 /* Packages */
 import { FiEdit } from "react-icons/fi";
+import { MdDeleteOutline } from "react-icons/md";
 
 /* Css */
 import './Table.css'
 
-export default function Table({header, data, editable, showUpdate, updateId}) {
+export default function Table({header, data, editable, showUpdate, showDelete, updateId}) {
     return (
         <div className='Table'>
             {header && (
@@ -23,8 +24,9 @@ export default function Table({header, data, editable, showUpdate, updateId}) {
                                 ((j > 0 && editable) || !editable) && <p key={j} className='TableItem'>{info}</p>
                             ))}
                             {editable && (
-                                <div className="flex v">
-                                    <FiEdit style={{cursor: 'pointer'}} onClick={() => {updateId(user[0]); showUpdate(true)}}/>
+                                <div className="flex v" style={{gap: '5px'}}>
+                                    <FiEdit style={{cursor: 'pointer'}} onClick={() => {updateId(user[0]); showUpdate(true); showDelete(false)}}/>
+                                    <MdDeleteOutline style={{cursor: 'pointer'}} onClick={() => {updateId(user[0]); showDelete(true); showUpdate(false)}}/>
                                 </div>
                             )}
                         </div>

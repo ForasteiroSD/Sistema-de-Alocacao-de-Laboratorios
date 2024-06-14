@@ -40,8 +40,7 @@ function verificaConflito(inicio1: Number, fim1: Number, inicio2: Number, fim2: 
 
 }
 
-function sendEmail(tipo: string, labName: string, userName: string, data_inicio: string, data_fim: string, hora_inicio: string, duracao: string,
-    horarios: any, email: string) {
+function sendEmail(email: string, text: string, texthtml: string, type: string) {
     const transport = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
@@ -55,6 +54,29 @@ function sendEmail(tipo: string, labName: string, userName: string, data_inicio:
         }
     });
 
+    const mailOptions = {
+        from: `"LabHub Reservas" <${env.EMAIL_USER}>`,
+        to: email,
+        subject: `LabHub - ${type}`,
+        text: text,
+        ... (texthtml && {
+            html: texthtml
+        })
+    };
+
+    transport.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log('Não foi possível enviar o email');
+        }
+    });
+
+    return;
+}
+
+function createText(tipo: string, labName: string, userName: string, data_inicio: string, data_fim: string, hora_inicio: string, duracao: string,
+    horarios: any, email: string) {
+    
+
     let text1 = `Nova reserva ${tipo} feita no laboratório ${labName}\n\nDados da Reserva:\nUsuário: ${userName}\n`;
     let text2 = `<h1>Nova reserva ${tipo} feita no laboratório ${labName}</h1><h3>Dados da Reserva:</h3><p style='margin: 0'>Usuário: ${userName}</p>`
 
@@ -64,7 +86,7 @@ function sendEmail(tipo: string, labName: string, userName: string, data_inicio:
     } else if (tipo === 'Personalizada') {
         for (const dia of horarios) {
             text1 += `Data: ${stringData(dia.data, false)}\nHorário: ${dia.hora_inicio}\nDuração: ${dia.duracao}\n\n`;
-            text2 += `<div><p style='margin: 0'>Data: ${stringData(dia.data, false)}</p><p style='margin: 0'>Horário: ${dia.hora_inicio}</p style='margin: 0'><p>Duração: ${dia.duracao}</p></div><br><br>`;
+            text2 += `<div><p style='margin: 0'>Data: ${stringData(dia.data, false)}</p><p style='margin: 0'>Horário: ${dia.hora_inicio}</p><p style='margin: 0'>Duração: ${dia.duracao}</p></div><br>`;
         }
     } else if (tipo === 'Semanal') {
         text1 += `Data Inicial: ${data_inicio}\nData Final: ${data_fim}\n\n`;
@@ -82,19 +104,7 @@ function sendEmail(tipo: string, labName: string, userName: string, data_inicio:
     text1 += `\nAcesse ${env.PAGE_LINK} para ver mais!\n\n\nLabHub - Alocação de Laboratórios`;
     text2 += `<br><br><p style='margin: 0'>Acesse <a href="${env.PAGE_LINK}">LabHub</a> para ver mais!</p><br><br>LabHub - Alocação de Laboratórios`;
 
-    const mailOptions = {
-        from: `"LabHub Reservas" <${env.EMAIL_USER}>`,
-        to: email,
-        subject: 'LabHub - Nova Reserva',
-        text: text1,
-        html: text2
-    };
-
-    transport.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log('Não foi possível enviar o email');
-        }
-    });
+    sendEmail(email, text1, text2, 'Nova Reserva');
 }
 
 //Inserir reservas
@@ -338,7 +348,7 @@ router.post('/reserva', async (req: Request, res: Response) => {
             }
         });
 
-        sendEmail(tipo, labName, userName, data_inicio, data_fim, hora_inicio, duracao, horarios, labReservas.responsavel.email);
+        createText(tipo, labName, userName, data_inicio, data_fim, hora_inicio, duracao, horarios, labReservas.responsavel.email);
 
         res.status(200).send('Reserva realizada');
         return;
@@ -513,6 +523,10 @@ router.get('/reservas', async (req: Request, res: Response) => {
     const dataSearch2 = new Date(String(data_fim))
     dataSearch2.setUTCHours(0, 0, 0, 0);
 
+    let today = new Date();
+    if (today.getUTCHours() < 3) today.setUTCDate(today.getUTCDate() - 1)
+    today.setUTCHours(0, 0, 0, 0);
+
     try {
 
         const reservas = await prisma.reserva.findMany({
@@ -532,9 +546,13 @@ router.get('/reservas', async (req: Request, res: Response) => {
                         gte: dataSearch1
                     }
                 }),
-                ... (data_fim && {
+                ... (data_fim ? {
                     data_fim: {
                         lte: dataSearch2
+                    }
+                }: {
+                    data_fim: {
+                        gte: today
                     }
                 }),
                 ... (tipo && {
@@ -683,6 +701,133 @@ router.get('/reserva', async (req: Request, res: Response) => {
         }
 
     } catch (error) {
+        res.status(400).send('database off');
+        return;
+    }
+
+});
+
+router.delete('/minhareserva', async (req: Request, res: Response) => {
+
+    const { reserva_id, user_id, senha } = req.body;
+
+    try {
+        await prisma.user.findFirstOrThrow({
+            where: {
+                id: String(user_id),
+                senha: senha
+            }
+        });
+
+        await prisma.reserva.delete({
+            where: {
+                id: String(reserva_id)
+            }
+        });
+
+        res.status(200).send('Reserva excluida')
+
+    } catch (error: any) {
+
+        if (error.code === 'P2025') {
+            res.status(404).send("Senha invalida");
+            return;
+        }
+
+        res.status(400).send('database off');
+        return;
+    }
+
+});
+
+router.delete('/reserva', async (req: Request, res: Response) => {
+
+    const { reserva_id, user_id, senha, motivo } = req.query;
+
+    let dia_min = new Date();
+    let today = new Date();
+
+    if (dia_min.getUTCHours() < 3) dia_min.setUTCDate(dia_min.getUTCDate() - 1);
+    if (today.getUTCHours() < 3) today.setUTCDate(today.getUTCDate() - 1);
+
+    dia_min.setUTCDate(dia_min.getUTCDate() + 3);
+    
+    dia_min.setUTCHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
+
+    try {
+        await prisma.user.findFirstOrThrow({
+            where: {
+                id: String(user_id),
+                senha: String(senha)
+            }
+        });
+
+        const reserva = await prisma.reserva.findUnique({
+            where: {
+                id: String(reserva_id)
+            },
+            include: {
+                usuario: true,
+                laboratorio: true,
+                dias: true,
+            }
+        });
+
+        if (!reserva) {
+            res.status(404).send('Reserva não encontrada');
+            return;
+        }
+
+        const diasRemoviveis = reserva.dias.filter(dia => (dia.data_inicio > dia_min || dia.data_inicio < today));
+
+        if (diasRemoviveis.length === 0) {
+            res.status(400).send('Não é possível remover nenhum dia da reserva');
+            return;
+        }
+
+        await prisma.dia.deleteMany({
+            where: {
+                id: {
+                    in: diasRemoviveis.map(dia => dia.id),
+                },
+            },
+        });
+
+        const diasRestantes = await prisma.dia.findMany({
+            where: {
+                reserva_id: String(reserva_id)
+            },
+        });
+
+        let text = `Informamos que sua reserva do tipo ${reserva.tipo}, no laboratório ${reserva.laboratorio.nome} do dia ${stringData(reserva.data_inicio, false)} até o dia ${stringData(reserva.data_fim, false)} foi removida.`;
+        text += `\n\nMotivo da remoção: ${motivo}`;
+
+        if (diasRestantes.length === 0) {
+            await prisma.reserva.delete({
+                where: {
+                    id: String(reserva_id)
+                },
+            });
+            res.status(200).send('Reserva removida');
+
+        } else {
+            res.status(200).send(`Dias da reserva removidos, as reservas que iriam ocorre até ${stringData(dia_min, false)} ainda estão marcadas`);
+            text += `\n\nAs reservas que iriam ocorre até ${stringData(dia_min, false)} ainda estão marcadas`;
+        }
+
+
+        sendEmail(reserva.usuario.email, text, '', 'Remoção de Reserva');
+
+        return;
+
+    } catch (error: any) {
+
+        if (error.code === 'P2025') {
+            res.status(404).send("Senha inválida");
+            return;
+        }
+
         res.status(400).send('database off');
         return;
     }

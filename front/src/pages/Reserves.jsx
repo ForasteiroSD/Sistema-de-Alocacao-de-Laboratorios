@@ -7,6 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import Input from "../components/Input";
 import Table from "../components/Table";
 import InfoReserve from "../components/Reserves/InfoReserve";
+import DeleteReserve from "../components/Reserves/DeleteReserve";
 
 /* Lib */
 import api from "../lib/Axios";
@@ -38,6 +39,7 @@ export default function Reserves() {
   const [labNames, setLabNames] = useState();
   const [editable, setEditable] = useState(false);
   const [infoReserva, setInfoReserva] = useState(false);
+  const [deleteReserva, setDeleteReserva] = useState(false);
   const [reservaId, setReservaId] = useState(false);
 
   useEffect(() => {
@@ -114,6 +116,10 @@ export default function Reserves() {
         {infoReserva && <InfoReserve CloseModal={setInfoReserva} ReserveId={reservaId} />}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {deleteReserva && <DeleteReserve CloseModal={setDeleteReserva} ReserveId={reservaId} />}
+      </AnimatePresence>
+
       <h1>Reservas no Sistema</h1>
 
       <p>Filtros de pesquisa:</p>
@@ -124,9 +130,10 @@ export default function Reserves() {
         <Input type={'date'} placeholder={'Data Final'} id={'dataFSearch'} />
         <Input type={'dropdown'} values={reservesTypes} id={'tipoSearch'} placeholder={'Tipo de Reserva'} />
         <Input type={'submit'} placeholder={searchButtonText} callback={SearchReserves} />
+      <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
       </form>
 
-      <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} updateId={setReservaId}/>
+      <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} showDelete={setDeleteReserva} updateId={setReservaId}/>
 
     </section>
   );

@@ -1,10 +1,9 @@
 /* Packages */
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useState } from 'react';
 
 /* Components */
 import Input from '../Input';
-import Alert from '../Alert';
 import Days from "./Days";
 
 /* Lib */
@@ -15,23 +14,9 @@ import '../Modal.css';
 import './InfoReserve.css';
 
 export default function InfoReserve({ CloseModal, ReserveId }) {
-    const [alertType, setAlertType] = useState('');
-    const [message, setMessage] = useState('');
-    const [alertState, setAlertState] = useState(false);
     const [reserveData, setReserveData] = useState({});
     const [weeklyDays, setWeeklyDays] = useState([]);
 
-    const setAlert = (type, message) => {
-        setAlertType(type);
-        setMessage(message);
-        setAlertState(true);
-
-        setTimeout(() => {
-            setAlertType('');
-            setMessage('');
-            setAlertState(false);
-        }, 5000);
-    }
 
     async function getReserveData() {
 
@@ -87,9 +72,6 @@ export default function InfoReserve({ CloseModal, ReserveId }) {
         <>
             <motion.div key={'logo'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }} className='ModalImg flex h'>
                 <img src="/logos/Logo-White.png" alt="Logo LabHub" />
-                <AnimatePresence>
-                    {alertState && <Alert messageType={alertType} message={message} />}
-                </AnimatePresence>
             </motion.div>
             <motion.div key={'wrapper'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }} className='ModalBackGround' />
             <form className='flex h v ModalWrapper'>
@@ -150,7 +132,6 @@ export default function InfoReserve({ CloseModal, ReserveId }) {
                             )
                         )}
                     </div>
-                    <Input type={'submit'} placeholder={'Excluir'} exclude={true} />
                     <p className='CancelButton' onClick={() => { CloseModal(false) }}>Cancelar</p>
                 </motion.div>
             </form>
