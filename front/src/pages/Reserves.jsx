@@ -134,6 +134,7 @@ export default function Reserves() {
       </form>
 
       <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} showDelete={setDeleteReserva} updateId={setReservaId}/>
+      <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} Id={setReservaId}/>
 
     </section>
   );

@@ -7,7 +7,7 @@ import { IoIosArrowDropdown } from "react-icons/io";
 /* Css */
 import './Input.css'
 
-export default function Input({type, label, placeholder, id, values, callback, exclude=false, formatter, maxDate, required, readOnly }) {
+export default function Input({type, label, placeholder, id, values, callback, exclude, formatter, maxDate, required, readOnly }) {
     const [showButtonSeePassword, setShowButtonSeePassword] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
     const [inputOpened, setInputOpened] = useState(false);
