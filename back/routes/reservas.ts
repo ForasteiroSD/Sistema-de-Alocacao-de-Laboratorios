@@ -356,14 +356,14 @@ router.post('/reserva', async (req: Request, res: Response) => {
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send('Laboratorio Inexistente');
+            res.status(404).send('Laboratório Inexistente');
             return;
         } else if (error.code === 'P2003') {
             res.status(404).send('Usuário Inexistente');
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível realizar a reserva. Tente novamente mais tarde');
         return;
 
     }
@@ -436,7 +436,7 @@ router.get('/reservas/lab', async (req: Request, res: Response) => {
         return;
 
     } catch (error) {
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde');
         return;
     }
 
@@ -506,7 +506,7 @@ router.post('/reservas/user', async (req: Request, res: Response) => {
         return;
 
     } catch (error) {
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde');
         return;
     }
 
@@ -709,15 +709,9 @@ router.get('/reserva', async (req: Request, res: Response) => {
 
 router.delete('/minhareserva', async (req: Request, res: Response) => {
 
-    const { reserva_id, user_id, senha } = req.body;
+    const { reserva_id } = req.query;
 
     try {
-        await prisma.user.findFirstOrThrow({
-            where: {
-                id: String(user_id),
-                senha: senha
-            }
-        });
 
         await prisma.reserva.delete({
             where: {
@@ -725,16 +719,16 @@ router.delete('/minhareserva', async (req: Request, res: Response) => {
             }
         });
 
-        res.status(200).send('Reserva excluida')
+        res.status(200).send('Reserva removida');
 
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send("Senha invalida");
+            res.status(404).send("Reserva inexistente");
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível remover a reserva. Tente novamente mais tarde');
         return;
     }
 
@@ -742,7 +736,7 @@ router.delete('/minhareserva', async (req: Request, res: Response) => {
 
 router.delete('/reserva', async (req: Request, res: Response) => {
 
-    const { reserva_id, user_id, senha, motivo } = req.query;
+    const { reserva_id, motivo } = req.query;
 
     let dia_min = new Date();
     let today = new Date();
@@ -756,12 +750,6 @@ router.delete('/reserva', async (req: Request, res: Response) => {
     today.setUTCHours(0, 0, 0, 0);
 
     try {
-        await prisma.user.findFirstOrThrow({
-            where: {
-                id: String(user_id),
-                senha: String(senha)
-            }
-        });
 
         const reserva = await prisma.reserva.findUnique({
             where: {
@@ -812,10 +800,9 @@ router.delete('/reserva', async (req: Request, res: Response) => {
             res.status(200).send('Reserva removida');
 
         } else {
-            res.status(200).send(`Dias da reserva removidos, as reservas que iriam ocorre até ${stringData(dia_min, false)} ainda estão marcadas`);
-            text += `\n\nAs reservas que iriam ocorre até ${stringData(dia_min, false)} ainda estão marcadas`;
+            res.status(200).send(`Dias da reserva removidos, as reservas que iriam ocorrer até ${stringData(dia_min, false)} ainda estão marcadas`);
+            text += `\n\nAs reservas que iriam ocorrer até ${stringData(dia_min, false)} ainda estão marcadas`;
         }
-
 
         sendEmail(reserva.usuario.email, text, '', 'Remoção de Reserva');
 
@@ -824,11 +811,11 @@ router.delete('/reserva', async (req: Request, res: Response) => {
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send("Senha inválida");
+            res.status(404).send("Reserva inexistente");
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível remover a reserva. Tente novamente mais tarde');
         return;
     }
 

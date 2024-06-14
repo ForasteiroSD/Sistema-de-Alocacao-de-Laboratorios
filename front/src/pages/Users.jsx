@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { VscSearch } from "react-icons/vsc";
 import { AnimatePresence } from "framer-motion";
-import Axios from "axios";
 
 /* Components */
 import Input from "../components/Input";
@@ -93,7 +92,7 @@ export default function Users() {
             </AnimatePresence>
 
             <AnimatePresence>
-                {showExcludeUser && <Exclude type={'User'} CloseModal={setShowExcludeUser} UserId={userId} />}
+                {showExcludeUser && <Exclude type={'User'} CloseModal={setShowExcludeUser} Id={userId} />}
             </AnimatePresence>
 
             <h1>Usuários do Sistema</h1>

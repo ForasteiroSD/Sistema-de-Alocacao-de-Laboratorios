@@ -16,7 +16,7 @@ import { UserContext } from '../context/UserContext';
 import './Exclude.css'
 
 /* type = User || Reserve || Lab */
-export default function Exclude({type, CloseModal, UserId}) {
+export default function Exclude({ type, CloseModal, Id }) {
     const { user, logout } = useContext(UserContext);
     const [alertType, setAlertType] = useState('');
     const [message, setMessage] = useState('');
@@ -37,52 +37,62 @@ export default function Exclude({type, CloseModal, UserId}) {
     }
 
     async function getUsersData() {
+
         const response = (await api.post('user/data', {
-            id: UserId
+            id: Id
         })).data;
-        
-        if(response.nome.length > 28) response.nome = response.nome.slice(0,27) + '...'
-        
-        setuserData({nome: response.nome, cpf: response.cpf});
+
+        if (response.nome.length > 28) response.nome = response.nome.slice(0, 27) + '...'
+
+        setuserData({ nome: response.nome, cpf: response.cpf });
     }
 
     useEffect(() => {
-        adm && getUsersData();
+        if (type === 'User' && adm) getUsersData();
     }, []);
 
-    async function deleteUser(pass) {
-        let params;
-
-        if(adm) params = {
-                id: UserId,
-                adm: true
-            };
-        else params = {
-            id: UserId,
-            senha: pass
-        };
+    async function deleteUser(e) {
+        e.preventDefault();
 
         try {
-            (await api.delete('user', params)).data;
-    
-            if(adm) setAlert('Success', 'Usuário excluido');
+            (await api.delete('user', {
+                params: {
+                    id: Id
+                }
+            })).data;
+
+            if (adm) setAlert('Success', 'Usuário excluido');
             else {
 
             }
-        } catch (e) {
-            const erro = e.response.data;
-            
-            if(erro === 'Senha invalida') setAlert('Error', 'Senha invalida');
-            else if (erro === 'Email ja cadastrado') setAlert('Error', 'Email ja cadastrado');
-            else setAlert('Error', 'Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde');
+        } catch (error) {
+            const erro = error.response.data;
+
+            setAlert('Error', erro);
         }
     }
 
-    const validate = (e) => {
+    async function deleteReserve(e) {
         e.preventDefault();
-        if(adm) deleteUser();
-        else {
 
+        const motivo = document.querySelector('#motivo').value;
+
+        try {
+
+            const response = (await api.delete('/reserva', {
+                params: {
+                    reserva_id: Id,
+                    motivo: motivo
+                }
+            })).data;
+
+            setAlert('Success', response);
+
+        } catch (error) {
+
+            const erro = error.response.data;
+
+            setAlert('Error', erro);
         }
     }
 
@@ -95,19 +105,19 @@ export default function Exclude({type, CloseModal, UserId}) {
                 <img src="/logos/Logo-White.png" alt="Logo LabHub" />
             </motion.div>
             <motion.div key={'wrapper'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }} className='ModalBackGround' />
-            
+
             {type == 'User' ? (
-                <form onSubmit={validate} className='flex h v ModalWrapper' >
+                <form onSubmit={deleteUser} className='flex h v ModalWrapper' >
                     <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: { duration: 0.2 } }} className='Modal flex c'>
                         {adm ? (
                             <>
                                 <h1>Excluir Usuário</h1>
                                 {userData.nome ? (
-                                    <p style={{fontSize: '1.06rem', textAlign: 'center', overflowX: 'hidden', textOverflow: 'ellipsis'}}>{userData.nome} - {userData.cpf}</p>
+                                    <p style={{ fontSize: '1.06rem', textAlign: 'center', overflowX: 'hidden', textOverflow: 'ellipsis' }}>{userData.nome} - {userData.cpf}</p>
                                 ) : (
-                                    <p style={{fontSize: '1.06rem', textAlign: 'center'}}>Carregando dados do usuário...</p>
+                                    <p style={{ fontSize: '1.06rem', textAlign: 'center' }}>Carregando dados do usuário...</p>
                                 )}
-                                <p style={{fontSize: '1.06rem', textAlign: 'center'}}>Tem certeza que deseja excluir esse usuário?</p>
+                                <p style={{ fontSize: '1.06rem', textAlign: 'center' }}>Tem certeza que deseja excluir esse usuário?</p>
                             </>
                         ) : (
                             <>
@@ -121,8 +131,18 @@ export default function Exclude({type, CloseModal, UserId}) {
                     </motion.div>
                 </form>
 
-            ): type == 'Reserve' ? (
-                <></>
+            ) : type == 'Reserve' ? (
+                <form onSubmit={deleteReserve} className='flex h v ModalWrapper' >
+                    <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: { duration: 0.2 } }} id='EditUserForm' className='Modal flex c v'>
+                        <h1>Excluir Reserva</h1>
+                        <div className="flex c" style={{ marginBottom: '10px', gap: '10px' }}>
+                            <Input type={'text'} placeholder={'Motivo do Cancelamento'} id={'motivo'} required={true} />
+                        </div>
+                        <p style={{ fontSize: '1.06rem', textAlign: 'center' }}>Tem certeza que deseja excluir essa reserva?</p>
+                        <Input type={'submit'} placeholder={'Excluir'} exclude={true} />
+                        <p className='CancelButton' onClick={() => { CloseModal(false) }}>Cancelar</p>
+                    </motion.div>
+                </form>
 
             ) : type == 'Lab' ? (
                 <></>

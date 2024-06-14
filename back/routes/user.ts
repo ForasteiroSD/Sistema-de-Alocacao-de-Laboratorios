@@ -22,7 +22,7 @@ router.post("/user/create", async (req: Request, res: Response) => {
     const date = new Date(d_nas);
 
     if (date.toString() === 'Invalid Date') {
-        res.status(400).send('Data inválida');
+        res.status(400).send('Formato de data inválido');
         return;
     }
 
@@ -39,20 +39,20 @@ router.post("/user/create", async (req: Request, res: Response) => {
             }
         });
 
-        res.status(200).send('Usuario criado');
+        res.status(200).send('Usuário cadastrado');
         return;
 
     } catch (error: any) {
 
         if (error.code === 'P2002' && error.meta.target[0] === 'cpf') {
-            res.status(409).send('CPF ja cadastrado');
+            res.status(409).send('CPF já cadastrado');
             return;
         } else if (error.code === 'P2002' && error.meta.target[0] === 'email') {
-            res.status(409).send('Email ja cadastrado');
+            res.status(409).send('Email já cadastrado');
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
         return;
 
     }
@@ -101,11 +101,11 @@ router.post("/user/login", async (req: Request, res: Response) => {
                 return;
             }
         } catch (error1) {
-            res.status(400).send('database off');
+            res.status(400).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
             return;
             }
             
-        res.status(404).send('Usuário não cadastrado');
+        res.status(404).send('Email ou senha incorretos');
         return;
 
     }
@@ -145,15 +145,15 @@ router.patch("/user", async (req: Request, res: Response) => {
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send('Senha invalida');
+            res.status(404).send('Senha inválida');
             return;
         }
         if (error.code === 'P2002' && error.meta.target[0] === 'email') {
-            res.status(409).send('Email ja cadastrado');
+            res.status(409).send('Email já cadastrado');
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde');
         return;
     }
 });
@@ -193,42 +193,38 @@ router.patch("/user/first", async (req: Request, res: Response) => {
 //Deletar usuário
 router.delete("/user", async (req: Request, res: Response) => {
 
-    //adm = true não precisa informar senha para excluir conta
-    const { id, senha, adm } = req.body;
+    const { id } = req.query;
 
     try {
 
         const labs = await prisma.laboratorio.findFirst({
             where: {
-                responsavel_id: id
+                responsavel_id: String(id)
             }
         });
 
         if (labs) {
-            res.status(400).send('Usuario ainda responsavel por laboratorios');
+            res.status(400).send('Usuário ainda é responsável por laboratórios');
             return;
         }
 
         await prisma.user.delete({
             where: {
-                id: String(id),
-                ... (!adm && {
-                    senha: senha
-                })
+                id: String(id)
             }
         });
 
-        res.status(200).send("Usuario excluido");
+        res.status(200).send("Usuário excluido");
         return;
 
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send("Senha invalida");
+            res.status(404).send("Usuário inexistente");
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível remover o usuário. Tente novamente mais tarde');
         return;
     }
 });
@@ -341,11 +337,11 @@ router.post("/user/data", async (req: Request, res: Response) => {
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send('Usuario inexistente');
+            res.status(404).send('Usuário inexistente');
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível buscar os dados do usuário. Tente novamente mais tarde');
         return;
     }
 });
@@ -458,7 +454,7 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send('Usuario inexistente');
+            res.status(404).send('Usuário inexistente');
             return;
         }
 

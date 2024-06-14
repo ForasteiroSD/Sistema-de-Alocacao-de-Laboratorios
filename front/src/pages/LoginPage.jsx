@@ -77,8 +77,7 @@ const LoginPage = () => {
       navigate('/');
     } catch (e) {
       const erro = e.response.data;
-      if (erro === 'Usuário não cadastrado') setAlert('Error', 'Email ou senha incorretos');
-      else setAlert('Error', 'Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
+      setAlert('Error', erro);
     }
   };
 

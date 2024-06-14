@@ -7,7 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import Input from "../components/Input";
 import Table from "../components/Table";
 import InfoReserve from "../components/Reserves/InfoReserve";
-import DeleteReserve from "../components/Reserves/DeleteReserve";
+import Exclude from "../components/Exclude";
 
 /* Lib */
 import api from "../lib/Axios";
@@ -58,7 +58,7 @@ export default function Reserves() {
       }
       setLabNames(inputValues);
     } catch (error) {
-      setLabNames({ value: '', name: 'Não foi possível encontrar os laboratórios' })
+      setLabNames([{ value: '', name: 'Não foi possível encontrar os laboratórios' }])
     }
 
   }
@@ -117,7 +117,7 @@ export default function Reserves() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {deleteReserva && <DeleteReserve CloseModal={setDeleteReserva} ReserveId={reservaId} />}
+        {deleteReserva && <Exclude type={'Reserve'} CloseModal={setDeleteReserva} Id={reservaId} />}
       </AnimatePresence>
 
       <h1>Reservas no Sistema</h1>
@@ -130,11 +130,10 @@ export default function Reserves() {
         <Input type={'date'} placeholder={'Data Final'} id={'dataFSearch'} />
         <Input type={'dropdown'} values={reservesTypes} id={'tipoSearch'} placeholder={'Tipo de Reserva'} />
         <Input type={'submit'} placeholder={searchButtonText} callback={SearchReserves} />
-      <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
+        <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
       </form>
 
-      <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} showDelete={setDeleteReserva} updateId={setReservaId}/>
-      <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} Id={setReservaId}/>
+      <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} showExclude={setDeleteReserva} Id={setReservaId} />
 
     </section>
   );

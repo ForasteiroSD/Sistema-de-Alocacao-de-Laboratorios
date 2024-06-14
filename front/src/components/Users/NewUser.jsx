@@ -60,9 +60,7 @@ export default function NewUser({ CloseModal }) {
         } catch (e) {
             const erro = e.response.data;
 
-            if (erro === 'CPF ja cadastrado') setAlert('Error', 'CPF ja cadastrado');
-            else if (erro === 'Email ja cadastrado') setAlert('Error', 'Email ja cadastrado');
-            else setAlert('Error', 'Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
+            setAlert('Error', erro);
         }
     }
 

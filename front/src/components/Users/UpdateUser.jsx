@@ -82,10 +82,7 @@ export default function UpdateUser({CloseModal, UserId}) {
             setAlert('Success', 'Usuário alterado');
         } catch (e) {
             const erro = e.response.data;
-            
-            if(erro === 'Senha invalida') setAlert('Error', 'Senha invalida');
-            else if (erro === 'Email ja cadastrado') setAlert('Error', 'Email ja cadastrado');
-            else setAlert('Error', 'Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde');
+            setAlert('Error', erro);
         }
     }
 

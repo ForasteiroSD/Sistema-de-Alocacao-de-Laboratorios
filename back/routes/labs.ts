@@ -47,16 +47,16 @@ router.post("/lab", async (req: Request, res: Response) => {
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send('Responsavel nao encontrado');
+            res.status(404).send('Responsável não encontrado');
             return;
         }
 
         if (error.code === 'P2002' && error.meta.target[0] === 'nome') {
-            res.status(409).send('Nome ja cadastrado');
+            res.status(409).send('Nome já cadastrado');
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível criar o laboratório. Tente novamente mais tarde');
         return;
 
     }
@@ -101,17 +101,17 @@ router.patch("/lab", async (req: Request, res: Response) => {
             });
         }
 
-        res.status(200).send('Laboratorio atualizado');
+        res.status(200).send('Laboratório atualizado');
         return;
 
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send('Responsavel nao encontrado');
+            res.status(404).send('Responsável não encontrado');
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível atualizar o laboratório. Tente novamente mais tarde');
         return;
     }
 });
@@ -206,7 +206,7 @@ router.get("/lab", async (req: Request, res: Response) => {
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send('Laboratorio inexistente');
+            res.status(404).send('Laboratório inexistente');
             return;
         }
 
@@ -283,7 +283,7 @@ router.get('/lab/reservasdia', async (req: Request, res: Response) => {
         });
 
         if (!laboratorio?.reservas) {
-            res.status(404).send('Nao ha reservas no dia');
+            res.status(404).send('Não há reservas no dia');
             return;
         }
 
@@ -307,11 +307,11 @@ router.get('/lab/reservasdia', async (req: Request, res: Response) => {
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send('Laboratorio inexistente');
+            res.status(404).send('Laboratório inexistente');
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(400).send('Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde');
         return;
 
     }
