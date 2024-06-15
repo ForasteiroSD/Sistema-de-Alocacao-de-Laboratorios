@@ -36,7 +36,7 @@ export default function Exclude({ type, CloseModal, Id }) {
         }, 5000);
     }
 
-    async function getUsersData() {
+    async function getUserData() {
 
         const response = (await api.post('user/data', {
             id: Id
@@ -48,7 +48,7 @@ export default function Exclude({ type, CloseModal, Id }) {
     }
 
     useEffect(() => {
-        if (type === 'User' && adm) getUsersData();
+        if (type === 'User' && adm) getUserData();
     }, []);
 
     async function deleteUser(e) {
@@ -61,9 +61,10 @@ export default function Exclude({ type, CloseModal, Id }) {
                 }
             })).data;
 
-            if (adm) setAlert('Success', 'Usuário excluido');
+            if (Id != user.id) setAlert('Success', 'Usuário excluido');
             else {
-
+                logout();
+                navigate('/login');
             }
         } catch (error) {
             const erro = error.response.data;
