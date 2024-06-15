@@ -12,18 +12,13 @@ import Reserves from './pages/Reserves';
 import Configs from './pages/Configs';
 import Users from "./pages/Users";
 import LoginPage from "./pages/LoginPage";
+import MyReserves from './pages/MyReserves';
 
 /* Context */
 import { UserProvider, UserContext } from './context/UserContext';
 
 /* Css */
 import './App.css';
-
-function Minhas() {
-  return (
-    <h1>Minhas</h1>
-  )
-}
 
 function NotFound() {
   return (
@@ -62,9 +57,9 @@ function App() {
                         ) : (
                           <>
                             {user?.tipo === 'Responsável' && (
-                              <Route path="/meuslaboratorios" element={<Reserves />} />
+                              <Route path="/meuslaboratorios" element={<Reserves Id={user.id}/>} />
                             )}
-                            <Route path="/minhasreservas" element={<Minhas />} />
+                            <Route path="/minhasreservas" element={<MyReserves Id={user.id}/>} />
                           </>
                         )}
 

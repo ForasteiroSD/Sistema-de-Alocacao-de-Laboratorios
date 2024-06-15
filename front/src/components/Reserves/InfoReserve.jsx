@@ -13,7 +13,7 @@ import api from '../../lib/Axios'
 import '../Modal.css';
 import './InfoReserve.css';
 
-export default function InfoReserve({ CloseModal, ReserveId }) {
+export default function InfoReserve({ CloseModal, ReserveId, includeUser = true }) {
     const [reserveData, setReserveData] = useState({});
     const [weeklyDays, setWeeklyDays] = useState([]);
 
@@ -31,7 +31,7 @@ export default function InfoReserve({ CloseModal, ReserveId }) {
     }
 
     useEffect(() => {
-        document.querySelector('#resp').value = reserveData.usuario;
+        if(includeUser) document.querySelector('#resp').value = reserveData.usuario;
         document.querySelector('#lab').value = reserveData.laboratorio;
         document.querySelector('#reserveType').value = reserveData.tipo;
 
@@ -49,14 +49,14 @@ export default function InfoReserve({ CloseModal, ReserveId }) {
             document.querySelector('#dataFinal').value = reserveData.data_fim;
             const dias = []
 
-            for (let i=0; i<reserveData.dias_semana.length; i++) {
+            for (let i = 0; i < reserveData.dias_semana.length; i++) {
                 dias.push(reserveData.dias_semana[i].dia);
                 document.querySelector(`#hora${i}`).value = reserveData.dias_semana[i].hora_inicio;
                 document.querySelector(`#duracao${i}`).value = reserveData.dias_semana[i].duracao;
             }
             setWeeklyDays(dias);
-        } else if (reserveData.tipo === 'Personalizada'){
-            for (let i=0; i<reserveData.horarios.length; i++) {
+        } else if (reserveData.tipo === 'Personalizada') {
+            for (let i = 0; i < reserveData.horarios.length; i++) {
                 document.querySelector(`#data${i}`).value = reserveData.horarios[i].data;
                 document.querySelector(`#hora${i}`).value = reserveData.horarios[i].hora_inicio;
                 document.querySelector(`#duracao${i}`).value = reserveData.horarios[i].duracao;
@@ -78,7 +78,7 @@ export default function InfoReserve({ CloseModal, ReserveId }) {
                 <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: { duration: 0.2 } }} id='EditUserForm' className='Modal flex c v'>
                     <h1>Informações da Reserva</h1>
                     <div className="infoReserve flex c">
-                        <Input type={'text'} placeholder={'Responsável'} id={'resp'} required={true} readOnly={'readonly'} />
+                        {includeUser && <Input type={'text'} placeholder={'Responsável'} id={'resp'} required={true} readOnly={'readonly'} />}
                         <Input type={'text'} placeholder={'Laboratório'} id={'lab'} required={true} readOnly={'readonly'} />
                         <Input type={'text'} placeholder={'Tipo de Reserva'} id={'reserveType'} required={true} readOnly={'readonly'} />
                         <hr style={{ marginTop: '10px' }} />
@@ -109,7 +109,7 @@ export default function InfoReserve({ CloseModal, ReserveId }) {
                                         {reserveData.dias_semana.map((dia, i) => (
                                             <div className="boxDay" key={i}>
                                                 <p className="diaSemana">{dia.dia}:</p>
-                                                <div className="flex h" style={{marginBottom: '15px'}}>
+                                                <div className="flex h" style={{ marginBottom: '15px' }}>
                                                     <Input type={'text'} placeholder={'14:00'} id={`hora${i}`} readOnly={'readonly'} required={true} label={'Horário de entrada:'} />
                                                     <Input type={'text'} placeholder={'2:00'} id={`duracao${i}`} readOnly={'readonly'} required={true} label={'Tempo de uso (hs):'} />
                                                 </div>
@@ -120,7 +120,7 @@ export default function InfoReserve({ CloseModal, ReserveId }) {
                                 ) : reserveData.tipo === 'Personalizada' && (
                                     <>
                                         {reserveData.horarios.map((data, i) => (
-                                            <div className="flex c" style={{gap: '10px'}} key={i}>
+                                            <div className="flex c" style={{ gap: '10px' }} key={i}>
                                                 <Input type={'text'} placeholder={'Data da Reserva'} id={`data${i}`} readOnly={'readonly'} required={true} label={'Data da reserva:'} />
                                                 <Input type={'text'} placeholder={'14:00'} id={`hora${i}`} readOnly={'readonly'} required={true} label={'Horário de entrada:'} />
                                                 <Input type={'text'} placeholder={'2:00'} id={`duracao${i}`} readOnly={'readonly'} required={true} label={'Tempo de uso (hs):'} />

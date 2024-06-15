@@ -15,7 +15,7 @@ import { UserContext } from '../context/UserContext';
 /* Css */
 import './Exclude.css'
 
-/* type = User || Reserve || Lab */
+/* type = User || Reserve || MyReserve || Lab */
 export default function Exclude({ type, CloseModal, Id }) {
     const { user, logout } = useContext(UserContext);
     const [alertType, setAlertType] = useState('');
@@ -96,6 +96,27 @@ export default function Exclude({ type, CloseModal, Id }) {
         }
     }
 
+    async function deleteMyReserve(e) {
+        e.preventDefault();
+
+        try {
+
+            const response = (await api.delete('/minhareserva', {
+                params: {
+                    reserva_id: Id
+                }
+            })).data;
+
+            setAlert('Success', response);
+
+        } catch (error) {
+
+            const erro = error.response.data;
+
+            setAlert('Error', erro);
+        }
+    }
+
     return (
         <>
             <AnimatePresence>
@@ -144,6 +165,15 @@ export default function Exclude({ type, CloseModal, Id }) {
                     </motion.div>
                 </form>
 
+            ) : type == 'MyReserve' ? (
+                <form onSubmit={deleteMyReserve} className='flex h v ModalWrapper' >
+                    <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: { duration: 0.2 } }} id='EditUserForm' className='Modal flex c v'>
+                        <h1>Excluir Reserva</h1>
+                        <p style={{ fontSize: '1.06rem', textAlign: 'center' }}>Tem certeza que deseja excluir essa reserva?</p>
+                        <Input type={'submit'} placeholder={'Excluir'} exclude={true} />
+                        <p className='CancelButton' onClick={() => { CloseModal(false) }}>Cancelar</p>
+                    </motion.div>
+                </form>
             ) : type == 'Lab' ? (
                 <></>
 

@@ -370,10 +370,10 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
 });
 
-//Recuperar reservas de um laboratório
-router.get('/reservas/lab', async (req: Request, res: Response) => {
+//Recuperar reservas de laboratórios de um usuário específico
+router.post('/reservas/lab', async (req: Request, res: Response) => {
 
-    const { userName, labName, data_inicio, data_fim, tipo } = req.query;
+    const { resp_id, userName, labName, data_inicio, data_fim, tipo } = req.body;
 
     const dataSearch1 = new Date(String(data_inicio));
     dataSearch1.setUTCHours(0, 0, 0, 0);
@@ -382,12 +382,17 @@ router.get('/reservas/lab', async (req: Request, res: Response) => {
     dataSearch2.setUTCHours(0, 0, 0, 0);
 
     try {
-
+        
         const reservas = await prisma.reserva.findMany({
             where: {
+                laboratorio: {
+                    responsavel_id: String(resp_id)
+                },
                 ... (userName && {
                     usuario: {
-                        nome: String(userName)
+                        nome: {
+                            contains: String(userName)
+                        }
                     }
                 }),
                 ... (data_inicio && {
@@ -403,16 +408,26 @@ router.get('/reservas/lab', async (req: Request, res: Response) => {
                 ... (tipo && {
                     tipo: String(tipo)
                 }),
-                laboratorio: {
-                    nome: String(labName)
-                }
+                ... (labName && {
+                    laboratorio: {
+                        nome: String(labName)
+                    }
+                })
             },
             include: {
+                laboratorio: {
+                    select: {
+                        nome: true
+                    }
+                },
                 usuario: {
                     select: {
                         nome: true
                     }
                 }
+            },
+            orderBy: {
+                data_inicio: 'asc'
             }
         });
 
@@ -426,6 +441,7 @@ router.get('/reservas/lab', async (req: Request, res: Response) => {
             reservasSend.push({
                 id: reserva.id,
                 responsavel: reserva.usuario.nome,
+                lab: reserva.laboratorio.nome,
                 data_inicio: string_aux1,
                 data_fim: string_aux2,
                 tipo: reserva.tipo
@@ -453,10 +469,15 @@ router.post('/reservas/user', async (req: Request, res: Response) => {
     const dataSearch2 = new Date(String(data_fim))
     dataSearch2.setUTCHours(0, 0, 0, 0);
 
+    let today = new Date();
+    if (today.getUTCHours() < 3) today.setUTCDate(today.getUTCDate() - 1)
+    today.setUTCHours(0, 0, 0, 0);
+
     try {
 
         const reservas = await prisma.reserva.findMany({
             where: {
+                user_id: String(userId),
                 ... (labName && {
                     laboratorio: {
                         nome: String(labName)
@@ -467,15 +488,18 @@ router.post('/reservas/user', async (req: Request, res: Response) => {
                         gte: dataSearch1
                     }
                 }),
-                ... (data_fim && {
+                ... (data_fim ? {
                     data_fim: {
                         lte: dataSearch2
+                    }
+                }: {
+                    data_fim: {
+                        gte: today
                     }
                 }),
                 ... (tipo && {
                     tipo: String(tipo)
                 }),
-                user_id: String(userId)
             },
             include: {
                 laboratorio: {
@@ -533,7 +557,9 @@ router.get('/reservas', async (req: Request, res: Response) => {
             where: {
                 ... (userName && {
                     usuario: {
-                        nome: String(userName)
+                        nome: {
+                            contains: String(userName)
+                        }
                     }
                 }),
                 ... (labName && {

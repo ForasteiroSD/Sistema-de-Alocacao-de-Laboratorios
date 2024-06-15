@@ -25,7 +25,7 @@ const reservesTypes = [
   { value: 'Personalizada', name: 'Personalizada' }
 ]
 
-const tableHeader = ['Responsáveis', 'Laboratórios', 'Datas Iniciais', 'Datas Finais', 'Tipos de Reservas'];
+const tableHeader = ['Responsável', 'Laboratório', 'Datas Inicial', 'Datas Final', 'Tipo de Reserva'];
 const searchButtonText = (
   <div className="flex h v" style={{ gap: '5px' }}>
     <VscSearch style={{ transform: 'scale(1.2)' }} />
@@ -34,7 +34,7 @@ const searchButtonText = (
 );
 
 
-export default function Reserves() {
+export default function Reserves({ Id }) {
   const [reservas, setReservas] = useState([['Carregando Reservas...']]);
   const [labNames, setLabNames] = useState();
   const [editable, setEditable] = useState(false);
@@ -50,7 +50,9 @@ export default function Reserves() {
   async function getData() {
 
     try {
-      const response = (await api.get('labNames')).data;
+      const response = (await api.post('userLabs', {
+        user_id: Id
+      })).data;
 
       const inputValues = [{ value: '', name: 'Qualquer Laboratório' }];
       for (let lab of response) {
@@ -80,15 +82,29 @@ export default function Reserves() {
     }
 
     try {
-      const response = (await api.get('reservas', {
-        params: {
+
+      let response;
+
+      if (Id) {
+        response = (await api.post('reservas/lab', {
           userName: responsavel,
           labName: laboratorio,
           data_inicio: data_inicial,
           data_fim: data_final,
-          tipo: tipo
-        }
-      })).data;
+          tipo: tipo,
+          resp_id: Id
+        })).data;
+      } else {
+        response = (await api.get('reservas', {
+          params: {
+            userName: responsavel,
+            labName: laboratorio,
+            data_inicio: data_inicial,
+            data_fim: data_final,
+            tipo: tipo
+          }
+        })).data;
+      }
 
       let reservas = [];
 
@@ -120,7 +136,7 @@ export default function Reserves() {
         {deleteReserva && <Exclude type={'Reserve'} CloseModal={setDeleteReserva} Id={reservaId} />}
       </AnimatePresence>
 
-      <h1>Reservas no Sistema</h1>
+      <h1>Reservas {Id ? 'nos Meus Laboratórios' : 'no Sistema'}</h1>
 
       <p>Filtros de pesquisa:</p>
       <form className="SearchForm">

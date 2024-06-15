@@ -18,29 +18,23 @@ import { UserContext } from '../context/UserContext';
 import './SideMenu.css';
 
 /* Variables/Consts */
-const links = [
+const linksAdm = [
     { id: 'mainpage', icon: <HiHome className="Icons" />, name: 'Página Inicial', link: '/' },
     { id: 'labs', icon: <FaComputer className="Icons" />, name: 'Laboratórios', link: '/laboratorios' },
     { id: 'reserves', icon: <PiNotepad className="Icons" />, name: 'Reservas', link: '/reservas' },
     { id: 'users', icon: <FaUser className="Icons" style={{ transform: 'scale(0.9)' }} />, name: 'Usuários', link: '/users' }
 ];
 
-const linksAux = [
+const linksRes = [
     { id: 'mainpage', icon: <HiHome className="Icons" />, name: 'Página Inicial', link: '/' },
-    { id: 'labs', icon: <FaComputer className="Icons" />, name: 'Laboratórios', link: '/laboratorios' }
-];
-
-const admLinks = [
-    { id: 'reserves', icon: <PiNotepad className="Icons" />, name: 'Reservas', link: '/reservas' },
-    { id: 'users', icon: <FaUser className="Icons" style={{ transform: 'scale(0.9)' }} />, name: 'Usuários', link: '/users' }
-];
-
-const resLinks = [
+    { id: 'labs', icon: <FaComputer className="Icons" />, name: 'Laboratórios', link: '/laboratorios' },
     { id: 'mylabs', icon: <FaComputer className="Icons" />, name: 'Meus Laboratórios', link: '/meuslaboratorios' },
     { id: 'reserves', icon: <PiNotepad className="Icons" />, name: 'Minhas Reservas', link: '/minhasreservas' }
 ];
 
 const userLinks = [
+    { id: 'mainpage', icon: <HiHome className="Icons" />, name: 'Página Inicial', link: '/' },
+    { id: 'labs', icon: <FaComputer className="Icons" />, name: 'Laboratórios', link: '/laboratorios' },
     { id: 'reserves', icon: <PiNotepad className="Icons" />, name: 'Minhas Reservas', link: '/minhasreservas' }
 ];
 
@@ -49,7 +43,7 @@ export default function SideMenu() {
     const [activeLink, setActiveLink] = useState();
     const location = useLocation();
     const navigate = useNavigate();
-    // const [links, setLinks] = useState(linksAux);
+    const [links, setLinks] = useState([]);
     
     // Select correct menu option when opening the site
     useEffect(() => {
@@ -57,7 +51,13 @@ export default function SideMenu() {
         links.forEach(link => {
             if (location.pathname === link.link) setActiveLink(link.id);
         });
-    }, [location]);
+    }, [location, links]);
+    
+    useEffect(() => {
+        if(user.tipo === 'Administrador') setLinks(linksAdm);
+        else if(user.tipo === 'Responsável') setLinks(linksRes);
+        else setLinks(userLinks);
+    }, [user]);
 
     const handleLogout = () => {
         logout();

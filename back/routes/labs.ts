@@ -230,7 +230,33 @@ router.get("/labNames", async (req: Request, res: Response) => {
         return;
 
     } catch (error: any) {
+        res.status(400).send('database off');
+        return;
+    }
 
+});
+
+router.post("/userLabs", async (req: Request, res: Response) => {
+
+    const { user_id } = req.body;
+
+    try {
+
+        const labs = await prisma.laboratorio.findMany({
+            where: {
+                ... (user_id && {
+                    responsavel_id: user_id
+                })
+            },
+            select: {
+                nome: true
+            }
+        });
+
+        res.status(200).send(labs);
+        return;
+
+    } catch (error: any) {
         res.status(400).send('database off');
         return;
     }
