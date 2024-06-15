@@ -17,7 +17,7 @@ export default function Exclude({ type, CloseModal, Id }) {
     const { user, logout } = useContext(UserContext);
     const { setAlert } = useContext(AlertContext);
     const [userData, setuserData] = useState({});
-    const adm = user.tipo == 'Administrador';
+    const selfAccount = Id == user.id;
 
     async function getUserData() {
 
@@ -31,7 +31,7 @@ export default function Exclude({ type, CloseModal, Id }) {
     }
 
     useEffect(() => {
-        if (type === 'User' && adm) getUserData();
+        if (type === 'User' && !selfAccount) getUserData();
     }, []);
 
     async function deleteUser(e) {
@@ -111,7 +111,7 @@ export default function Exclude({ type, CloseModal, Id }) {
             {type == 'User' ? (
                 <form onSubmit={deleteUser} className='flex h v ModalWrapper' >
                     <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: { duration: 0.2 } }} className='Modal flex c'>
-                        {adm ? (
+                        {!selfAccount ? (
                             <>
                                 <h1>Excluir Usuário</h1>
                                 {userData.nome ? (
@@ -124,7 +124,7 @@ export default function Exclude({ type, CloseModal, Id }) {
                         ) : (
                             <>
                                 <h1>Excluir Conta</h1>
-                                <Input type={'password'} placeholder={'Senha'} id={'password'} autoComplete={'off'} required={true} />
+                                <p style={{ fontSize: '1.06rem', textAlign: 'center' }}>Tem certeza que deseja excluir sua conta?</p>
                             </>
                         )}
 
