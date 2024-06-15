@@ -47,6 +47,13 @@
     width: 288px;
 }
 
+.SideMenu .BottomMenu .Name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 150px;
+    white-space: nowrap;
+}
+
 .SideMenu .BottomMenu .link {
     font-family: Antic;
     font-size: 0.9375rem;

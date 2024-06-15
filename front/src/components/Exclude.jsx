@@ -1,40 +1,23 @@
 /* Packages */
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState, useEffect, useContext } from 'react';
 
 /* Components */
 import Input from './Input';
-import Alert from './Alert';
 
 /* Lib */
 import api from '../lib/Axios'
 
 /* Context */
 import { UserContext } from '../context/UserContext';
-
-/* Css */
-import './Exclude.css'
+import { AlertContext } from '../context/AlertContext';
 
 /* type = User || Reserve || MyReserve || Lab */
 export default function Exclude({ type, CloseModal, Id }) {
     const { user, logout } = useContext(UserContext);
-    const [alertType, setAlertType] = useState('');
-    const [message, setMessage] = useState('');
-    const [alertState, setAlertState] = useState(false);
+    const { setAlert } = useContext(AlertContext);
     const [userData, setuserData] = useState({});
     const adm = user.tipo == 'Administrador';
-
-    const setAlert = (type, message) => {
-        setAlertType(type);
-        setMessage(message);
-        setAlertState(true);
-
-        setTimeout(() => {
-            setAlertType('');
-            setMessage('');
-            setAlertState(false);
-        }, 5000);
-    }
 
     async function getUserData() {
 
@@ -61,8 +44,8 @@ export default function Exclude({ type, CloseModal, Id }) {
                 }
             })).data;
 
-            if (Id != user.id) setAlert('Success', 'Usuário excluido');
-            else {
+            setAlert('Success', 'Usuário excluido');
+            if (Id == user.id) {
                 logout();
                 navigate('/login');
             }
@@ -120,9 +103,6 @@ export default function Exclude({ type, CloseModal, Id }) {
 
     return (
         <>
-            <AnimatePresence>
-                {alertState && <Alert messageType={alertType} message={message} />}
-            </AnimatePresence>
             <motion.div key={'logo'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }} className='ModalImg flex h'>
                 <img src="/logos/Logo-White.png" alt="Logo LabHub" />
             </motion.div>
@@ -135,7 +115,7 @@ export default function Exclude({ type, CloseModal, Id }) {
                             <>
                                 <h1>Excluir Usuário</h1>
                                 {userData.nome ? (
-                                    <p style={{ fontSize: '1.06rem', textAlign: 'center', overflowX: 'hidden', textOverflow: 'ellipsis' }}>{userData.nome} - {userData.cpf}</p>
+                                    <p style={{ fontSize: '1.06rem', textAlign: 'center', overflowX: 'hidden', textOverflow: 'ellipsis'}}>{userData.nome} - {userData.cpf}</p>
                                 ) : (
                                     <p style={{ fontSize: '1.06rem', textAlign: 'center' }}>Carregando dados do usuário...</p>
                                 )}

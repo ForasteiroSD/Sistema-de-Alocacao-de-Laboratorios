@@ -86,8 +86,8 @@ export default function SideMenu() {
                 <div className="flex User">
                     <FaUserCircle className="UserImage" style={activeLink === 'configs' ? { 'color': 'var(--buttonBlue)' } : null} />
                     <div className="flex h c">
-                        <p style={activeLink === 'configs' ? { 'color': 'var(--buttonBlue)' } : null}>{user?.nome || 'User'}</p>
-                        <Link to={'/configs'} className="link" style={activeLink === 'configs' ? { 'color': 'var(--buttonBlue)' } : null} onClick={() => setActiveLink('configs')}>Configurações</Link>
+                        <p className="Name" style={activeLink === 'configs' ? { 'color': 'var(--buttonBlue)' } : null}>{String(user?.nome).split(' ')[0] || 'User'}</p>
+                        <Link to={'/configs'} className="link" style={activeLink === 'configs' ? { color: 'var(--buttonBlue)', textAlign: 'left' } : { textAlign: 'left' }} onClick={() => setActiveLink('configs')}>Configurações</Link>
                     </div>
                 </div>
 

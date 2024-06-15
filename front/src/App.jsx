@@ -1,9 +1,12 @@
-import React from 'react';
+/* Packages */
+import { AnimatePresence } from "framer-motion";
+import { useState, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
 
 /* Components */
 import SideMenu from "./components/SideMenu";
 import Header from './components/Header';
+import Alert from './components/Alert';
 
 /* Pages */
 import MainPage from './pages/MainPage';
@@ -16,6 +19,7 @@ import MyReserves from './pages/MyReserves';
 
 /* Context */
 import { UserProvider, UserContext } from './context/UserContext';
+import { AlertProvider, AlertContext } from './context/AlertContext';
 
 /* Css */
 import './App.css';
@@ -30,60 +34,71 @@ function NotFound() {
 }
 
 function App() {
-  return (
-    <UserProvider>
-      <Router>
-        <section className="flex">
-          <UserContext.Consumer>
-            {({ user }) => (
-              <>
-                {user && <SideMenu />}
-                <div>
-                  {user && <Header />}
-                  <Routes>
+    return (
+        <AlertProvider>
+            <AlertContext.Consumer>{({ alertState, alertType, alertMessage }) => (
+                <>
+                    <AnimatePresence>
+                        {alertState && <Alert messageType={alertType} message={alertMessage} />}
+                    </AnimatePresence>
+                    
+                    <UserProvider>
+                    <Router>
+                        <section className="flex">
+                        <UserContext.Consumer>
+                            {({ user }) => (
+                            <>
+                                {user && <SideMenu />}
+                                <div>
+                                {user && <Header />}
+                                <Routes>
 
-                    {user ?
-                      <>
-                        <Route path="/" element={<MainPage />} />
-                        <Route path="/laboratorios" element={<Labs />} />
-                        <Route path="/configs" element={<Configs />} />
-                        <Route path="/login" element={<Navigate to={'/'} />} />
+                                    {user ?
+                                    <>
+                                        <Route path="/" element={<MainPage />} />
+                                        <Route path="/laboratorios" element={<Labs />} />
+                                        <Route path="/configs" element={<Configs />} />
+                                        <Route path="/login" element={<Navigate to={'/'} />} />
 
-                        {user?.tipo === 'Administrador' ? (
-                          <>
-                            <Route path="/reservas" element={<Reserves />} />
-                            <Route path="/users" element={<Users />} />
-                          </>
-                        ) : (
-                          <>
-                            {user?.tipo === 'Responsável' && (
-                              <Route path="/meuslaboratorios" element={<Reserves Id={user.id}/>} />
+                                        {user?.tipo === 'Administrador' ? (
+                                        <>
+                                            <Route path="/reservas" element={<Reserves />} />
+                                            <Route path="/users" element={<Users />} />
+                                        </>
+                                        ) : (
+                                        <>
+                                            {user?.tipo === 'Responsável' && (
+                                            <Route path="/meuslaboratorios" element={<Reserves Id={user.id}/>} />
+                                            )}
+                                            <Route path="/minhasreservas" element={<MyReserves Id={user.id}/>} />
+                                        </>
+                                        )}
+
+                                        {!user?.loading &&
+                                        <Route path="*" element={<NotFound />} />
+                                        }
+                                    </>
+                                    :
+                                    <>
+                                        <Route path="/login" element={<LoginPage />} />
+                                        {!user?.loading &&
+                                        <Route path="*" element={<Navigate to={'/login'} />} />
+                                        }
+                                    </>
+                                    }
+                                </Routes>
+                                </div>
+                            </>
                             )}
-                            <Route path="/minhasreservas" element={<MyReserves Id={user.id}/>} />
-                          </>
-                        )}
-
-                        {!user?.loading &&
-                          <Route path="*" element={<NotFound />} />
-                        }
-                      </>
-                      :
-                      <>
-                        <Route path="/login" element={<LoginPage />} />
-                        {!user?.loading &&
-                          <Route path="*" element={<Navigate to={'/login'} />} />
-                        }
-                      </>
-                    }
-                  </Routes>
-                </div>
-              </>
+                        </UserContext.Consumer>
+                        </section>
+                    </Router>
+                    </UserProvider>
+                </>
             )}
-          </UserContext.Consumer>
-        </section>
-      </Router>
-    </UserProvider>
-  );
+            </AlertContext.Consumer>
+        </AlertProvider>
+    );
 }
 
 export default App;

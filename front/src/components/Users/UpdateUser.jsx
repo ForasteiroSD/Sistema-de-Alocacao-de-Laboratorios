@@ -3,14 +3,16 @@ import Axios from 'axios';
 import { sha256 } from "js-sha256";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 /* Components */
 import Input from '../Input';
-import Alert from '../Alert';
 
 /* Lib */
 import api from '../../lib/Axios'
+
+/* Context */
+import { AlertContext } from '../../context/AlertContext';
 
 /* Css */
 import '../Modal.css';
@@ -24,21 +26,7 @@ const accoutTypes = [
 import { nameMask, phoneMask } from "../../GlobalVariables";
 
 export default function UpdateUser({CloseModal, UserId}) {
-    const [alertType, setAlertType] = useState('');
-    const [message, setMessage] = useState('');
-    const [alertState, setAlertState] = useState(false);
-
-    const setAlert = (type, message) => {
-        setAlertType(type);
-        setMessage(message);
-        setAlertState(true);
-
-        setTimeout(() => {
-            setAlertType('');
-            setMessage('');
-            setAlertState(false);
-        }, 5000);
-    }
+    const { setAlert } = useContext(AlertContext);
 
     async function getUsersData() {
         const response = (await api.post('user/data', {
@@ -112,9 +100,6 @@ export default function UpdateUser({CloseModal, UserId}) {
         <>
             <motion.div key={'logo'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: {duration: 0.2} }} className='ModalImg flex h'>
                 <img src="/logos/Logo-White.png" alt="Logo LabHub" />
-                <AnimatePresence>
-                    {alertState && <Alert messageType={alertType} message={message} />}
-                </AnimatePresence>
             </motion.div>
             <motion.div key={'wrapper'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: {duration: 0.2} }} className='ModalBackGround' />
             <form onSubmit={validate} className='flex h v ModalWrapper' >

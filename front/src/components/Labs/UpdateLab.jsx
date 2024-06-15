@@ -1,17 +1,19 @@
 /* Packages */
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 
 /* Components */
 import Input from '../Input';
-import Alert from '../Alert';
 
 /* Lib */
 import api from '../../lib/Axios';
 
 /* Css */
 import '../Modal.css';
+
+/* Context */
+import { AlertContext } from '../context/AlertContext';
 
 /* Variables/Consts */
 const responsaveis = [
@@ -21,9 +23,7 @@ const responsaveis = [
 ];
 
 export default function UpdateLab({ labId, closeModal }) {
-    const [alertType, setAlertType] = useState('');
-    const [message, setMessage] = useState('');
-    const [alertState, setAlertState] = useState(false);
+    const { setAlert } = useContext(AlertContext);
     const [labDetails, setLabDetails] = useState({});
 
     useEffect(() => {
@@ -51,18 +51,6 @@ export default function UpdateLab({ labId, closeModal }) {
 
         fetchLabDetails();
     }, [labId]);
-
-    const setAlert = (type, message) => {
-        setAlertType(type);
-        setMessage(message);
-        setAlertState(true);
-
-        setTimeout(() => {
-            setAlertType('');
-            setMessage('');
-            setAlertState(false);
-        }, 5000);
-    };
 
     const updateLab = async (nome, capacidade, responsavel, projetores, quadros, televisoes, ar_condicionados, computadores, outro) => {
         try {
@@ -110,9 +98,6 @@ export default function UpdateLab({ labId, closeModal }) {
 
     return (
         <>
-            <AnimatePresence>
-                {alertState && <Alert messageType={alertType} message={message} />}
-            </AnimatePresence>
             <motion.div key={'logo'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }} className='ModalImg flex h'>
                 <img src="/logos/Logo-White.png" alt="Logo LabHub" />
             </motion.div>

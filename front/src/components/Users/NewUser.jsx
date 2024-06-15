@@ -3,11 +3,13 @@ import { sha256 } from "js-sha256";
 import { z } from "zod";
 import { cpf as CPF } from 'cpf-cnpj-validator';
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 /* Components */
 import Input from '../Input';
-import Alert from '../Alert';
+
+/* Context */
+import { AlertContext } from '../../context/AlertContext';
 
 /* Lib */
 import api from '../../lib/Axios'
@@ -24,21 +26,7 @@ const accoutTypes = [
 import { nameMask, cpfMask, phoneMask, getCurrentDate } from "../../GlobalVariables";
 
 export default function NewUser({ CloseModal }) {
-    const [alertType, setAlertType] = useState('');
-    const [message, setMessage] = useState('');
-    const [alertState, setAlertState] = useState(false);
-
-    const setAlert = (type, message) => {
-        setAlertType(type);
-        setMessage(message);
-        setAlertState(true);
-
-        setTimeout(() => {
-            setAlertType('');
-            setMessage('');
-            setAlertState(false);
-        }, 5000);
-    }
+    const { setAlert } = useContext(AlertContext);
 
     const CreateNewUser = async (senha, email, cpf, telefone) => {
         const nome = document.querySelector('#name').value.toLowerCase().replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
@@ -89,9 +77,6 @@ export default function NewUser({ CloseModal }) {
 
     return (
         <>
-            <AnimatePresence>
-                {alertState && <Alert messageType={alertType} message={message} />}
-            </AnimatePresence>
             <motion.div key={'logo'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }} className='ModalImg flex h'>
                 <img src="/logos/Logo-White.png" alt="Logo LabHub" />
             </motion.div>
