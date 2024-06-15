@@ -139,7 +139,7 @@ export default function InfoReserve({ CloseModal, ReserveId, includeUser = true 
                             )
                         )}
                     </div>
-                    <p className='CancelButton' onClick={() => { CloseModal(false) }}>Cancelar</p>
+                    <p className='CancelButton' onClick={() => { CloseModal(false) }}>Fechar</p>
                 </motion.div>
             </form>
         </>

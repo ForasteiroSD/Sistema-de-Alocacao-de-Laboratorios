@@ -133,28 +133,21 @@ export default function Exclude({ type, CloseModal, Id }) {
                     </motion.div>
                 </form>
 
-            ) : type == 'Reserve' ? (
+            ) : type == 'Reserve' || type == 'MyReserve' ? (
                 <form onSubmit={deleteReserve} className='flex h v ModalWrapper' >
                     <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: { duration: 0.2 } }} id='EditUserForm' className='Modal flex c v'>
-                        <h1>Excluir Reserva</h1>
-                        <div className="flex c" style={{ marginBottom: '10px', gap: '10px' }}>
-                            <Input type={'text'} placeholder={'Motivo do Cancelamento'} id={'motivo'} required={true} />
-                        </div>
-                        <p style={{ fontSize: '1.06rem', textAlign: 'center' }}>Tem certeza que deseja excluir essa reserva?</p>
+                        <h1>Cancelar Reserva</h1>
+                        {type == 'Reserve' ? (
+                            <Input type={'text'} label={'Tem certeza que deseja cancelar essa reserva?'} placeholder={'Motivo do Cancelamento'} id={'motivo'} required={true} />
+                        ) : (
+                            <p style={{textAlign: 'left', fontSize: '17px'}}>Tem certeza que deseja cancelar essa reserva?</p>
+                        )}
                         <Input type={'submit'} placeholder={'Excluir'} exclude={true} />
                         <p className='CancelButton' onClick={() => { CloseModal(false) }}>Cancelar</p>
                     </motion.div>
                 </form>
 
-            ) : type == 'MyReserve' ? (
-                <form onSubmit={deleteMyReserve} className='flex h v ModalWrapper' >
-                    <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: { duration: 0.2 } }} id='EditUserForm' className='Modal flex c v'>
-                        <h1>Excluir Reserva</h1>
-                        <p style={{ fontSize: '1.06rem', textAlign: 'center' }}>Tem certeza que deseja excluir essa reserva?</p>
-                        <Input type={'submit'} placeholder={'Excluir'} exclude={true} />
-                        <p className='CancelButton' onClick={() => { CloseModal(false) }}>Cancelar</p>
-                    </motion.div>
-                </form>
+
             ) : type == 'Lab' ? (
                 <></>
 
