@@ -7,22 +7,12 @@
     display: flex;
 }
 
-.Reserves .SearchForm .Input {
-    width: initial;
-}
-
 .Reserves .SearchForm .InputBox {
-    width: initial;
-    flex-grow: 1;
+    flex: 1 1 0px;
 }
 
 .Reserves .SearchForm .Submit {
-    width: initial;
-    flex-grow: .4;
-}
-
-.Reserves .SearchForm .Dropdown {
-    flex-grow: 1.3;
+    width: 150px;
 }
 
 .Reserves .info {

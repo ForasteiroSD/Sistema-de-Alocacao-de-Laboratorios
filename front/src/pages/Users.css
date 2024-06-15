@@ -3,24 +3,14 @@
 }
 
 .Users .SearchForm {
-    gap: 15px;
+    gap: 7px;
     display: flex;
 }
 
-.Users .SearchForm .Input {
-    width: initial;
-}
-
 .Users .SearchForm .InputBox {
-    width: initial;
-    flex-grow: 1;
+    flex: 1 1 0px;
 }
 
 .Users .SearchForm .Submit {
-    width: initial;
-    flex-grow: .4;
-}
-
-.Users .SearchForm .Dropdown {
-    flex-grow: 1.3;
+    width: 150px;
 }

@@ -35,15 +35,17 @@ export default function Input({type, label, placeholder, id, values, callback, e
     if(type == 'dropdown') {
         if(values) {
             return (
-                <div className="InputBox Dropdown flex v" style={{cursor: 'auto'}} onClick={() => {clickInput(id)}}>
+                <div className="InputBox">
                     {label ? <p>{label}</p> : null}
-                    <select style={{color: '#757575'}} onMouseDown={() => {setInputOpened(!inputOpened)}} onBlur={() => {setInputOpened(false)}} onChange={() => {document.querySelector('#' + id).style.color = '#000000'}} id={id} required={required}>
-                        {placeholder && <option value='' style={{display: 'none'}} defaultValue >{placeholder}</option>}
-                        {values.map((value) => (
-                            <option key={value.value} style={{color: '#000000'}} value={value.value} >{value.name}</option>
-                        ))}
-                    </select>
-                    <IoIosArrowDropdown className="DropdownArrow" style={inputOpened && {rotate: '180deg'}} />
+                    <div className="Input flex c Dropdown" style={{cursor: 'auto'}} onClick={() => {clickInput(id)}}>
+                        <select style={{color: '#757575'}} onMouseDown={() => {setInputOpened(!inputOpened)}} onBlur={() => {setInputOpened(false)}} onChange={() => {document.querySelector('#' + id).style.color = '#000000'}} id={id} required={required}>
+                            {placeholder && <option value='' style={{display: 'none'}} defaultValue >{placeholder}</option>}
+                            {values.map((value) => (
+                                <option key={value.value} style={{color: '#000000'}} value={value.value} >{value.name}</option>
+                            ))}
+                        </select>
+                        <IoIosArrowDropdown className="DropdownArrow" style={inputOpened && {rotate: '180deg'}} />
+                    </div>
                 </div>
             )
         }

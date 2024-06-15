@@ -1,5 +1,6 @@
 .InputBox {
     width: 345px;
+    height: 45px;
     cursor: text;
 }
 
@@ -8,7 +9,6 @@
     border: solid var(--gray) 1px;
     padding: 13px;
     border-radius: 6px;
-    width: calc(100% - 2*13px);
     height: 17px;
 }
 
@@ -32,6 +32,7 @@
     font-family: Antic;
     font-size: 16px;
     margin-bottom: 5px !important;
+    cursor: auto;
 }
 
 .Input .SeePasswordButton {
@@ -53,6 +54,7 @@
     font-family: Acme;
     /* font-family: Antic; */
     font-size: 16px;
+    height: 45px;
 }
 
 
@@ -67,31 +69,30 @@
 .SubmitExclude:hover {
     background-color: var(--selectedButtonRed);
 }
-    
+
 .Dropdown {
-    background-color: var(--background);
-    border: solid var(--gray) 1px;
-    border-radius: 6px;
-    /* height: 17px; */
+    padding: 0;
     position: relative;
+    height: 43px;
+    justify-content: center;
 }
 
-.Dropdown select {
+.Input select {
     background-color: var(--background);
     font-family: Antic;
     font-size: 14px;
     appearance: none;
     border: 0;
-    padding: 13px;
     border-radius: 6px;
     flex-grow: 1;
+    padding: 0px 13px;
 }
 
-.Dropdown:has(select:focus) {
+.Input:has(select:focus) {
     outline: solid var(--gray) 1px;
 }
 
-.Dropdown select:focus {
+.Input select:focus {
     outline: none;
 }
 

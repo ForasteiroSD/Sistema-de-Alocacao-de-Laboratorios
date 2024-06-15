@@ -36,7 +36,7 @@ const searchButtonText = (
 
 export default function Reserves({ Id }) {
   const [reservas, setReservas] = useState([['Carregando Reservas...']]);
-  const [labNames, setLabNames] = useState();
+  const [labNames, setLabNames] = useState([]);
   const [editable, setEditable] = useState(false);
   const [infoReserva, setInfoReserva] = useState(false);
   const [deleteReserva, setDeleteReserva] = useState(false);
