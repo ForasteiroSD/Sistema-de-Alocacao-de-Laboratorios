@@ -9,7 +9,7 @@
     
 .Table .TableHeader {
     border-bottom: solid var(--gray) 1px;
-    padding-right: 8px;
+    /* padding-right: 8px; */
 }
     
 .Table .TableData {

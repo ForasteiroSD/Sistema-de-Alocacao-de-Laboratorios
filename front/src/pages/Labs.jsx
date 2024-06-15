@@ -31,7 +31,7 @@ export default function Labs() {
     const { user } = useContext(UserContext); // Get user from context
     const [showNewLab, setShowNewLab] = useState(false);
     const [labs, setLabs] = useState([['Carregando Laboratórios...']]);
-    const [editable, setEditable] = useState(false);
+    const [expandable, setExpandable] = useState(false);
 
     useEffect(() => {
         SearchLabs();
@@ -74,16 +74,16 @@ export default function Labs() {
                         lab.responsavel.nome
                     ]);
                 });
-                setEditable(user && user.tipo !== 'cliente'); // Allow editing if user is not 'cliente'
+                setExpandable(user && user.tipo !== 'cliente'); // Allow editing if user is not 'cliente'
             } else {
                 labs.push(['Nenhum laboratório encontrado']);
-                setEditable(false);
+                setExpandable(false);
             }
 
             setLabs(labs);
         } catch {
             setLabs([['Desculpe, não foi possível realizar a pesquisa. Tente novamente mais tarde.']]);
-            setEditable(false);
+            setExpandable(false);
         }
     };
 
@@ -103,7 +103,7 @@ export default function Labs() {
                 <Input type={'submit'} placeholder={searchButtonText} />
             </form>
 
-            <Table header={tableHeader} data={labs} editable={editable} />
+            <Table header={tableHeader} data={labs} expandable={expandable} />
 
             {user && user.tipo !== 'Usuário' && (
                 <div className="flex h" style={{ marginTop: '50px', marginBottom: '50px' }}>

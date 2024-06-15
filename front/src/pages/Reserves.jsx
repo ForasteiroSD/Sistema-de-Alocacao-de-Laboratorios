@@ -37,7 +37,7 @@ const searchButtonText = (
 export default function Reserves({ Id }) {
   const [reservas, setReservas] = useState([['Carregando Reservas...']]);
   const [labNames, setLabNames] = useState([]);
-  const [editable, setEditable] = useState(false);
+  const [expandable, setExpandable] = useState(false);
   const [infoReserva, setInfoReserva] = useState(false);
   const [deleteReserva, setDeleteReserva] = useState(false);
   const [reservaId, setReservaId] = useState(false);
@@ -112,16 +112,16 @@ export default function Reserves({ Id }) {
         response.forEach(reserva => {
           reservas.push([reserva.id, reserva.responsavel, reserva.lab, reserva.data_inicio, reserva.data_fim, reserva.tipo]);
         });
-        setEditable(true);
+        setExpandable(true);
       } else {
         reservas.push(['Nenhuma reserva encontrada']);
-        setEditable(false);
+        setExpandable(false);
       }
 
       setReservas(reservas);
     } catch {
       setReservas([['Desculpe, não foi possível realizar a pesquisa. Tente novamente mais tarde.']]);
-      setEditable(false);
+      setExpandable(false);
     }
   };
 
@@ -149,7 +149,7 @@ export default function Reserves({ Id }) {
         <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
       </form>
 
-      <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} showExclude={setDeleteReserva} Id={setReservaId} />
+      <Table header={tableHeader} data={reservas} expandable={expandable} deletable={true} showUpdate={setInfoReserva} showExclude={setDeleteReserva} Id={setReservaId} />
 
     </section>
   );
