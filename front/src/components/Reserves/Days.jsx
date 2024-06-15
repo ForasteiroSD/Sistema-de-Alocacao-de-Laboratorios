@@ -35,13 +35,13 @@ export default function Days({ editable = true, actives, setActives }) {
 
     return (
         <div className="Days flex sb">
-            <div className="dayCircle flex h v" id='Domingo' onClick={() => handleClick('Domingo')}>D</div>
-            <div className="dayCircle flex h v" id='Segunda' onClick={() => handleClick('Segunda')}>S</div>
-            <div className="dayCircle flex h v" id='Terça' onClick={() => handleClick('Terça')}>T</div>
-            <div className="dayCircle flex h v" id='Quarta' onClick={() => handleClick('Quarta')}>Q</div>
-            <div className="dayCircle flex h v" id='Quinta' onClick={() => handleClick('Quinta')}>Q</div>
-            <div className="dayCircle flex h v" id='Sexta' onClick={() => handleClick('Sexta')}>S</div>
-            <div className="dayCircle flex h v" id='Sábado' onClick={() => handleClick('Sábado')}>S</div>
+            <div className="dayCircle flex h v" style={!editable ? {cursor: 'inherit'} : null} id='Domingo' onClick={() => handleClick('Domingo')}>D</div>
+            <div className="dayCircle flex h v" style={!editable ? {cursor: 'inherit'} : null} id='Segunda' onClick={() => handleClick('Segunda')}>S</div>
+            <div className="dayCircle flex h v" style={!editable ? {cursor: 'inherit'} : null} id='Terça' onClick={() => handleClick('Terça')}>T</div>
+            <div className="dayCircle flex h v" style={!editable ? {cursor: 'inherit'} : null} id='Quarta' onClick={() => handleClick('Quarta')}>Q</div>
+            <div className="dayCircle flex h v" style={!editable ? {cursor: 'inherit'} : null} id='Quinta' onClick={() => handleClick('Quinta')}>Q</div>
+            <div className="dayCircle flex h v" style={!editable ? {cursor: 'inherit'} : null} id='Sexta' onClick={() => handleClick('Sexta')}>S</div>
+            <div className="dayCircle flex h v" style={!editable ? {cursor: 'inherit'} : null} id='Sábado' onClick={() => handleClick('Sábado')}>S</div>
         </div>
     )
 }

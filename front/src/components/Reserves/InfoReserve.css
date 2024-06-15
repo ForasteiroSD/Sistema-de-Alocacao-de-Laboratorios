@@ -1,6 +1,6 @@
 .infoReserve {
-    padding: 0 5px 0 12px;
-    margin-bottom: 10px;
+    padding: 0 5px 1px 12px;
+    margin-bottom: 2px;
     max-height: 555px;
     width: 355px;
     gap: 10px;
@@ -17,11 +17,24 @@
     margin: 5px 0;
 }
 
+.infoReserve .boxDay {
+    width: 345px;
+}
+
 .infoReserve .boxDay .diaSemana {
     font-size: .8em;
     text-decoration: underline;
     font-family: Actor;
     margin: 0 0 5px;
+}
+
+.infoReserve .boxDay .Times {
+    gap: 25px;
+}
+
+.infoReserve .boxDay .Times .InputBox {
+    width: 160px;
+    /* flex: 1 1 0px; */
 }
 
 .infoReserve .dashedLine {

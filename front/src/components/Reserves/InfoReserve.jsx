@@ -14,7 +14,7 @@ import '../Modal.css';
 import './InfoReserve.css';
 
 export default function InfoReserve({ CloseModal, ReserveId, includeUser = true }) {
-    const [reserveData, setReserveData] = useState({});
+    const [reserveData, setReserveData] = useState({usuario: 'Carregando...', laboratorio: 'Carregando...', tipo: 'Carregando...'});
     const [weeklyDays, setWeeklyDays] = useState([]);
 
 
@@ -82,7 +82,14 @@ export default function InfoReserve({ CloseModal, ReserveId, includeUser = true 
                         <Input type={'text'} placeholder={'Laboratório'} id={'lab'} required={true} readOnly={'readonly'} />
                         <Input type={'text'} placeholder={'Tipo de Reserva'} id={'reserveType'} required={true} readOnly={'readonly'} />
                         <hr style={{ marginTop: '10px' }} />
-                        <label className="title">Reserva {reserveData.tipo}:</label>
+                        {reserveData.tipo === 'Carregando...' ? (
+                            <>
+                                <label className="title">Reserva:</label>
+                                <p style={{fontSize: '1rem'}}>Carregando detalhes da reserva...</p>
+                            </>
+                        ) : (
+                            <label className="title">Reserva {reserveData.tipo}:</label>
+                        )}
                         {reserveData.tipo === 'Única' ? (
                             <>
                                 <Input type={'text'} placeholder={'Data da Reserva'} id={'data'} readOnly={'readonly'} required={true} label={'Data da reserva:'} />
@@ -109,7 +116,7 @@ export default function InfoReserve({ CloseModal, ReserveId, includeUser = true 
                                         {reserveData.dias_semana.map((dia, i) => (
                                             <div className="boxDay" key={i}>
                                                 <p className="diaSemana">{dia.dia}:</p>
-                                                <div className="flex h" style={{ marginBottom: '15px' }}>
+                                                <div className="flex h Times" style={i !== reserveData.dias_semana.length - 1 ? {marginBottom: '15px'} : null}>
                                                     <Input type={'text'} placeholder={'14:00'} id={`hora${i}`} readOnly={'readonly'} required={true} label={'Horário de entrada:'} />
                                                     <Input type={'text'} placeholder={'2:00'} id={`duracao${i}`} readOnly={'readonly'} required={true} label={'Tempo de uso (hs):'} />
                                                 </div>

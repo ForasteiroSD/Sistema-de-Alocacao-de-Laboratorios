@@ -61,9 +61,9 @@ export default function Input({type, label, placeholder, id, values, callback, e
     //Params: type, label(optional), placeholder(optional), id, maxDate(optional), required(optional)
     else if(type == 'date') {
         return (
-            <div className="InputBox" onClick={() => {clickInput(id)}}>
+            <div className="InputBox" >
                 {label ? <p>{label}</p> : null}
-                <div className='Input flex c'>
+                <div className='Input flex c' onClick={() => {clickInput(id)}}>
                     <input placeholder={placeholder} ref={ref} onFocus={() => {ref.current.type = 'date'}} onBlur={() => {checkDate(id)}} id={id} max={maxDate} required={required} readOnly={readOnly} />
                 </div>
             </div>
@@ -73,9 +73,9 @@ export default function Input({type, label, placeholder, id, values, callback, e
     //Params: type, label(optional), placeholder(optional), id, required(optional)
     else if(type == 'password') {
         return (
-            <div className="InputBox" onClick={() => {clickInput(id)}}>
+            <div className="InputBox" >
                 {label ? <p>{label}</p> : null}
-                <div className='Input flex c'>
+                <div className='Input flex c' onClick={() => {clickInput(id)}}>
                     <div className="flex h v">
                         <input type='password' style={{flexGrow: 1}} onChange={() => {showButton(id)}} placeholder={placeholder} ref={ref} autoComplete='off' id={id} required={required}/>
                         {showButtonSeePassword && seePassword ? (
@@ -92,9 +92,9 @@ export default function Input({type, label, placeholder, id, values, callback, e
     //Params: type, label(optional), placeholder(optional), id, formatter(optional), required(optional)
     else {
         return (
-            <div className="InputBox" onClick={() => {clickInput(id)}}>
+            <div className="InputBox" >
                 {label ? <p>{label}</p> : null}
-                <div className='Input flex c'>
+                <div className='Input flex c' onClick={() => {clickInput(id)}}>
                     {formatter ? (
                         <input type={type} placeholder={placeholder} onChange={() => formatter(id)} id={id} required={required} readOnly={readOnly} />
                     ) : (
