@@ -43,7 +43,7 @@ export default function MyReserves({ Id }) {
     useEffect(() => {
         getData();
         SearchReserves();
-    }, []);
+    }, [Id]);
 
     async function getData() {
 
@@ -127,7 +127,7 @@ export default function MyReserves({ Id }) {
                 <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
             </form>
 
-            <Table header={tableHeader} data={reservas} editable={editable} showUpdate={setInfoReserva} showExclude={setDeleteReserva} Id={setReservaId} />
+            <Table header={tableHeader} data={reservas} editable={editable} deletable={true} showUpdate={setInfoReserva} showExclude={setDeleteReserva} Id={setReservaId} />
 
         </section>
     );

@@ -1,0 +1,41 @@
+.NotFound #ImgPc {
+    width: 25vw;
+}
+
+.NotFound #Img404 {
+    width: 35vw;
+}
+
+.NotFound h1 {
+    margin-bottom: 0;
+}
+
+.NotFound .Wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    flex-grow: 1;
+}
+
+.NotFound .ImgsBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* flex-direction: column; */
+}
+
+.NotFound .TextBox {
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.NotFound p {
+    font-size: 23px;
+}
+
+.NotFound .Link {
+    font-family: Acme;
+    text-decoration: none;
+    color: var(--buttonBlue);
+}

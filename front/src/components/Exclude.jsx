@@ -59,35 +59,22 @@ export default function Exclude({ type, CloseModal, Id }) {
     async function deleteReserve(e) {
         e.preventDefault();
 
-        const motivo = document.querySelector('#motivo').value;
+        let motivo, link;
+        if (type == 'Reserve') {
+            motivo = document.querySelector('#motivo').value;
+            link = '/reserva';
+        } else {
+            link = '/minhareserva';
+        }
 
         try {
 
-            const response = (await api.delete('/reserva', {
+            const response = (await api.delete(link, {
                 params: {
                     reserva_id: Id,
-                    motivo: motivo
-                }
-            })).data;
-
-            setAlert('Success', response);
-
-        } catch (error) {
-
-            const erro = error.response.data;
-
-            setAlert('Error', erro);
-        }
-    }
-
-    async function deleteMyReserve(e) {
-        e.preventDefault();
-
-        try {
-
-            const response = (await api.delete('/minhareserva', {
-                params: {
-                    reserva_id: Id
+                    ... (motivo && {
+                        motivo: motivo
+                    })
                 }
             })).data;
 

@@ -16,6 +16,7 @@ import Configs from './pages/Configs';
 import Users from "./pages/Users";
 import LoginPage from "./pages/LoginPage";
 import MyReserves from './pages/MyReserves';
+import NotFound from './pages/NotFound';
 
 /* Context */
 import { UserProvider, UserContext } from './context/UserContext';
@@ -23,15 +24,6 @@ import { AlertProvider, AlertContext } from './context/AlertContext';
 
 /* Css */
 import './App.css';
-
-function NotFound() {
-  return (
-    <div className='flex v h c PageContent'>
-      <h1>Página Não Encontrada</h1>
-      <h3><Link to='/' style={{ textDecoration: 'none'}}>Clique para voltar para página principal</Link></h3>
-    </div>
-  );
-}
 
 function App() {
     return (
