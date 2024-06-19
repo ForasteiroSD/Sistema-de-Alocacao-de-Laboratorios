@@ -633,7 +633,6 @@ router.get('/reservas', async (req: Request, res: Response) => {
 router.get('/reserva', async (req: Request, res: Response) => {
 
     const { id } = req.query;
-
     try {
 
         const reserva = await prisma.reserva.findUniqueOrThrow({

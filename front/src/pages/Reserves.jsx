@@ -149,7 +149,7 @@ export default function Reserves({ Id }) {
         <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
       </form>
 
-      <Table header={tableHeader} data={reservas} expandable={expandable} deletable={true} showUpdate={setInfoReserva} showExclude={setDeleteReserva} Id={setReservaId} />
+      <Table header={tableHeader} data={reservas} expandable={expandable} deletable={true} handleExpand={setInfoReserva} showExclude={setDeleteReserva} Id={setReservaId} />
 
     </section>
   );

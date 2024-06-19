@@ -1,29 +1,3 @@
-.PageContent {
-    padding: 20px;
-}
-
-.SearchForm {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-bottom: 20px;
-}
-
-.flex.h {
-    display: flex;
-    justify-content: center;
-}
-
-@media (max-width: 768px) {
-    .SearchForm {
-        flex-direction: column;
-    }
-
-    .flex.h {
-        flex-direction: column;
-    }
-}
-
 .Labs p {
     margin-bottom: 10px;
 }

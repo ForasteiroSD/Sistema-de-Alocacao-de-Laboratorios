@@ -51,6 +51,7 @@ export default function SideMenu() {
         links.forEach(link => {
             if (location.pathname === link.link) setActiveLink(link.id);
         });
+        if(location.pathname.includes('/laboratorio/')) setActiveLink('labs');
     }, [location, links]);
     
     useEffect(() => {

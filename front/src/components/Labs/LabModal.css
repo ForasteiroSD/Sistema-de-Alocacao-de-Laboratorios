@@ -1,0 +1,25 @@
+.labModal {
+    margin-bottom: 2px;
+    max-height: 555px;
+    width: 355px;
+    gap: 10px;
+    overflow-y: scroll;
+}
+
+.labModal .recursos{
+    font-size: .8em;
+    font-family: BakBak;
+    margin: 0;
+}
+
+@media (max-height: 880px) {
+    .labModal {
+        max-height: 420px;
+    }
+}
+
+@media (max-height: 730px) {
+    .labModal {
+        max-height: 300px;
+    }
+}

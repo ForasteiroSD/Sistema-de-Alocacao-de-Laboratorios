@@ -67,8 +67,8 @@ router.patch("/lab", async (req: Request, res: Response) => {
 
     //Dados de busca e a serem atualizados
     //novoResponsavel é o cpf do usuário que será responsável pelo laboratório (opcional)
-    const { id, capacidade, projetor, quadro, televisao, ar_condicionado, computador, outro, novo_responsavel } = req.body;
-
+    const { nome, capacidade, projetor, quadro, televisao, ar_condicionado, computador, outro, novo_responsavel } = req.body;
+    
     try {
         if (novo_responsavel) {
             await prisma.user.update({
@@ -79,32 +79,34 @@ router.patch("/lab", async (req: Request, res: Response) => {
                 data: {
                     laboratorios: {
                         connect: {
-                            id: id
+                            nome: nome
                         }
                     }
                 }
             })
-        } else {
-            await prisma.laboratorio.update({
-                where: {
-                    id: id
-                },
-                data: {
-                    capacidade: capacidade,
-                    projetor: projetor,
-                    quadro: quadro,
-                    televisao: televisao,
-                    ar_contidionado: ar_condicionado,
-                    computador: computador,
-                    outro: outro
-                }
-            });
         }
+
+        await prisma.laboratorio.update({
+            where: {
+                nome: nome
+            },
+            data: {
+                capacidade: capacidade,
+                projetor: projetor,
+                quadro: quadro,
+                televisao: televisao,
+                ar_contidionado: ar_condicionado,
+                computador: computador,
+                outro: outro
+            }
+        });
 
         res.status(200).send('Laboratório atualizado');
         return;
 
     } catch (error: any) {
+
+        console.log(error)
 
         if (error.code === 'P2025') {
             res.status(404).send('Responsável não encontrado');
@@ -140,7 +142,6 @@ router.get("/labs", async (req: Request, res: Response) => {
                 })
             },
             select: {
-                id: true,
                 nome: true,
                 responsavel: true,
                 capacidade: true
@@ -155,7 +156,6 @@ router.get("/labs", async (req: Request, res: Response) => {
         const labsRet = [];
         for (let lab of labs) {
             labsRet.push({
-                id: lab.id,
                 nome: lab.nome,
                 responsavel: lab.responsavel.nome,
                 capacidade: lab.capacidade
@@ -174,13 +174,13 @@ router.get("/labs", async (req: Request, res: Response) => {
 
 router.get("/lab", async (req: Request, res: Response) => {
 
-    const { id } = req.query;
+    const { nome } = req.query;
 
     try {
 
         const lab = await prisma.laboratorio.findUniqueOrThrow({
             where: {
-                id: String(id)
+                nome: String(nome)
             },
             include: {
                 responsavel: true
@@ -210,7 +210,7 @@ router.get("/lab", async (req: Request, res: Response) => {
             return;
         }
 
-        res.status(400).send('database off');
+        res.status(400).send('Não foi possível buscar os dados do laboratório. Tente novamente mais tarde.');
         return;
     }
 
@@ -265,7 +265,7 @@ router.post("/userLabs", async (req: Request, res: Response) => {
 
 router.get('/lab/reservasdia', async (req: Request, res: Response) => {
 
-    const { id, dia } = req.query;
+    const { nome, dia } = req.query;
     let data = new Date(String(dia));
     let data1 = new Date(String(dia));
     data1.setUTCDate(data1.getUTCDate() + 1)
@@ -277,7 +277,7 @@ router.get('/lab/reservasdia', async (req: Request, res: Response) => {
 
         const laboratorio = await prisma.laboratorio.findUniqueOrThrow({
             where: {
-                id: String(id)
+                nome: String(nome)
             },
             include: {
                 reservas: {
@@ -298,34 +298,38 @@ router.get('/lab/reservasdia', async (req: Request, res: Response) => {
                                 data_fim: {
                                     lte: data1
                                 },
+                            },
+                            orderBy: {
+                                data_inicio: 'asc'
                             }
                         }
-                    },
-                    orderBy: {
-                        data_inicio: 'asc'
-                    },
+                    }
                 }
             }
         });
-
-        if (!laboratorio?.reservas) {
-            res.status(404).send('Não há reservas no dia');
-            return;
-        }
 
         const reservasHoje = []
         for (const reservaInfo of laboratorio.reservas) {
             for (const reserva of reservaInfo.dias) {
 
                 let string_aux1 = stringData(reserva.data_inicio, true);
-
+                
                 reservasHoje.push({
                     hora_inicio: string_aux1,
-                    duracao: reserva.duracao
+                    duracao: reserva.duracao,
+                    hora: reserva.data_inicio
                 });
-
+                
             }
         }
+
+        
+        if (reservasHoje.length === 0) {
+            res.status(404).send('Não há reservas no dia');
+            return;
+        }
+
+        reservasHoje.sort((a, b) => a.hora.getTime() - b.hora.getTime());
 
         res.status(200).send(reservasHoje);
         return;

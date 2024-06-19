@@ -40,7 +40,7 @@ export default function Table({ header, data, editable, expandable, deletable, s
                             )}
                             {expandable && (
                                 <div className="flex v" style={{ gap: '.6rem', margin: '0 .6rem' }}>
-                                    <IoIosExpand className="Icons" style={{ cursor: 'pointer' }} onClick={() => handleExpandClick(line[0])} />
+                                    <IoIosExpand className="Icons" style={{ cursor: 'pointer' }} onClick={() => { Id && Id(line[0]); handleExpandClick(line[0])}} />
                                     {deletable && <IoTrashOutline className="Icons" style={{ width: '1.3rem', height: '1.3rem', cursor: 'pointer' }} onClick={() => { Id(line[0]); showExclude(true) }} />}
                                 </div>
                             )}

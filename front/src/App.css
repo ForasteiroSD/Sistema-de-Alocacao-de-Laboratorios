@@ -117,6 +117,14 @@ hr {
     background-color: var(--background);
 }
 
+.SearchForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 20px;
+}
+
+
 .CancelButton:hover {
     color: var(--selectedButtonBlue);
 }
@@ -137,6 +145,12 @@ hr {
     .PageContent {
         padding: 0 5%;
     }
+}
+
+@media (max-width: 768px) {
+  .SearchForm {
+      flex-direction: column;
+  }
 }
 
 @media (max-width: 400px) {
