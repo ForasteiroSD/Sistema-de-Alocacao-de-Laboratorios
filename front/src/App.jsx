@@ -16,6 +16,7 @@ import Configs from './pages/Configs';
 import Users from "./pages/Users";
 import LoginPage from "./pages/LoginPage";
 import MyReserves from './pages/MyReserves';
+import CreateReserve from './pages/CreateReserve'
 import NotFound from './pages/NotFound';
 
 /* Context */
@@ -50,6 +51,7 @@ function App() {
                                         <Route path="/" element={<MainPage />} />
                                         <Route path="/laboratorios" element={<Labs />} />
                                         <Route path="/configs" element={<Configs />} />
+                                        <Route path="createreserve/:id" element={<CreateReserve/>}/>
                                         <Route path="/login" element={<Navigate to={'/'} />} />
 
                                         {user?.tipo === 'Administrador' ? (
