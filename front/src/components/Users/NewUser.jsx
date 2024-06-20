@@ -25,7 +25,7 @@ const accoutTypes = [
 ]
 import { nameMask, cpfMask, phoneMask, getCurrentDate } from "../../GlobalVariables";
 
-export default function NewUser({ CloseModal }) {
+export default function NewUser({ CloseModal, updateView }) {
     const { setAlert } = useContext(AlertContext);
 
     const CreateNewUser = async (senha, email, cpf, telefone) => {
@@ -45,6 +45,7 @@ export default function NewUser({ CloseModal }) {
             });
 
             setAlert('Success', 'Usuário criado');
+            updateView && updateView();
         } catch (e) {
             const erro = e.response.data;
 

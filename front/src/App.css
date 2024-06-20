@@ -23,6 +23,11 @@
   src: url(/fonts/Acme-Regular.ttf);
 }
 
+@font-face {
+  font-family: IBM;
+  src: url(/fonts/IBMPlexSans-Regular.ttf);
+}
+
 :root {
   --menuBlue: #22b1b1;
   --buttonBlue: #4F8F8F;
@@ -62,6 +67,10 @@
 
 .sa {
   justify-content: space-around;
+}
+
+.se {
+  justify-content: space-evenly;
 }
 
 .c {

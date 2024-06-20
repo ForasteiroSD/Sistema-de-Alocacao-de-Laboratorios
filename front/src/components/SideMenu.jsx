@@ -2,8 +2,7 @@
 import { HiHome } from "react-icons/hi2";
 import { FaComputer } from "react-icons/fa6";
 import { PiNotepad } from "react-icons/pi";
-import { FaUser } from "react-icons/fa";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUser, FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from "framer-motion";
 import { useEffect, useContext, useState } from "react";

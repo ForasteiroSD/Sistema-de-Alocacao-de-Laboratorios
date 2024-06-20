@@ -13,7 +13,7 @@ import { UserContext } from '../context/UserContext';
 import { AlertContext } from '../context/AlertContext';
 
 /* type = User || Reserve || MyReserve || Lab */
-export default function Exclude({ type, CloseModal, Id }) {
+export default function Exclude({ type, CloseModal, Id, updateView }) {
     const { user, logout } = useContext(UserContext);
     const { setAlert } = useContext(AlertContext);
     const [userData, setUserData] = useState({});
@@ -38,6 +38,7 @@ export default function Exclude({ type, CloseModal, Id }) {
                 logout();
                 navigate('/login');
             }
+            updateView && updateView();
         } catch (error) {
             const erro = error.response.data;
             setAlert('Error', erro);
@@ -64,8 +65,8 @@ export default function Exclude({ type, CloseModal, Id }) {
                     })
                 }
             })).data;
-
             setAlert('Success', response);
+            updateView && updateView();
         } catch (error) {
             const erro = error.response.data;
             setAlert('Error', erro);
