@@ -58,9 +58,9 @@ export default function Configs() {
                 {showExcludeUser && <Exclude type={'User'} CloseModal={setShowExcludeUser} Id={user.id} />}
             </AnimatePresence>
 
-            <div className='Configs flex c'>
-                <h1>Seus Dados</h1>
+            <h1>Seus Dados</h1>
 
+            <div className='Configs flex c'>
                 <div className='MainUserDiv flex v'>
                     <FaUserCircle className='userIcon' />
                     <div className='flex c h' style={{gap: '10px'}}>
