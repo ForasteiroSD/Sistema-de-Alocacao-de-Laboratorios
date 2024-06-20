@@ -1,6 +1,9 @@
+.InfoLab footer {
+    height: 50px;
+}
+
 .InfoLab .InfoLabWrapper {
     flex-grow: 1;
-    margin-bottom: 50px;
     max-height: calc(100vh - 65px - 189px - 50px); /* 1--vh - header - title - bottomMargin */
 }
 
@@ -20,24 +23,29 @@
 }
 
 .InfoLab .info .infosLab {
-    /* grid-template-areas: 'resp resp' 'nome cap' 'proj quadr' 'tel ar' 'comp outro'; */
+    grid-template-areas: 'resp resp' 'nome cap' 'proj quadr' 'tel ar' 'comp outro';
     /* grid-template-areas: 'resp resp resp resp resp resp' 'nome nome cap cap quadr quadr' 'proj proj proj tel tel tel' 'ar ar ar comp comp comp' 'outro outro outro outro outro outro'; */
     /* grid-template-areas: 'resp resp resp resp resp resp' 'nome nome nome cap cap cap' 'proj proj quadr quadr tel tel' 'ar ar ar comp comp comp' 'outro outro outro outro outro outro'; */
     /* grid-template-areas: 'resp resp' 'nome nome' 'cap proj' 'quadr tel' 'ar comp' 'outro outro'; */
     /* grid-template-rows: repeat(5, auto); */
     /* grid-template-areas: 'resp resp' 'nome nome' 'cap quadr' 'proj ar' 'tel comp' 'outro outro'; */
     display: grid;
-    padding-right: 10px;
+    /* padding-right: 10px;
     grid-template-columns: repeat(1, auto);
-    grid-template-rows: repeat(9, 74px);
-    overflow-y: scroll;
+    grid-template-rows: repeat(9, 74px); */
+    /* overflow-y: scroll; */
     flex-grow: 1;
     row-gap: 20px;
     column-gap: 20px;
     max-height: 512px;
 }
 
-/* .InfoLab .info .infosLab .UserData:nth-child(1) {
+.InfoLab .info .infosLab .UserData:nth-child(1) .Data {
+    grid-area: resp;
+    max-width: 400px;
+}
+
+.InfoLab .info .infosLab .UserData:nth-child(1) {
     grid-area: resp;
 }
 
@@ -70,16 +78,19 @@
 }
 
 .InfoLab .info .infosLab .UserData:nth-child(9) {
-    /* max-width: 256px;
+    max-width: 256px;
     grid-area: outro;
-} */
+}
 
 .InfoLab .info .infosLab .UserData .IconDiv {
     width: 50px;
 }
 
 .InfoLab .info .infosLab .UserData .Title, .Data {
-    margin-right: 30px;
+    max-height: 70px;
+    margin-right: 15px;
+    max-width: 173px;
+    overflow-y: scroll;
 }
 
 .InfoLab .info .infosLab .UserData .DataDiv {
