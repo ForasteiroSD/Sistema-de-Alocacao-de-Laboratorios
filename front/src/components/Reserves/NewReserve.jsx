@@ -25,6 +25,7 @@ const reserveTypes = [
     { value: 'Semanal', name: 'Semanal' },
     { value: 'Personalizada', name: 'Personalizada' }
 ]
+import { durationMask, hourMask } from "../../GlobalVariables";
 
 export default function NewReserve({ CloseModal, labName }) {
     const { setAlert } = useContext(AlertContext);
@@ -64,19 +65,57 @@ export default function NewReserve({ CloseModal, labName }) {
     }
 
     function changeReserveType() {
+        if (reserveType === 'Única') {
+            document.querySelector('#data').value = '';
+            document.querySelector('#hora').value = '';
+            document.querySelector('#duracao').value = '';
+            document.querySelector('#data').type = 'text';
+
+        } else if (reserveType === 'Diária') {
+            document.querySelector('#dataInicial').value = '';
+            document.querySelector('#dataFinal').value = '';
+            document.querySelector('#hora').value = '';
+            document.querySelector('#duracao').value = '';
+            document.querySelector('#dataInicial').type = 'text';
+            document.querySelector('#dataFinal').type = 'text';
+
+        } else if (reserveType === 'Semanal') {
+
+            document.querySelector('#dataInicial').value = '';
+            document.querySelector('#dataFinal').value = '';
+
+            for (let i = 0; i < weeklyDays.length; i++) {
+                document.querySelector(`#hora${i}`).value = '';
+                document.querySelector(`#duracao${i}`).value = '';
+            }
+
+            document.querySelector('#dataInicial').type = 'text';
+            document.querySelector('#dataFinal').type = 'text';
+
+        } else if (reserveType === 'Personalizada') {
+
+            for (let i = 0; i < numberPersonalizada.length; i++) {
+                document.querySelector(`#data${i}`).value = '';
+                document.querySelector(`#hora${i}`).value = '';
+                document.querySelector(`#duracao${i}`).value = '';
+                document.querySelector(`#data${i}`).type = 'text';
+            }
+        }
+        setWeeklyDays([]);
+        setNumberPersonalizada(['0'])
         setReserveType(document.querySelector('#reserveType').value);
     }
 
     function validateHour(hora) {
-        if (!/^([0-1][0-9]|2[0-3]):[0-5](0|5)$/.test(hora)) {
-            setAlert('Warning', `Formato ${hora} inválido. As unidades de minuto devem ser 0 ou 5`);
+        if (hora.length < 5) {
+            setAlert('Warning', `Formato de hora inválido. Obs: As unidades de minuto devem ser 0 ou 5`);
             return false;
         } else return true;
     }
 
     function validateDuration(duracao) {
-        if (!/^((0[0-4]:[0-5](0|5))|(05:00))$/.test(duracao)) {
-            setAlert('Warning', `Formato ${duracao} inválido. No máximo 5 horas e unidades de minuto devem ser 0 ou 5`);
+        if (duracao.length < 5) {
+            setAlert('Warning', `Formato de duração inválido. Obs: No máximo 5 horas e unidades de minuto devem ser 0 ou 5`);
             return false;
         } else return true;
     }
@@ -90,7 +129,7 @@ export default function NewReserve({ CloseModal, labName }) {
             data_inicio = document.querySelector('#data').value;
             data_fim = data_inicio;
             hora_inicio = document.querySelector('#hora').value;
-            duracao = document.querySelector('#duracao').value;
+            duracao = '0' + document.querySelector('#duracao').value;
 
             if (!validateHour(hora_inicio)) return;
             if (!validateDuration(duracao)) return;
@@ -99,7 +138,7 @@ export default function NewReserve({ CloseModal, labName }) {
             data_inicio = document.querySelector('#dataInicial').value;
             data_fim = document.querySelector('#dataFinal').value;
             hora_inicio = document.querySelector('#hora').value;
-            duracao = document.querySelector('#duracao').value;
+            duracao = '0' + document.querySelector('#duracao').value;
 
             if (!validateHour(hora_inicio)) return;
             if (!validateDuration(duracao)) return;
@@ -115,7 +154,7 @@ export default function NewReserve({ CloseModal, labName }) {
 
             for (let i = 0; i < weeklyDays.length; i++) {
                 const h = document.querySelector(`#hora${i}`).value;
-                const d = document.querySelector(`#duracao${i}`).value;
+                const d = '0' + document.querySelector(`#duracao${i}`).value;
 
                 if (!validateHour(h)) return;
                 if (!validateDuration(d)) return;
@@ -132,7 +171,7 @@ export default function NewReserve({ CloseModal, labName }) {
             for (let i = 0; i < numberPersonalizada.length; i++) {
                 const da = document.querySelector(`#data${i}`).value;
                 const h = document.querySelector(`#hora${i}`).value;
-                const d = document.querySelector(`#duracao${i}`).value;
+                const d = '0' + document.querySelector(`#duracao${i}`).value;
 
                 if (!validateHour(h)) return;
                 if (!validateDuration(d)) return;
@@ -165,7 +204,7 @@ export default function NewReserve({ CloseModal, labName }) {
                 <img src="/logos/Logo-White.png" alt="Logo LabHub" />
             </motion.div>
             <motion.div key={'wrapper'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.2 } }} className='ModalBackGround' />
-            <form className='flex h v ModalWrapper' onSubmit={validate}>
+            <form className='flex h v ModalWrapper' onSubmit={validate} id="formNewReserve">
                 <motion.div key={'modal'} initial={{ x: '-50%', opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: '50%', opacity: 0, transition: { duration: 0.2 } }} id='EditUserForm' className='Modal flex c v'>
                     <h1>Nova Reserva</h1>
                     <div className="infoReserve newReserve flex c">
@@ -176,16 +215,16 @@ export default function NewReserve({ CloseModal, labName }) {
                         {reserveType === 'Única' ? (
                             <>
                                 <Input type={'date'} placeholder={'Data da Reserva'} id={'data'} required={true} label={'Data da reserva:'} />
-                                <Input type={'text'} placeholder={'14:00'} id={'hora'} required={true} label={'Horário de entrada:'} />
-                                <Input type={'text'} placeholder={'02:00'} id={'duracao'} required={true} label={'Tempo de uso (hs):'} />
+                                <Input type={'text'} placeholder={'14:00'} id={'hora'} required={true} label={'Horário de entrada:'} formatter={hourMask} />
+                                <Input type={'text'} placeholder={'2:00'} id={'duracao'} required={true} label={'Tempo de uso (hs):'} formatter={durationMask} />
                             </>
                         ) : (
                             reserveType === 'Diária' ? (
                                 <>
                                     <Input type={'date'} placeholder={'Data Inicial'} id={'dataInicial'} required={true} label={'Data Inicial:'} />
                                     <Input type={'date'} placeholder={'Data Final'} id={'dataFinal'} required={true} label={'Data Final:'} />
-                                    <Input type={'text'} placeholder={'14:00'} id={'hora'} required={true} label={'Horário de entrada:'} />
-                                    <Input type={'text'} placeholder={'02:00'} id={'duracao'} required={true} label={'Tempo de uso (hs):'} />
+                                    <Input type={'text'} placeholder={'14:00'} id={'hora'} required={true} label={'Horário de entrada:'} formatter={hourMask} />
+                                    <Input type={'text'} placeholder={'2:00'} id={'duracao'} required={true} label={'Tempo de uso (hs):'} formatter={durationMask} />
                                 </>
                             ) : (
                                 reserveType === 'Semanal' ? (
@@ -200,8 +239,8 @@ export default function NewReserve({ CloseModal, labName }) {
                                             <div className="boxDay" key={i}>
                                                 <p className="diaSemana">{dia}:</p>
                                                 <div className="flex h Times" style={i !== weeklyDays.length - 1 ? { marginBottom: '15px' } : null}>
-                                                    <Input type={'text'} placeholder={'14:00'} id={`hora${i}`} required={true} label={'Horário de entrada:'} />
-                                                    <Input type={'text'} placeholder={'02:00'} id={`duracao${i}`} required={true} label={'Tempo de uso (hs):'} />
+                                                    <Input type={'text'} placeholder={'14:00'} id={`hora${i}`} required={true} label={'Horário de entrada:'} formatter={hourMask} />
+                                                    <Input type={'text'} placeholder={'2:00'} id={`duracao${i}`} required={true} label={'Tempo de uso (hs):'} formatter={durationMask} />
                                                 </div>
                                                 {i !== weeklyDays.length - 1 && <hr className="dashedLine" />}
                                             </div>
@@ -212,8 +251,8 @@ export default function NewReserve({ CloseModal, labName }) {
                                         {numberPersonalizada.slice().map((data, i) => (
                                             <div className="flex c" style={{ gap: '10px' }} key={i}>
                                                 <Input type={'date'} placeholder={'Data da Reserva'} id={`data${i}`} required={true} label={'Data da reserva:'} />
-                                                <Input type={'text'} placeholder={'14:00'} id={`hora${i}`} required={true} label={'Horário de entrada:'} />
-                                                <Input type={'text'} placeholder={'02:00'} id={`duracao${i}`} required={true} label={'Tempo de uso (hs):'} />
+                                                <Input type={'text'} placeholder={'14:00'} id={`hora${i}`} required={true} label={'Horário de entrada:'} formatter={hourMask} />
+                                                <Input type={'text'} placeholder={'2:00'} id={`duracao${i}`} required={true} label={'Tempo de uso (hs):'} formatter={durationMask} />
                                                 {i !== numberPersonalizada.length - 1 && <hr className="dashedLine" />}
                                             </div>
                                         ))}

@@ -30,6 +30,37 @@ export const phoneMask = (inputId) => {
     input.value = formattedValue;
 }
 
+export const hourMask = (inputId) => {
+    const input = document.querySelector('#' + inputId);
+    let formattedValue = input.value
+    .replace(/\D/g, '')
+    formattedValue = 'i'+formattedValue
+    formattedValue = formattedValue
+        .replace(/(i[3-9])/, '')
+        .replace(/i2([4-9])/, 'i2')
+        .replace(/(\d{2})(\d)/, '$1:$2')
+        .replace(/(\d{2}:)([6-9])/, '$1')
+        .replace(/(\d{2}):(\d)([1-4]|[6-9])/, '$1:$2')
+        .replace(/(:\d{2})\d+?$/, '$1')
+
+    input.value = formattedValue.slice(1);
+}
+
+export const durationMask = (inputId) => {
+    const input = document.querySelector('#' + inputId);
+    let formattedValue = input.value
+    .replace(/\D/g, '')
+    formattedValue = 'i'+formattedValue
+    formattedValue = formattedValue
+        .replace(/(i[6-9])/, '')
+        .replace(/(\d{1})(\d)/, '$1:$2')
+        .replace(/(0:)([0-2]|[6-9])/, '$1')
+        .replace(/(\d{1}):(\d)([1-4]|[6-9])/, '$1:$2')
+        .replace(/(:\d{2})\d+?$/, '$1')
+
+    input.value = formattedValue.slice(1);
+}
+
 export const getCurrentDate = (subtractYears = 0) => {
     let newDate = new Date()
     let date = newDate.getDate();
