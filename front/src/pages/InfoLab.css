@@ -86,7 +86,14 @@
     width: 50px;
 }
 
-.InfoLab .info .infosLab .UserData .Title, .Data {
+.InfoLab .info .infosLab .UserData .Data {
+    max-height: 70px;
+    margin-right: 15px;
+    max-width: 173px;
+    overflow-y: scroll;
+}
+
+.InfoLab .info .infosLab .UserData .Title {
     max-height: 70px;
     margin-right: 15px;
     max-width: 173px;
