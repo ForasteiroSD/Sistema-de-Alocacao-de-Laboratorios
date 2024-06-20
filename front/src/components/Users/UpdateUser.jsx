@@ -25,7 +25,7 @@ const accoutTypes = [
 ]
 import { nameMask, phoneMask } from "../../GlobalVariables";
 
-export default function UpdateUser({CloseModal, UserId}) {
+export default function UpdateUser({CloseModal, UserId, updateView}) {
     const { setAlert } = useContext(AlertContext);
 
     async function getUsersData() {
@@ -68,6 +68,7 @@ export default function UpdateUser({CloseModal, UserId}) {
             (await api.patch('user', params)).data;
     
             setAlert('Success', 'Usuário alterado');
+            updateView && updateView();
         } catch (e) {
             const erro = e.response.data;
             setAlert('Error', erro);

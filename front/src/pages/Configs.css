@@ -1,0 +1,59 @@
+.Configs {
+    width: 70%;
+    gap: 25px;
+}
+
+.Configs .MainUserDiv {
+    border: solid var(--gray) 1px;
+    border-radius: 10px;
+    box-shadow: 3px 3px 3px #34343450;
+    padding: 35px;
+    gap: 20px;
+    overflow: hidden;
+    min-height: 150px;
+}
+
+.Configs .MainUserDiv p {
+    font-family: IBM;
+    color: var(--gray);
+    text-align: left;
+    /* text-overflow: ellipsis; */
+    /* white-space: nowrap; */
+}
+
+.Configs .MainUserDiv .userIcon {
+    min-width: 150px;
+    min-height: 150px;
+    color: var(--gray);
+}
+
+.Configs .MainUserDiv .NameUser {
+    /* width: calc(55% - 145px - 20px - 35px); */
+    max-height: 180px;
+    overflow: hidden;
+    font-size: 50px;
+    font-family: Actor;
+}
+
+
+.Configs .MainUserDiv .cpfUser {
+    font-size: 23px;
+}
+
+.Configs .DivUserData {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-bottom: 50px;
+}
+
+/* .Configs .ButtonsDiv {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+} */
+
+.Configs .DivUserData .Submit {
+    width: inherit;
+    flex-grow: 1;
+}

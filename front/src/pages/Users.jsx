@@ -84,15 +84,15 @@ export default function Users() {
     return (
         <section className="Users PageContent flex c">
             <AnimatePresence>
-                {showNewUser && <NewUser CloseModal={setShowNewUser} />}
+                {showNewUser && <NewUser CloseModal={setShowNewUser} updateView={SearchUsers} />}
             </AnimatePresence>
 
             <AnimatePresence>
-                {showUpdateUser && <UpdateUser CloseModal={setShowUpdateUser} UserId={userId} />}
+                {showUpdateUser && <UpdateUser CloseModal={setShowUpdateUser} UserId={userId} updateView={SearchUsers} />}
             </AnimatePresence>
 
             <AnimatePresence>
-                {showExcludeUser && <Exclude type={'User'} CloseModal={setShowExcludeUser} Id={userId} />}
+                {showExcludeUser && <Exclude type={'User'} CloseModal={setShowExcludeUser} Id={userId} updateView={SearchUsers} />}
             </AnimatePresence>
 
             <h1>Usuários do Sistema</h1>

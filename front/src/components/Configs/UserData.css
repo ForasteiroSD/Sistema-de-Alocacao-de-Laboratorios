@@ -1,0 +1,37 @@
+.UserData {
+    /* font-family: IBM; */
+    text-align: left;
+    border: solid var(--gray) 1px;
+    border-radius: 6px;
+    box-shadow: 3px 3px 3px #34343450;
+    overflow: hidden;
+    gap: 15px;
+}
+
+.UserData .IconDiv {
+    background-color: #DDDDDD;
+    height: 100%;
+    width: 60px;
+    border-right: solid var(--gray) 1px;
+}
+
+.UserData .IconDiv svg {
+    color: var(--gray);
+    width: 25px;
+    height: 25px;
+}
+
+.UserData .DataDiv {
+    padding: 20px 0;
+    gap: 5px;
+}
+
+.UserData .DataDiv .Title {
+    font-size: 21px;
+}
+
+.UserData .DataDiv .Data {
+    font-size: 18px;
+    color: var(--gray);
+}
+
