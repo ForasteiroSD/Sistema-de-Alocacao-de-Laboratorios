@@ -120,6 +120,16 @@ export default function NewReserve({ CloseModal, labName }) {
         } else return true;
     }
 
+    function verificaConflito(inicio1, fim1, inicio2, fim2) {
+
+        if (inicio1 >= inicio2 && inicio1 < fim2) return true;
+
+        if (inicio2 >= inicio1 && inicio2 < fim1) return true;
+
+        return false;
+
+    }
+
     function validate(e) {
         e.preventDefault();
 
@@ -181,6 +191,23 @@ export default function NewReserve({ CloseModal, labName }) {
                     hora_inicio: h,
                     duracao: d
                 });
+            }
+
+            for (let i = 0; i < horarios.length; i++) {
+                const inicio1 = Number(horarios[i].hora_inicio.split(':')[0]) + Number(horarios[i].hora_inicio.split(':')[1]) / 60;
+                const fim1 = inicio1 + Number(horarios[i].duracao.split(':')[0]) + Number(horarios[i].duracao.split(':')[1]) / 60;
+
+                for (let j = i + 1; j < horarios.length; j++) {
+                    if (horarios[i].data === horarios[j].data) {
+
+                        const inicio2 = Number(horarios[j].hora_inicio.split(':')[0]) + Number(horarios[j].hora_inicio.split(':')[1]) / 60;
+                        const fim2 = inicio2 + Number(horarios[j].duracao.split(':')[0]) + Number(horarios[j].duracao.split(':')[1]) / 60;
+                        if (verificaConflito(inicio1, fim1, inicio2, fim2)) {
+                            setAlert('Warning', 'As reservas inseridas possuem horários conflitantes entre elas');
+                            return;
+                        }
+                    }
+                }
             }
         }
 
