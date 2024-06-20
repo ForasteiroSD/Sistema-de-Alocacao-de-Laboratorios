@@ -28,6 +28,7 @@ export default function Configs() {
     const [showExcludeUser, setShowExcludeUser] = useState(false);
     
     async function GetUserData() {
+        if(!user.id) return;
         const response = (await api.post('user/data', {
             id: user.id
         })).data;
@@ -41,7 +42,7 @@ export default function Configs() {
     }
 
     const CallbackExcludeUser = () => {
-        setShowExcludeUser(true)
+        setShowExcludeUser(true);
     }
 
     useEffect(() => {
@@ -51,7 +52,7 @@ export default function Configs() {
     return (
         <section className="PageContent flex c v">
             <AnimatePresence>
-                {showUpdateUser && <UpdateUser CloseModal={setShowUpdateUser} UserId={user.id} updateView={GetUserData} />}
+                {showUpdateUser && <UpdateUser CloseModal={setShowUpdateUser} UserId={user.id} updateView={GetUserData} myAccount={true} />}
             </AnimatePresence>
 
             <AnimatePresence>

@@ -1,6 +1,7 @@
 /* Packages */
 import { motion } from "framer-motion";
 import { useState, useEffect, useContext } from 'react';
+import { sha256 } from "js-sha256";
 
 /* Components */
 import Input from './Input';
@@ -31,8 +32,21 @@ export default function Exclude({ type, CloseModal, Id, updateView }) {
 
     async function deleteUser(e) {
         e.preventDefault();
+
+        let senha;
+        if (selfAccount) {
+            senha = document.querySelector('#password').value;
+
+            if (senha.length < 8) {
+                setAlert('Warning', 'A senha deve ter no mínimo 8 caracteres');
+                return;
+            }
+
+            senha = sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha);
+        }
+
         try {
-            await api.delete('user', { params: { id: Id } });
+            await api.delete('user', { params: { id: Id, senha: senha, minhaConta: selfAccount } });
             setAlert('Success', 'Usuário excluído');
             if (selfAccount) {
                 logout();
@@ -97,6 +111,7 @@ export default function Exclude({ type, CloseModal, Id, updateView }) {
                             <>
                                 <h1>Excluir Conta</h1>
                                 <p style={{ fontSize: '1.06rem', textAlign: 'center' }}>Tem certeza que deseja excluir sua conta?</p>
+                                <Input type={'password'} placeholder={'Senha'} id={'password'} required={true} />
                             </>
                         )}
                         <Input type={'submit'} exclude={true} placeholder={'Excluir'} />

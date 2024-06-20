@@ -88,11 +88,11 @@ router.post("/user/login", async (req: Request, res: Response) => {
                 const user = await prisma.user.create({
                     data: {
                         email: email,
-                        cpf: 'cpf',
-                        nome: 'adm1',
+                        cpf: 'Master',
+                        nome: 'Master',
                         senha: senha,
                         data_nasc: new Date('2000-01-01'),
-                        telefone: 'telefone',
+                        telefone: '(00) 00000-0000',
                         tipo: 'Administrador'
                     }
                 });
@@ -118,7 +118,7 @@ router.patch("/user", async (req: Request, res: Response) => {
     //Dados de busca e a serem atualizados
     //adm = true não precisa informar senha
     //mudarSenha usado com adm, caso administrador queira trocar a senha também sem saber a anterior
-    const { id, nome, telefone, email, senha, novasenha, tipo, adm, mudarSenha } = req.body;
+    const { id, nome, telefone, email, senha, novasenha, tipo, adm, mudarSenha, changeType } = req.body;
 
     try {
         await prisma.user.update({
@@ -132,7 +132,9 @@ router.patch("/user", async (req: Request, res: Response) => {
                 nome: nome,
                 telefone: telefone,
                 email: email,
-                tipo: tipo,
+                ... (changeType && {
+                    tipo: tipo,
+                }),
                 ... (adm && !mudarSenha || {
                     senha: novasenha
                 })
@@ -193,7 +195,7 @@ router.patch("/user/first", async (req: Request, res: Response) => {
 //Deletar usuário
 router.delete("/user", async (req: Request, res: Response) => {
 
-    const { id } = req.query;
+    const { id, senha, minhaConta } = req.query;
 
     try {
 
@@ -208,9 +210,23 @@ router.delete("/user", async (req: Request, res: Response) => {
             return;
         }
 
+        const user = await prisma.user.findUnique({
+            where: {
+                cpf: 'Master'
+            }
+        });
+
+        if(user?.id === String(id)) {
+            res.status(400).send('Você não pode excluir essa conta');
+            return;
+        }
+
         await prisma.user.delete({
             where: {
-                id: String(id)
+                id: String(id),
+                ... (minhaConta && {
+                    senha: String(senha)
+                })
             }
         });
 
@@ -220,7 +236,7 @@ router.delete("/user", async (req: Request, res: Response) => {
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            res.status(404).send("Usuário inexistente");
+            res.status(404).send("Senha inválida");
             return;
         }
 
