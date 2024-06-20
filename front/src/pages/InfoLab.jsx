@@ -6,6 +6,7 @@ import { AnimatePresence } from 'framer-motion';
 /* Components */
 import Input from '../components/Input';
 import UpdateLab from '../components/Labs/UpdateLab';
+import NewReserve from '../components/Reserves/NewReserve';
 
 /* Context */
 import { UserContext } from '../context/UserContext';
@@ -22,6 +23,7 @@ export default function InfoLab() {
     const [showEdit, setShowEdit] = useState(false);
     const [showEditButton, setShowEditButton] = useState(false);
     const [reservasDia, setReservasDia] = useState(['Selecione um dia']);
+    const [showNewReserve, setShowNewReserve] = useState(false);
     const parametros = useParams();
     const nome = parametros.nome;
     const navigate = useNavigate();
@@ -69,22 +71,22 @@ export default function InfoLab() {
 
             const response = (await api.get('lab/reservasdia', { params: { nome: nome, dia: data } })).data;
             const reservas = [];
-            for(let reserva of response) reservas.push(`${reserva.hora_inicio} - ${reserva.duracao}`);
+            for (let reserva of response) reservas.push(`${reserva.hora_inicio} - ${reserva.duracao}`);
             setReservasDia(reservas);
         } catch (error) {
             setReservasDia([error.response.data]);
         }
     }
 
-    const handleReserveClick = () => {
-        navigate(`/reservas`);
-    };
-
     return (
         <section className="InfoLab PageContent flex c">
 
             <AnimatePresence>
                 {showEdit && <UpdateLab CloseModal={setShowEdit} labId={nome} />}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {showNewReserve && <NewReserve CloseModal={setShowNewReserve} labName={nome} />}
             </AnimatePresence>
 
             <h1>Laboratório {nome}</h1>
@@ -118,7 +120,7 @@ export default function InfoLab() {
                                     <p key={i}>{reserva}</p>
                                 ))}
                             </div>
-                            <button className='newReserve' onClick={handleReserveClick}>Realizar Reserva</button>
+                            <button className='newReserve' onClick={() => setShowNewReserve(true)}>Realizar Reserva</button>
                         </div>
                     </>
                 ) : (

@@ -381,6 +381,10 @@ router.post('/reservas/lab', async (req: Request, res: Response) => {
     const dataSearch2 = new Date(String(data_fim));
     dataSearch2.setUTCHours(0, 0, 0, 0);
 
+    let today = new Date();
+    if (today.getUTCHours() < 3) today.setUTCDate(today.getUTCDate() - 1)
+    today.setUTCHours(0, 0, 0, 0);
+
     try {
         
         const reservas = await prisma.reserva.findMany({
@@ -400,9 +404,13 @@ router.post('/reservas/lab', async (req: Request, res: Response) => {
                         gte: dataSearch1
                     }
                 }),
-                ... (data_fim && {
+                ... (data_fim ? {
                     data_fim: {
                         lte: dataSearch2
+                    }
+                } : {
+                    data_fim: {
+                        gte: today
                     }
                 }),
                 ... (tipo && {
@@ -492,7 +500,7 @@ router.post('/reservas/user', async (req: Request, res: Response) => {
                     data_fim: {
                         lte: dataSearch2
                     }
-                }: {
+                } : {
                     data_fim: {
                         gte: today
                     }
@@ -576,7 +584,7 @@ router.get('/reservas', async (req: Request, res: Response) => {
                     data_fim: {
                         lte: dataSearch2
                     }
-                }: {
+                } : {
                     data_fim: {
                         gte: today
                     }
@@ -762,7 +770,6 @@ router.delete('/minhareserva', async (req: Request, res: Response) => {
 router.delete('/reserva', async (req: Request, res: Response) => {
 
     const { reserva_id, motivo } = req.query;
-
     let dia_min = new Date();
     let today = new Date();
 

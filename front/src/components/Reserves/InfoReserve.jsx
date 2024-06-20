@@ -84,11 +84,11 @@ export default function InfoReserve({ CloseModal, ReserveId, includeUser = true 
                         <hr style={{ marginTop: '10px' }} />
                         {reserveData.tipo === 'Carregando...' ? (
                             <>
-                                <label className="title">Reserva:</label>
+                                <label className="titleRes">Reserva:</label>
                                 <p style={{fontSize: '1rem'}}>Carregando detalhes da reserva...</p>
                             </>
                         ) : (
-                            <label className="title">Reserva {reserveData.tipo}:</label>
+                            <label className="titleRes">Reserva {reserveData.tipo}:</label>
                         )}
                         {reserveData.tipo === 'Única' ? (
                             <>

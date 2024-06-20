@@ -30,7 +30,8 @@ export default function Days({ editable = true, actives, setActives }) {
         const index = actives.indexOf(day);
         if (index + 1) actives.splice(index, 1);
         else actives.push(day);
-        changeColor();
+        const copy = actives.slice();
+        setActives(copy);
     }
 
     return (

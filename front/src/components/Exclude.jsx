@@ -46,6 +46,7 @@ export default function Exclude({ type, CloseModal, Id }) {
 
     async function deleteReserve(e) {
         e.preventDefault();
+
         let motivo, link;
         if (type === 'Reserve') {
             motivo = document.querySelector('#motivo').value;
@@ -55,18 +56,15 @@ export default function Exclude({ type, CloseModal, Id }) {
         }
 
         try {
-            const response = (await api.delete(link, { params: { reserva_id: Id, ...(motivo && { motivo }) } })).data;
-            setAlert('Success', response);
-        } catch (error) {
-            const erro = error.response.data;
-            setAlert('Error', erro);
-        }
-    }
+            const response = (await api.delete(link, {
+                params: {
+                    reserva_id: Id,
+                    ... (motivo && {
+                        motivo: motivo
+                    })
+                }
+            })).data;
 
-    async function deleteLab(e) {
-        e.preventDefault();
-        try {
-            const response = (await api.delete('/lab', { params: { id: Id } })).data;
             setAlert('Success', response);
         } catch (error) {
             const erro = error.response.data;

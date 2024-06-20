@@ -7,7 +7,7 @@ import { IoIosArrowDropdown } from "react-icons/io";
 /* Css */
 import './Input.css'
 
-export default function Input({ type, label, placeholder, id, values, callback, exclude, formatter, maxDate, required, readOnly, min=null, max=null }) {
+export default function Input({ type, label, placeholder, id, values, callback, exclude, formatter, maxDate, required, readOnly, min = null, max = null }) {
     const [showButtonSeePassword, setShowButtonSeePassword] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
     const [inputOpened, setInputOpened] = useState(false);
@@ -38,7 +38,10 @@ export default function Input({ type, label, placeholder, id, values, callback, 
                 <div className="InputBox">
                     {label ? <p>{label}</p> : null}
                     <div className="Input flex c Dropdown" style={{ cursor: 'auto' }} onClick={() => { clickInput(id) }}>
-                        <select style={{ color: '#757575' }} onMouseDown={() => { setInputOpened(!inputOpened) }} onBlur={() => { setInputOpened(false) }} onChange={() => { document.querySelector('#' + id).style.color = '#000000' }} id={id} required={required}>
+                        <select style={{ color: '#757575' }} onMouseDown={() => { setInputOpened(!inputOpened) }} onBlur={() => { setInputOpened(false) }} onChange={() => {
+                            document.querySelector('#' + id).style.color = '#000000';
+                            if(callback) callback();
+                        }} id={id} required={required}>
                             {placeholder && <option value='' style={{ display: 'none' }} defaultValue >{placeholder}</option>}
                             {values.map((value) => (
                                 <option key={value.value} style={{ color: '#000000' }} value={value.value} >{value.name}</option>
@@ -95,7 +98,7 @@ export default function Input({ type, label, placeholder, id, values, callback, 
             <div className="InputBox" >
                 {label ? <p>{label}</p> : null}
                 <div className='Input flex c' onClick={() => { clickInput(id) }}>
-                    <input type='number' placeholder={placeholder} id={id} required={required} readOnly={readOnly} min={min} max={max}/>
+                    <input type='number' placeholder={placeholder} id={id} required={required} readOnly={readOnly} min={min} max={max} />
                 </div>
             </div>
         )

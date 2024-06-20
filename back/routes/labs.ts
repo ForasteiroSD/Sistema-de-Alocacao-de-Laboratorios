@@ -216,26 +216,7 @@ router.get("/lab", async (req: Request, res: Response) => {
 
 });
 
-router.get("/labNames", async (req: Request, res: Response) => {
-
-    try {
-
-        const labs = await prisma.laboratorio.findMany({
-            select: {
-                nome: true
-            }
-        });
-
-        res.status(200).send(labs);
-        return;
-
-    } catch (error: any) {
-        res.status(400).send('database off');
-        return;
-    }
-
-});
-
+//Recupera nomes dos laboratórios de um usuário ou todos os laboratórios caso nenhum nome id seja passado
 router.post("/userLabs", async (req: Request, res: Response) => {
 
     const { user_id } = req.body;

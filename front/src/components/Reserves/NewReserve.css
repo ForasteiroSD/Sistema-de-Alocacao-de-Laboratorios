@@ -1,0 +1,9 @@
+.newReserve .addDia {
+    background-color: var(--gray);
+    color: var(--white);
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: Actor;
+    padding: 13px;
+}
