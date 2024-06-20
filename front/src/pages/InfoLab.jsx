@@ -2,11 +2,23 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import { VscSearch } from "react-icons/vsc";
+import { SiGlassdoor } from "react-icons/si";
+import { MdManageAccounts } from "react-icons/md";
+import { GoNumber } from "react-icons/go";
+import { BsProjectorFill } from "react-icons/bs";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import { PiTelevisionSimpleFill } from "react-icons/pi";
+import { TbAirConditioning } from "react-icons/tb";
+import { LuComputer } from "react-icons/lu";
+import { FaRegQuestionCircle } from "react-icons/fa";
 
 /* Components */
+import UserData from '../components/Configs/UserData';
 import Input from '../components/Input';
 import UpdateLab from '../components/Labs/UpdateLab';
 import NewReserve from '../components/Reserves/NewReserve';
+import Table from '../components/Table';
 
 /* Context */
 import { UserContext } from '../context/UserContext';
@@ -17,12 +29,20 @@ import api from '../lib/Axios';
 /* Css */
 import './InfoLab.css';
 
+/* Consts/Variables */
+const searchReservesText = (
+    <div className="flex h v" style={{gap: '5px'}}>
+        <VscSearch style={{transform: 'scale(1.2)'}} />    
+        <p style={{margin: '0'}}>Buscar</p>
+    </div>
+)
+
 export default function InfoLab() {
     const { user } = useContext(UserContext);
     const [labData, setLabData] = useState(null);
     const [showEdit, setShowEdit] = useState(false);
     const [showEditButton, setShowEditButton] = useState(false);
-    const [reservasDia, setReservasDia] = useState(['Selecione um dia']);
+    const [reservasDia, setReservasDia] = useState([['Selecione um dia']]);
     const [showNewReserve, setShowNewReserve] = useState(false);
     const parametros = useParams();
     const nome = parametros.nome;
@@ -65,17 +85,25 @@ export default function InfoLab() {
         try {
             const data = document.querySelector('#diaSearch').value;
             if (!data) {
-                setReservasDia(['Selecione um dia']);
+                setReservasDia([['Selecione um dia']]);
                 return;
             }
 
             const response = (await api.get('lab/reservasdia', { params: { nome: nome, dia: data } })).data;
             const reservas = [];
-            for (let reserva of response) reservas.push(`${reserva.hora_inicio} - ${reserva.duracao}`);
+            for (let reserva of response) reservas.push([reserva.hora_inicio + ' hrs', reserva.duracao + ' hrs']);
             setReservasDia(reservas);
         } catch (error) {
-            setReservasDia([error.response.data]);
+            setReservasDia([[error.response.data]]);
         }
+    }
+
+    function callbackNewReserve() {
+        setShowNewReserve(true);
+    }
+
+    function callbackShowEdit() {
+        setShowEdit(true);
     }
 
     return (
@@ -91,40 +119,37 @@ export default function InfoLab() {
 
             <h1>Laboratório {nome}</h1>
 
-            <div className='flex' style={{ gap: '20px' }}>
+            <div className='flex InfoLabWrapper' style={{ gap: '50px' }}>
                 {labData ? (
                     <>
-                        <div className="info">
+                        <div className="flex c info">
                             <h2 className='title'>Dados do Laboratório</h2>
-                            <p>Nome: {labData.nome}</p>
-                            <p>Responsável: {labData.responsavelNome}</p>
-                            <p>Capacidade: {labData.capacidade}</p>
-                            <p>Projetores: {labData.projetores}</p>
-                            <p>Quadros: {labData.quadros}</p>
-                            <p>Televisões: {labData.televisoes}</p>
-                            <p>Ar Condicionados: {labData.ar_condicionados}</p>
-                            <p>Computadores: {labData.computadores}</p>
-                            <p>Outro: {labData.outro || '-'}</p>
-                            {showEditButton && <button onClick={() => setShowEdit(true)}>Editar Dados</button>}
-                        </div>
-                        <div className="vertical-divider"></div>
-                        <div className="reserves">
-                            <h2 className='title'>Ver Horários já Reservados</h2>
-                            <form className='flex sa' onSubmit={getReservasDia}>
-                                <Input type={'date'} placeholder={'Dia'} id={'diaSearch'} />
-                                <Input type={'submit'} placeholder={'Buscar'} />
-                            </form>
-                            <h3>Início - Duração</h3>
-                            <div className='horarios'>
-                                {reservasDia.map((reserva, i) => (
-                                    <p key={i}>{reserva}</p>
-                                ))}
+                            <div className='infosLab'>
+                                <UserData icon={<MdManageAccounts />} title={'Responsável:'} data={labData.responsavelNome} />
+                                <UserData icon={<SiGlassdoor />} title={'Nome:'} data={labData.nome} />
+                                <UserData icon={<GoNumber />} title={'Capacidade:'} data={labData.capacidade} />
+                                <UserData icon={<FaChalkboardTeacher />} title={'Quadros:'} data={labData.quadros} />
+                                <UserData icon={<BsProjectorFill />} title={'Projetores:'} data={labData.projetores} />
+                                <UserData icon={<PiTelevisionSimpleFill />} title={'Televisões:'} data={labData.televisoes} />
+                                <UserData icon={<TbAirConditioning />} title={'Ar Condicionados:'} data={labData.ar_condicionados} />
+                                <UserData icon={<LuComputer />} title={'Computadores:'} data={labData.computadores} />
+                                <UserData icon={<FaRegQuestionCircle />} title={'Outro:'} data={labData.outro || '-'} />
                             </div>
-                            <button className='newReserve' onClick={() => setShowNewReserve(true)}>Realizar Reserva</button>
+                            {showEditButton && <Input type={'submit'} placeholder={'Editar Dados'} callback={callbackShowEdit} />}
+                        </div>
+                        <hr className="vertical-divider"/>
+                        <div className="reserves flex c">
+                            <h2 className='title'>Ver Horários já Reservados</h2>
+                            <form className='flex h' style={{gap: '20px', alignItems: 'end'}} onSubmit={getReservasDia}>
+                                <Input type={'date'} placeholder={'Dia'} id={'diaSearch'} />
+                                <Input type={'submit'} placeholder={searchReservesText} />
+                            </form>
+                            <Table header={['Horário de Início', 'Duração']} data={reservasDia}/>
+                            <Input type={'submit'} placeholder={'Realizar Reserva'} callback={callbackNewReserve} />
                         </div>
                     </>
                 ) : (
-                    <p>Carregando dados...</p>
+                    <h2 style={{width: '100%', textAlign: 'center'}}>Carregando dados...</h2>
                 )}
             </div>
         </section>
