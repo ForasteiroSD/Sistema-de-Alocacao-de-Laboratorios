@@ -128,29 +128,28 @@ export default function Reserves({ Id }) {
   return (
     <section className="Reserves PageContent flex c">
 
-      <AnimatePresence>
-        {infoReserva && <InfoReserve CloseModal={setInfoReserva} ReserveId={reservaId} />}
-      </AnimatePresence>
+        <AnimatePresence>
+            {infoReserva && <InfoReserve CloseModal={setInfoReserva} ReserveId={reservaId} />}
+        </AnimatePresence>
 
-      <AnimatePresence>
-        {deleteReserva && <Exclude type={'Reserve'} CloseModal={setDeleteReserva} Id={reservaId} />}
-      </AnimatePresence>
+        <AnimatePresence>
+            {deleteReserva && <Exclude type={'Reserve'} CloseModal={setDeleteReserva} Id={reservaId} />}
+        </AnimatePresence>
 
-      <h1>Reservas {Id ? 'nos Meus Laboratórios' : 'no Sistema'}</h1>
+        <h1>Reservas {Id ? 'nos Meus Laboratórios' : 'no Sistema'}</h1>
 
-      <p>Filtros de pesquisa:</p>
-      <form className="SearchForm">
-        <Input type={'text'} placeholder={'Responsável'} formatter={nameMask} id={'respSearch'} />
-        <Input type={'dropdown'} values={labNames} id={'labSearch'} placeholder={'Laboratório'} />
-        <Input type={'date'} placeholder={'Data Inicial'} id={'dataISearch'} />
-        <Input type={'date'} placeholder={'Data Final'} id={'dataFSearch'} />
-        <Input type={'dropdown'} values={reservesTypes} id={'tipoSearch'} placeholder={'Tipo de Reserva'} />
-        <Input type={'submit'} placeholder={searchButtonText} callback={SearchReserves} />
-        <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
-      </form>
+        <p>Filtros de pesquisa:</p>
+        <form className="SearchForm">
+            <Input type={'text'} placeholder={'Responsável'} formatter={nameMask} id={'respSearch'} />
+            <Input type={'dropdown'} values={labNames} id={'labSearch'} placeholder={'Laboratório'} />
+            <Input type={'date'} placeholder={'Data Inicial'} id={'dataISearch'} />
+            <Input type={'date'} placeholder={'Data Final'} id={'dataFSearch'} />
+            <Input type={'dropdown'} values={reservesTypes} id={'tipoSearch'} placeholder={'Tipo de Reserva'} />
+            <Input type={'submit'} placeholder={searchButtonText} callback={SearchReserves} />
+            <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
+        </form>
 
-      <Table header={tableHeader} data={reservas} expandable={expandable} deletable={true} handleExpand={setInfoReserva} showExclude={setDeleteReserva} Id={setReservaId} />
-
+        <Table header={tableHeader} data={reservas} expandable={expandable} deletable={true} handleExpand={setInfoReserva} showExclude={setDeleteReserva} Id={setReservaId} />
     </section>
   );
 }

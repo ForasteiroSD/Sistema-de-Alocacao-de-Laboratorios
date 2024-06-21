@@ -135,19 +135,17 @@ export default function InfoLab() {
                                 <UserData icon={<LuComputer />} title={'Computadores:'} data={labData.computadores} />
                                 <UserData icon={<FaRegQuestionCircle />} title={'Outro:'} data={labData.outro || '-'} />
                             </div>
-                            {showEditButton && <div className='WrapperSubmit'><Input type={'submit'} placeholder={'Editar Dados'} callback={callbackShowEdit} /></div>}
+                            {showEditButton && <Input type={'submit'} placeholder={'Editar Dados'} callback={callbackShowEdit} />}
                         </div>
                         <hr className="vertical-divider"/>
                         <div className="reserves flex c">
                             <h2 className='title'>Ver Horários já Reservados</h2>
-                            <form className='flex h' style={{gap: '20px', alignItems: 'end'}} onSubmit={getReservasDia}>
+                            <form className='flex h' onSubmit={getReservasDia}>
                                 <Input type={'date'} placeholder={'Dia'} id={'diaSearch'} />
                                 <Input type={'submit'} placeholder={searchReservesText} />
                             </form>
                             <Table header={['Horário de Início', 'Duração']} data={reservasDia}/>
-                            <div className='WrapperSubmit'>
-                                <Input type={'submit'} placeholder={'Realizar Reserva'} callback={callbackNewReserve} />
-                            </div>
+                            <Input type={'submit'} placeholder={'Realizar Reserva'} callback={callbackNewReserve} />
                         </div>
                     </>
                 ) : (

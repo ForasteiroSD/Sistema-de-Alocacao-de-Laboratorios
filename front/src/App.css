@@ -117,13 +117,21 @@ hr {
 .PageContent {
     max-width: 1584px;
     margin: 0 auto;
-    padding: 0 10% 50px 10%;
+    /* padding: 0 10% 50px 10%; */
+    padding: 0 10%;
     text-align: justify;
     font-family: Antic;
     font-size: 1.1875rem;
     overflow-y: scroll;
-    height: calc(100vh - 64px - 1px - 50px); /* Full height - header height - header border height - border bottom*/
+    /* height: calc(100vh - 64px - 1px - 50px); /* Full height - header height - header border height - border bottom*/
+    height: calc(100vh - 64px - 1px); /* Full height - header height - header border height - border bottom*/
     background-color: var(--background);
+}
+
+.PageContent::after {
+    margin: 25px;
+    content: "";
+    background-color: red;
 }
 
 .SearchForm {
