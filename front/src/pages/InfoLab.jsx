@@ -122,7 +122,7 @@ export default function InfoLab() {
             <div className='flex InfoLabWrapper' style={{ gap: '50px' }}>
                 {labData ? (
                     <>
-                        <div className="flex c info">
+                        <div className="flex c sb info">
                             <h2 className='title'>Dados do Laboratório</h2>
                             <div className='infosLab'>
                                 <UserData icon={<MdManageAccounts />} title={'Responsável:'} data={labData.responsavelNome} />
@@ -135,7 +135,7 @@ export default function InfoLab() {
                                 <UserData icon={<LuComputer />} title={'Computadores:'} data={labData.computadores} />
                                 <UserData icon={<FaRegQuestionCircle />} title={'Outro:'} data={labData.outro || '-'} />
                             </div>
-                            {showEditButton && <Input type={'submit'} placeholder={'Editar Dados'} callback={callbackShowEdit} />}
+                            {showEditButton && <div className='WrapperSubmit'><Input type={'submit'} placeholder={'Editar Dados'} callback={callbackShowEdit} /></div>}
                         </div>
                         <hr className="vertical-divider"/>
                         <div className="reserves flex c">
@@ -145,7 +145,9 @@ export default function InfoLab() {
                                 <Input type={'submit'} placeholder={searchReservesText} />
                             </form>
                             <Table header={['Horário de Início', 'Duração']} data={reservasDia}/>
-                            <Input type={'submit'} placeholder={'Realizar Reserva'} callback={callbackNewReserve} />
+                            <div className='WrapperSubmit'>
+                                <Input type={'submit'} placeholder={'Realizar Reserva'} callback={callbackNewReserve} />
+                            </div>
                         </div>
                     </>
                 ) : (

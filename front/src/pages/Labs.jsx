@@ -30,7 +30,7 @@ const searchButtonText = (
 export default function Labs() {
     const { user } = useContext(UserContext);
     const navigate = useNavigate();
-    const [responsaveis, setResponsaveis] = useState();
+    const [responsaveis, setResponsaveis] = useState([]);
     const [showNewLab, setShowNewLab] = useState(false);
     const [expandable, setExpandable] = useState(false);
     const [labs, setLabs] = useState([['Carregando Laboratórios...']]);
@@ -129,7 +129,7 @@ export default function Labs() {
             />
 
             {user && user.tipo !== 'Usuário' && (
-                <div className="flex h" style={{ marginTop: '50px', marginBottom: '50px' }}>
+                <div className="flex h" style={{ marginTop: '50px' }}>
                     <Input type={'submit'} placeholder={'Adicionar Novo Laboratório'} callback={() => { setShowNewLab(true) }} />
                 </div>
             )}
