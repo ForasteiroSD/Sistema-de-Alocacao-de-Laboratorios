@@ -1,3 +1,8 @@
+.ConfigsWrapper {
+    padding-bottom: 0 !important;
+    height: calc(100vh - 64px - 1px) !important; /* Full height - header height - header border height - border bottom*/
+}
+
 .Configs {
     width: 70%;
     gap: 25px;

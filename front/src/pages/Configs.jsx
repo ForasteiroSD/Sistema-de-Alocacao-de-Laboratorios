@@ -50,7 +50,7 @@ export default function Configs() {
     }, [user]);
 
     return (
-        <section className="PageContent flex c v">
+        <section className="PageContent ConfigsWrapper flex c v">
             <AnimatePresence>
                 {showUpdateUser && <UpdateUser CloseModal={setShowUpdateUser} UserId={user.id} updateView={GetUserData} myAccount={true} />}
             </AnimatePresence>
