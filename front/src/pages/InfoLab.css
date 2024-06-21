@@ -1,13 +1,33 @@
-.InfoLab .InfoLabWrapper {
-    flex-grow: 1;
-    /*max-height: calc(100vh - 65px - 189px - 50px); /* 1--vh - header - title - bottomMargin */
-}
+/* .InfoLab .InfoLabWrapper { */
+    /* flex-grow: 1; */
+    /*max-height: calc(100vh - 65px - 189px); /* 1--vh - header - title - bottomMargin */
+/* } */
 
 .InfoLab .reserves {
     /* max-width: 60%; */
     flex-grow: 1;
     height: 100%;
-    height: 600px;
+    /* max-height: 663px; */
+    /* height: 713px; */
+    height: 663px;
+}
+
+.InfoLab .reserves .Table {
+    margin-top: 30px;
+}
+
+.InfoLab .reserves .Table .TableHeader p {
+    margin-bottom: 10px;
+}
+
+.InfoLab .reserves form {
+    gap: 20px;
+    align-items: end;
+    margin-top: 10px;
+}
+
+.InfoLab .info {
+    height: 663px;
 }
 
 .InfoLab .title {
@@ -15,22 +35,24 @@
     font-size: 1.1em;
     color: var(--gray);
     text-align: center;
-    margin-bottom: 25px;
+    /* margin-bottom: 25px; */
 }
 
 .InfoLab .info .infosLab {
     grid-template-areas: 'resp resp' 'nome cap' 'proj quadr' 'tel ar' 'comp outro';
+    /* grid-template-areas: 'resp resp resp resp' 'nome nome cap cap' 'proj proj quadr quadr' 'tel tel ar ar' 'comp outro outro outro'; */
     /* grid-template-areas: 'resp resp resp resp resp resp' 'nome nome cap cap quadr quadr' 'proj proj proj tel tel tel' 'ar ar ar comp comp comp' 'outro outro outro outro outro outro'; */
     /* grid-template-areas: 'resp resp resp resp resp resp' 'nome nome nome cap cap cap' 'proj proj quadr quadr tel tel' 'ar ar ar comp comp comp' 'outro outro outro outro outro outro'; */
     /* grid-template-areas: 'resp resp' 'nome nome' 'cap proj' 'quadr tel' 'ar comp' 'outro outro'; */
     /* grid-template-rows: repeat(5, auto); */
     /* grid-template-areas: 'resp resp' 'nome nome' 'cap quadr' 'proj ar' 'tel comp' 'outro outro'; */
     display: grid;
+    grid-template-rows: repeat(5, 77px);
     /* padding-right: 10px;
     grid-template-columns: repeat(1, auto);
     grid-template-rows: repeat(9, 74px); */
     /* overflow-y: scroll; */
-    flex-grow: 1;
+    /* flex-grow: 1; */
     row-gap: 20px;
     column-gap: 20px;
     max-height: 512px;
@@ -74,7 +96,7 @@
 }
 
 .InfoLab .info .infosLab .UserData:nth-child(9) {
-    max-width: 256px;
+    /* max-width: 256px; */
     grid-area: outro;
 }
 
@@ -85,7 +107,8 @@
 .InfoLab .info .infosLab .UserData .Data {
     max-height: 70px;
     margin-right: 15px;
-    max-width: 173px;
+    /* max-width: 173px; */
+    max-width: 400px;
     overflow-y: scroll;
 }
 
@@ -102,13 +125,13 @@
 }
 
 .InfoLab .info .Submit {
-    margin: 50px auto 0 auto;
+    margin: 0 auto;
     width: 250px;
 }
 
 .InfoLab .vertical-divider {
     color: var(--gray);
-    max-height: 663px;
+    height: calc(100% - 50px);
 }
 
 .InfoLab .info button:hover {
