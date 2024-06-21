@@ -46,7 +46,6 @@ export default function InfoLab() {
     const [showNewReserve, setShowNewReserve] = useState(false);
     const parametros = useParams();
     const nome = parametros.nome;
-    const navigate = useNavigate();
 
     useEffect(() => {
         getLabData();

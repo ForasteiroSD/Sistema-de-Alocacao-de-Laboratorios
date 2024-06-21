@@ -50,7 +50,7 @@
 }
 
 .grid {
-    display: grid;
+  display: grid;
 }
 
 .v {
@@ -84,46 +84,47 @@ html {
 }
 
 h1 {
-    /* margin: 6vh 0; */
-    margin: 4rem 0;
-    font-family: Anton;
-    text-align: center;
-    color: var(--gray);
-    font-size: 2.5625rem;
+  /* margin: 6vh 0; */
+  margin: 4rem 0;
+  font-family: Anton;
+  text-align: center;
+  color: var(--gray);
+  font-size: 2.5625rem;
 }
 
 hr {
-    color: var(--gray);
+  color: var(--gray);
 }
 
 
 /* width */
 ::-webkit-scrollbar {
-    width: .5rem;
+  width: .5rem;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #b4b4b4; 
-    border-radius: 10px;
-    border: solid var(--background) .1rem;
+  background: #b4b4b4;
+  border-radius: 10px;
+  border: solid var(--background) .1rem;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: #979797; 
+  background: #979797;
 }
 
 .PageContent {
-    max-width: 1584px;
-    margin: 0 auto;
-    padding: 0 10%;
-    text-align: justify;
-    font-family: Antic;
-    font-size: 1.1875rem;
-    overflow-y: scroll;
-    height: calc(100vh - 64px - 1px); /* Full height - header height - header border height*/
-    background-color: var(--background);
+  position: relative;
+  max-width: 1584px;
+  margin: 0 auto;
+  padding: 0 10%;
+  text-align: justify;
+  font-family: Antic;
+  font-size: 1.1875rem;
+  overflow-y: scroll;
+  height: calc(100vh - 64px - 1px); /* Full height - header height - header border height*/
+  background-color: var(--background);
 }
 
 .SearchForm {
@@ -135,41 +136,41 @@ hr {
 
 
 .CancelButton:hover {
-    color: var(--selectedButtonBlue);
+  color: var(--selectedButtonBlue);
 }
 
 @media (max-width: 1400px) {
-    .PageContent {
-        padding: 0 5%;
-    }
+  .PageContent {
+    padding: 0 5%;
+  }
 }
 
 @media (max-width: 1250px) {
-    .PageContent {
-        padding: 0 10%;
-    }
+  .PageContent {
+    padding: 0 10%;
+  }
 }
 
 @media (max-width: 1000px) {
-    .PageContent {
-        padding: 0 5%;
-    }
+  .PageContent {
+    padding: 0 5%;
+  }
 }
 
 @media (max-width: 768px) {
   .SearchForm {
-      flex-direction: column;
+    flex-direction: column;
   }
 }
 
 @media (max-width: 400px) {
-    html {
-        font-size: .9rem;
-    }
+  html {
+    font-size: .9rem;
+  }
 }
 
 @media (max-width: 355px) {
-    h1 {
-        font-size: 2.2rem;
-    }
+  h1 {
+    font-size: 2.2rem;
+  }
 }
