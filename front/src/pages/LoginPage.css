@@ -61,29 +61,76 @@
 .login-register-container .toggle-link span{
     cursor: pointer;
 }
+
+@media (max-width: 1200px) {
+    .login-register-container .left-half .imgLogo {
+        width: calc(70px * 5.5);
+        height: 70px;
+    }
+}
   
-@media (max-width: 768px) {
+/* @media (max-width: 850px) {
+    html {
+        overflow-y: hidden; comentar isso daqui tbm dps
+    }
+
     .login-register-container {
         flex-direction: column;
     }
 
-    .left-half, .right-half {
+    .login-register-container .left-half {
+        background-color: var(--background);
         flex: none;
-        width: 100%;
-        padding: 20px;
+        height: 70px;
+        width: 100vw;
+        border-bottom: solid var(--gray ) 1px;
+    }
+
+    .login-register-container .left-half .imgLogo {
+        background-image: url('./logos/Logo-Dark.png');
+        width: calc(40px * 5.5);
+        height: 40px;
+    }
+    
+    .login-register-container .right-half {
+        width: 100vw;
+    }
+} */
+
+@media (max-width: 850px) {
+    .login-register-container {
+        flex-direction: column;
+    }
+
+    .login-register-container .left-half {
+        flex: none;
+        height: 50vh;
+        width: 100vw;
+    }
+    
+    .login-register-container .right-half {
+        height: 50vh;
+        width: 100vw;
     }
 
     .left-half {
         display: none; /* Hide the logo section on smaller screens */
     }
 
-    .right-half .content {
-        width: 100%;
-        max-width: none;
-    }
-
     .toggle-link {
         text-align: center;
         display: block;
+    }
+    
+    @media (max-height: 720px) {
+        .login-register-container .left-half {
+            height: 30vh;
+            min-height: 152px;
+        }
+        
+        .login-register-container .right-half {
+            height: 70vh;
+            min-height: 355px;
+        }
     }
 }
