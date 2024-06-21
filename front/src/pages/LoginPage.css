@@ -1,84 +1,89 @@
 .login-register-container {
-  display: flex;
-  height: 100vh;
+    display: flex;
+    height: 100vh;
 }
 
 .login-register-container .left-half {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #446868;
-  align-items: center;
+    width: 50vw;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #446868;
 }
 
-.login-register-container img {
-  width: 65%;
+.login-register-container .left-half .imgLogo {
+    background-image: url('./logos/Big-Logo-White.png');
+    background-size: cover;
+    width: calc(100px * 5.5);
+    height: 100px;
 }
 
 .login-register-container .right-half {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    width: 50vw;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .login-register-container h2 {
-  font-weight: 500;
+    font-weight: 500;
 }
 
 .login-register-container .acme {
-  font-family: Acme;
+    font-family: IBM;
+    font-weight: bold;
+    color: var(--gray);
 }
 
 .login-register-container span {
-  color: #22B1B1;
+    color: var(--buttonBlue);
 }
 
 .login-register-container form {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
 .login-register-container .form-group {
-  display: flex;
-  margin-bottom: 1rem;
-  justify-content: center;
-  flex-direction: column;
+    display: flex;
+    margin-bottom: 1rem;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .login-register-container .toggle-link {
-  text-align: center;
-  margin-top: 1em;
+    text-align: center;
+    margin-top: 1em;
 }
 
 .login-register-container .toggle-link span{
-  cursor: pointer;
+    cursor: pointer;
 }
   
 @media (max-width: 768px) {
-  .login-register-container {
-    flex-direction: column;
-  }
+    .login-register-container {
+        flex-direction: column;
+    }
 
-  .left-half, .right-half {
-    flex: none;
-    width: 100%;
-    padding: 20px;
-  }
+    .left-half, .right-half {
+        flex: none;
+        width: 100%;
+        padding: 20px;
+    }
 
-  .left-half {
-    display: none; /* Hide the logo section on smaller screens */
-  }
+    .left-half {
+        display: none; /* Hide the logo section on smaller screens */
+    }
 
-  .right-half .content {
-    width: 100%;
-    max-width: none;
-  }
+    .right-half .content {
+        width: 100%;
+        max-width: none;
+    }
 
-  .toggle-link {
-    text-align: center;
-    display: block;
-  }
+    .toggle-link {
+        text-align: center;
+        display: block;
+    }
 }
