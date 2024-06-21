@@ -40,9 +40,9 @@ function App() {
                                 <UserContext.Consumer>
                                     {({ user }) => (
                                         <>
-                                            {user && <SideMenu />}
+                                            {user && !user.loading && <SideMenu />}
                                             <div>
-                                                {user && <Header />}
+                                                {user && !user.loading && <Header />}
                                                 <Routes>
 
                                                     {user ?
