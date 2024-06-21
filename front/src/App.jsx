@@ -39,50 +39,49 @@ function App() {
                             <section className="flex">
                                 <UserContext.Consumer>
                                     {({ user }) => (
-                                        <>
-                                            {user && <SideMenu />}
-                                            <div>
-                                                {user && <Header />}
+                                        user ? (
+                                            <>
+                                                {!user.loading && <SideMenu />}
+                                                <div>
+                                                    {!user.loading && <Header />}
+                                                    <Routes>
+                                                        <Route path="/" element={<MainPage />} />
+                                                        <Route path="/laboratorios" element={<Labs />} />
+                                                        <Route path="/configs" element={<Configs />} />
+                                                        <Route path="laboratorio/:nome" element={<InfoLab />} />
+                                                        <Route path="/login" element={<Navigate to={'/'} />} />
+                                                        {user?.tipo === 'Administrador' ? (
+                                                            <>
+                                                                <Route path="/reservas" element={<Reserves />} />
+                                                                <Route path="/users" element={<Users />} />
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                {user?.tipo === 'Responsável' && (
+                                                                    <Route path="/meuslaboratorios" element={<Reserves Id={user.id} />} />
+                                                                )}
+                                                                <Route path="/minhasreservas" element={<MyReserves Id={user.id} />} />
+                                                            </>
+                                                        )}
+
+                                                        {!user?.loading &&
+                                                            <Route path="*" element={<NotFound />} />
+                                                        }
+                                                    </Routes>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
                                                 <Routes>
-
-                                                    {user ?
-                                                        <>
-                                                            <Route path="/" element={<MainPage />} />
-                                                            <Route path="/laboratorios" element={<Labs />} />
-                                                            <Route path="/configs" element={<Configs />} />
-                                                            <Route path="laboratorio/:nome" element={<InfoLab />} />
-                                                            <Route path="/login" element={<Navigate to={'/'} />} />
-
-                                                            {user?.tipo === 'Administrador' ? (
-                                                                <>
-                                                                    <Route path="/reservas" element={<Reserves />} />
-                                                                    <Route path="/users" element={<Users />} />
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    {user?.tipo === 'Responsável' && (
-                                                                        <Route path="/meuslaboratorios" element={<Reserves Id={user.id} />} />
-                                                                    )}
-                                                                    <Route path="/minhasreservas" element={<MyReserves Id={user.id} />} />
-                                                                </>
-                                                            )}
-
-                                                            {!user?.loading &&
-                                                                <Route path="*" element={<NotFound />} />
-                                                            }
-                                                        </>
-                                                        :
-                                                        <>
-                                                            <Route path="/login" element={<LoginPage />} />
-                                                            {!user?.loading &&
-                                                                <Route path="*" element={<Navigate to={'/login'} />} />
-                                                            }
-                                                        </>
+                                                    <Route path="/login" element={<LoginPage />} />
+                                                    {!user?.loading &&
+                                                        <Route path="*" element={<Navigate to={'/login'} />} />
                                                     }
                                                 </Routes>
-                                            </div>
-                                        </>
-                                    )}
+                                            </>
+                                        )
+                                    )
+                                    }
                                 </UserContext.Consumer>
                             </section>
                         </Router>

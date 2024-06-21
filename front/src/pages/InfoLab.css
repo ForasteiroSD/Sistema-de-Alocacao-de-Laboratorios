@@ -1,13 +1,33 @@
-.InfoLab .InfoLabWrapper {
-    flex-grow: 1;
-    /*max-height: calc(100vh - 65px - 189px - 50px); /* 1--vh - header - title - bottomMargin */
-}
+/* .InfoLab .InfoLabWrapper { */
+    /* flex-grow: 1; */
+    /*max-height: calc(100vh - 65px - 189px); /* 1--vh - header - title - bottomMargin */
+/* } */
 
 .InfoLab .reserves {
     /* max-width: 60%; */
     flex-grow: 1;
     height: 100%;
-    height: 600px;
+    /* max-height: 663px; */
+    /* height: 713px; */
+    height: 663px;
+}
+
+.InfoLab .reserves .Table {
+    margin-top: 30px;
+}
+
+.InfoLab .reserves .Table .TableHeader p {
+    margin-bottom: 10px;
+}
+
+.InfoLab .reserves form {
+    gap: 20px;
+    align-items: end;
+    margin-top: 10px;
+}
+
+.InfoLab .info {
+    height: 663px;
 }
 
 .InfoLab .title {
@@ -15,7 +35,7 @@
     font-size: 1.1em;
     color: var(--gray);
     text-align: center;
-    margin-bottom: 25px;
+    /* margin-bottom: 25px; */
 }
 
 .InfoLab .info .infosLab {
@@ -104,18 +124,14 @@
     /* width: 220px; */
 }
 
-.InfoLab .WrapperSubmit {
-    margin: 0 auto;
-    padding: 50px 0;
-}
-
 .InfoLab .info .Submit {
+    margin: 0 auto;
     width: 250px;
 }
 
 .InfoLab .vertical-divider {
     color: var(--gray);
-    max-height: 663px;
+    height: calc(100% - 50px);
 }
 
 .InfoLab .info button:hover {
@@ -132,5 +148,6 @@
 }
 
 .InfoLab .reserves .Submit {
+    margin: 50px auto 0 auto;
     width: 250px;
 }

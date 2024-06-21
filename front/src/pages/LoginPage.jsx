@@ -66,7 +66,7 @@ const LoginPage = () => {
         <>
             <div className="login-register-container">
                 <div className="left-half ">
-                    <img src="/logos/Big-Logo-White.png" alt="logo" />
+                    <div className='imgLogo'></div>
                 </div>
                 <div className="right-half">
                     <div className='content'>
@@ -87,7 +87,7 @@ const LoginPage = () => {
                 </div>
             </div>
         </>
-    );
+    )
 };
 
 export default LoginPage;
