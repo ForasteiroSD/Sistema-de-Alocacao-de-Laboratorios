@@ -6,7 +6,7 @@ import { VscSearch } from "react-icons/vsc";
 import { SiGlassdoor } from "react-icons/si";
 import { MdManageAccounts } from "react-icons/md";
 import { GoNumber } from "react-icons/go";
-import { BsProjectorFill } from "react-icons/bs";
+import { BsProjectorFill } from "react-icons/bs";   import { BsProjector } from "react-icons/bs";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { PiTelevisionSimpleFill } from "react-icons/pi";
 import { TbAirConditioning } from "react-icons/tb";
@@ -129,7 +129,7 @@ export default function InfoLab() {
                                 <UserData icon={<SiGlassdoor />} title={'Nome:'} data={labData.nome} />
                                 <UserData icon={<GoNumber />} title={'Capacidade:'} data={labData.capacidade} />
                                 <UserData icon={<FaChalkboardTeacher />} title={'Quadros:'} data={labData.quadros} />
-                                <UserData icon={<BsProjectorFill />} title={'Projetores:'} data={labData.projetores} />
+                                <UserData icon={<BsProjector />} title={'Projetores:'} data={labData.projetores} />
                                 <UserData icon={<PiTelevisionSimpleFill />} title={'Televisões:'} data={labData.televisoes} />
                                 <UserData icon={<TbAirConditioning />} title={'Ar Condicionados:'} data={labData.ar_condicionados} />
                                 <UserData icon={<LuComputer />} title={'Computadores:'} data={labData.computadores} />
