@@ -1,8 +1,9 @@
 /* Packages */
 import { useRef, useState } from "react";
-import { PiEye } from "react-icons/pi";
-import { PiEyeSlash } from "react-icons/pi";
+import { PiEye, PiEyeSlash } from "react-icons/pi";
 import { IoIosArrowDropdown } from "react-icons/io";
+import { TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
+import { GiCheckMark } from "react-icons/gi";
 
 /* Css */
 import './Input.css'
@@ -11,6 +12,7 @@ export default function Input({ type, label, placeholder, id, values, callback, 
     const [showButtonSeePassword, setShowButtonSeePassword] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
     const [inputOpened, setInputOpened] = useState(false);
+    const [seeSelectNumber, setSeeSelectNumber] = useState(false);
     const ref = useRef();
     const checkDate = (id) => {
         const input = document.querySelector('#' + id);
@@ -29,6 +31,15 @@ export default function Input({ type, label, placeholder, id, values, callback, 
     }
     const clickInput = (id) => {
         document.querySelector('#' + id).focus();
+    }
+    const updateNumber = (value) => {
+        const input = document.querySelector('#' + id);
+        const inputValue = parseInt(input.value);
+        if(inputValue + value > 0) input.value = inputValue + value;
+        else input.value = 1;
+    }
+    const removeSelection = () => {
+        window.getSelection().removeAllRanges();
     }
 
     //Params: type, label(optional), placeholder(optional), id, values, required(optional)
@@ -98,8 +109,51 @@ export default function Input({ type, label, placeholder, id, values, callback, 
             <div className="InputBox" >
                 {label ? <p>{label}</p> : null}
                 <div className='Input flex c' onClick={() => { clickInput(id) }}>
-                    <input type='number' placeholder={placeholder} id={id} required={required} readOnly={readOnly} min={min} max={max} />
+                    <input type='number' className="InputNumber" placeholder={placeholder} id={id} required={required} readOnly={readOnly} min={min} max={max} />
                 </div>
+            </div>
+        )
+    }
+
+    //Params: type, label(optional) id
+    else if (type == 'optionalQuant') {
+        return (
+            <div className="flex sb optionalQuant">
+                <p>{label}</p>
+                <div className="flex v" style={{gap: '15px'}}>
+                    <div className="flex v" style={{gap: '5px', position: 'relative'}}>
+                        <p>Não </p>
+                        <input type="radio" name={id} onClick={() => setSeeSelectNumber(false)} defaultChecked />
+                        <GiCheckMark className="CheckIcon" />
+                    </div>
+                    <div className="flex v" style={{gap: '5px', position: 'relative'}}>
+                        <p>Sim </p>
+                        <input type="radio" name={id} onClick={() => setSeeSelectNumber(true)} />
+                        <GiCheckMark className="CheckIcon" />
+                    </div>
+                    {seeSelectNumber ? (
+                        <div className="flex v">
+                            <TiArrowSortedUp className="ArrowIcon" onDoubleClick={removeSelection} onClick={() => updateNumber(1)} />
+                            <input type="number" min={1} id={id} defaultValue={1} className="NumberSelector"/>
+                            <TiArrowSortedDown className="ArrowIcon" onDoubleClick={removeSelection} onClick={() => updateNumber(-1)} />
+                        </div>
+                    ) : (
+                        <div style={{ width: '74px', height: '21px' }}></div>
+                    )}
+                </div>
+            </div>
+        )
+    }
+
+    else if (type == 'textArea') {
+        return (
+            <div className="InputBox" >
+                {label ? <p>{label}</p> : null}
+                {formatter ? (
+                    <textarea placeholder={placeholder} className='Input TextArea' onChange={() => formatter(id)} id={id} required={required} readOnly={readOnly} ></textarea>
+                ) : (
+                    <textarea placeholder={placeholder} className='Input TextArea' id={id} required={required} readOnly={readOnly} ></textarea>
+                )}
             </div>
         )
     }

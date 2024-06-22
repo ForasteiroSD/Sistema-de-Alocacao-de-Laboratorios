@@ -46,11 +46,13 @@ export default function NewLab({ CloseModal }) {
         if(!isResponsavel) responsavel = document.querySelector('#responsible').value;
         const nome = document.querySelector('#name').value;
         const capacidade = Number(document.querySelector('#capacity').value);
-        const projetores = Number(document.querySelector('#projetores').value);
-        const quadros = Number(document.querySelector('#quadros').value);
-        const televisoes = Number(document.querySelector('#televisoes').value);
-        const ar_condicionados = Number(document.querySelector('#ar_condicionados').value);
-        const computadores = Number(document.querySelector('#computadores').value);
+
+        let projetores, quadros, televisoes, ar_condicionados, computadores;
+        if(document.querySelector('#projetores')) projetores = Number(document.querySelector('#projetores').value); else projetores = 0;
+        if(document.querySelector('#quadros')) quadros = Number(document.querySelector('#quadros').value); else quadros = 0;
+        if(document.querySelector('#televisoes')) televisoes = Number(document.querySelector('#televisoes').value); else televisoes = 0;
+        if(document.querySelector('#ar_condicionados')) ar_condicionados = Number(document.querySelector('#ar_condicionados').value); else ar_condicionados = 0;
+        if(document.querySelector('#computadores')) computadores = Number(document.querySelector('#computadores').value); else computadores = 0;
         const outro = document.querySelector('#outro').value;
 
         const data = {
@@ -91,12 +93,14 @@ export default function NewLab({ CloseModal }) {
                         <Input type={'number'} placeholder={'Capacidade'} id={'capacity'} required={true} min={0} />
                         <hr />
                         <p className='recursos'>Recursos:</p>
-                        <Input type={'number'} placeholder={'Projetores'} id={'projetores'} min={0} />
-                        <Input type={'number'} placeholder={'Quadros'} id={'quadros'} min={0} />
-                        <Input type={'number'} placeholder={'Televisões'} id={'televisoes'} min={0} />
-                        <Input type={'number'} placeholder={'Ar-Condicionados'} id={'ar_condicionados'} min={0} />
-                        <Input type={'number'} placeholder={'Computadores'} id={'computadores'} min={0} />
-                        <Input type={'text'} placeholder={'Outro'} id={'outro'} />
+                        <div className=' flex c' style={{gap: '20px'}}>
+                            <Input type={'optionalQuant'} label={'Projetor:'} id={'projetores'} />
+                            <Input type={'optionalQuant'} label={'Quadro:'} id={'quadros'} />
+                            <Input type={'optionalQuant'} label={'Televisão:'} id={'televisoes'} />
+                            <Input type={'optionalQuant'} label={'Ar Condicionado:'} id={'ar_condicionados'} />
+                            <Input type={'optionalQuant'} label={'Computador:'} id={'computadores'} />
+                            <Input type={'textArea'} placeholder={'Outro'} id={'outro'} />
+                        </div>
                     </div>
                     <Input type={'submit'} placeholder={'Cadastrar'} />
                     <p className='CancelButton' onClick={() => { CloseModal(false) }}>Cancelar</p>
