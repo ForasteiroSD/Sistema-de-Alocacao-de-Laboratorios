@@ -126,7 +126,7 @@
 
 .InfoLab .vertical-divider {
     color: var(--gray);
-    max-height: 663px;
+    height: calc(100% - 50px);
 }
 
 .InfoLab .info button:hover {

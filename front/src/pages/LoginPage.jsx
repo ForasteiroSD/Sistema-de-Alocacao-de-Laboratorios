@@ -63,30 +63,30 @@ const LoginPage = () => {
     };
 
   return (
-    <>
-        <div className="login-register-container">
-            <div className="left-half ">
-                <div className='imgLogo'></div>
-            </div>
-            <div className="right-half">
-                <div className='content'>
-                    <h2 className='acme'>Seja bem vindo ao <span>Labhub</span></h2>
-                    <form onSubmit={validate}>
-                        <div className="form-group">
-                            <Input type={'text'} placeholder={'Email'} id={'email'} required={true} />
-                        </div>
-                        <div className="form-group">
-                            <Input type={'password'} placeholder={'Senha'} id={'password'} autoComplete={'off'} required={true} />
-                        </div>
-                        <Input type={'submit'} placeholder={'Entrar'} />
-                    </form>
-                    <p className="toggle-link acme">
-                        Não tem uma conta? <span onClick={handleToggle}>Contate um administrador</span>
-                    </p>
+        <>
+            <div className="login-register-container">
+                <div className="left-half ">
+                    <div className='imgLogo'></div>
+                </div>
+                <div className="right-half">
+                    <div className='content'>
+                        <h2 className='acme'>Seja bem vindo ao <span>Labhub</span></h2>
+                        <form onSubmit={validate}>
+                            <div className="form-group">
+                                <Input type={'text'} placeholder={'Email'} id={'email'} required={true} />
+                            </div>
+                            <div className="form-group">
+                                <Input type={'password'} placeholder={'Senha'} id={'password'} autoComplete={'off'} required={true} />
+                            </div>
+                            <Input type={'submit'} placeholder={'Entrar'} />
+                        </form>
+                        <p className="toggle-link acme">
+                            Não tem uma conta? <span onClick={handleToggle}>Contate um administrador</span>
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </>
+        </>
     );
 };
 

@@ -21,6 +21,7 @@ export default function MainPage() {
     const [nextReserves, setNextReserves] = useState('Carregando Reservas...');
 
     useEffect(() => {
+        if(!user?.id) return;
         async function buscaDados() {
             try {
                 const response = (await api.post('mainpageinfo', {
