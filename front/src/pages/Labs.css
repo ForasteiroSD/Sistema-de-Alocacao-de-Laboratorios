@@ -2,10 +2,60 @@
     margin-bottom: 10px;
 }
 
+
+.Labs .SearchForm {
+    grid-template-columns: repeat(3, 1fr) auto;
+}
+
 .Labs .SearchForm .InputBox {
-    flex: 1 1 0px;
+    width: inherit;
+}
+
+.Labs .SearchForm .Input {
+    width: inherit;
 }
 
 .Labs .SearchForm .Submit {
     width: 150px;
+}
+
+@media (max-width: 841px) {
+    .Labs .SearchForm {
+        grid-template-columns: none;
+        grid-template-areas: 'nome nome nome cap' 'resp resp resp pesq';
+    }
+
+    .Labs .SearchForm .InputBox:nth-child(1) {
+        grid-area: nome;
+    }
+    
+    .Labs .SearchForm .InputBox:nth-child(2) {
+        grid-area: resp;
+    }
+    
+    .Labs .SearchForm .InputBox:nth-child(3) {
+        grid-area: cap;
+    }
+    
+    .Labs .SearchForm .Submit {
+        grid-area: pesq;
+    }
+
+    .Labs .SearchForm .Submit {
+        width: inherit;
+    }
+}
+
+@media (max-width: 600px) {
+    .Labs .SearchForm {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-areas: 'resp resp' 'nome cap' 'pesq pesq';
+    }
+}
+
+@media (max-width: 470px) {
+    .Labs .SearchForm {
+        grid-template-columns: repeat(1, 1fr);
+        grid-template-areas: 'nome' 'resp' 'cap' 'pesq';
+    }
 }

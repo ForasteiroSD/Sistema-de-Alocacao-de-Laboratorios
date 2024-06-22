@@ -13,7 +13,7 @@ import Exclude from "../components/Exclude";
 import api from "../lib/Axios";
 
 /* Css */
-import './Reserves.css';
+import './MyReserves.css';
 
 const reservesTypes = [
     { value: '', name: 'Qualquer Tipo' },
@@ -104,7 +104,7 @@ export default function MyReserves({ Id }) {
     };
 
     return (
-        <section className="Reserves PageContent flex c">
+        <section className="MyReserves PageContent flex c">
 
             <AnimatePresence>
                 {infoReserva && <InfoReserve CloseModal={setInfoReserva} ReserveId={reservaId} includeUser={false}/>}
@@ -123,8 +123,8 @@ export default function MyReserves({ Id }) {
                 <Input type={'date'} placeholder={'Data Final'} id={'dataFSearch'} />
                 <Input type={'dropdown'} values={reservesTypes} id={'tipoSearch'} placeholder={'Tipo de Reserva'} />
                 <Input type={'submit'} placeholder={searchButtonText} callback={SearchReserves} />
-                <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
             </form>
+                <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
 
             <Table header={tableHeader} data={reservas} expandable={expandable} deletable={true} handleExpand={setInfoReserva} showExclude={setDeleteReserva} Id={setReservaId} />
 

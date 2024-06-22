@@ -79,6 +79,7 @@ export default function Input({ type, label, placeholder, id, values, callback, 
                 {label ? <p>{label}</p> : null}
                 <div className='Input flex c' onClick={() => { clickInput(id) }}>
                     <input placeholder={placeholder} ref={ref} onFocus={() => { ref.current.type = 'date' }} onBlur={() => { checkDate(id) }} id={id} max={maxDate} required={required} readOnly={readOnly} />
+                    {/* <input placeholder={placeholder} ref={ref} type="date" id={id} max={maxDate} required={required} readOnly={readOnly} /> */}
                 </div>
             </div>
         )

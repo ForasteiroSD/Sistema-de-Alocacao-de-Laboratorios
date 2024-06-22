@@ -1,0 +1,69 @@
+.MyReserves p {
+    margin-bottom: 10px;
+}
+
+.MyReserves .SearchForm {
+    grid-template-columns: repeat(4, 1fr) auto;
+    margin-bottom: 8px;
+}
+
+.MyReserves .SearchForm .InputBox {
+    width: inherit;
+}
+
+.MyReserves .SearchForm .Input {
+    width: inherit;
+}
+
+.MyReserves .SearchForm .Submit {
+    width: 150px;
+}
+
+.MyReserves .info {
+    font-size: .8rem;
+}
+
+@media (max-width: 1090px) {
+    .MyReserves .SearchForm {
+        grid-template-areas: 'lab lab lab lab tipo tipo tipo tipo' 'dinicio dinicio dinicio dfim dfim dfim pesq pesq';
+        grid-template-columns: repeat(8, 1fr);
+    }
+    
+    .MyReserves .SearchForm .InputBox:nth-child(1) {
+        grid-area: lab;
+    }
+    
+    .MyReserves .SearchForm .InputBox:nth-child(2) {
+        grid-area: dinicio;
+    }
+
+    .MyReserves .SearchForm .InputBox:nth-child(3) {
+        grid-area: dfim;
+    }
+
+    .MyReserves .SearchForm .InputBox:nth-child(4) {
+        grid-area: tipo;
+    }
+    
+    .MyReserves .SearchForm .Submit {
+        grid-area: pesq;
+    }
+
+    .MyReserves .SearchForm .Submit {
+        width: inherit;
+    }
+}
+
+@media (max-width: 570px) {
+    .MyReserves .SearchForm {
+        grid-template-areas: 'lab tipo' 'dinicio dfim' 'pesq pesq';
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 470px) {
+    .MyReserves .SearchForm {
+        grid-template-areas: 'resp' 'dinicio' 'lab' 'dfim' 'tipo' 'pesq';
+        grid-template-columns: repeat(1, 1fr);
+    }
+}

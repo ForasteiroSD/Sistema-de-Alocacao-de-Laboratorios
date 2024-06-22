@@ -146,8 +146,8 @@ export default function Reserves({ Id }) {
             <Input type={'date'} placeholder={'Data Final'} id={'dataFSearch'} />
             <Input type={'dropdown'} values={reservesTypes} id={'tipoSearch'} placeholder={'Tipo de Reserva'} />
             <Input type={'submit'} placeholder={searchButtonText} callback={SearchReserves} />
-            <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
         </form>
+            <p className="info">Obs: Caso nenhuma data final seja informada serão retornadas as reservas que terminam após o dia de hoje</p>
 
         <Table header={tableHeader} data={reservas} expandable={expandable} deletable={true} handleExpand={setInfoReserva} showExclude={setDeleteReserva} Id={setReservaId} />
     </section>

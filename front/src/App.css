@@ -133,12 +133,11 @@ hr {
 }
 
 .SearchForm {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  /* flex-wrap: wrap; */
   gap: 7px;
   margin-bottom: 20px;
 }
-
 
 .CancelButton:hover {
   color: var(--selectedButtonBlue);
