@@ -70,10 +70,11 @@ export default function UpdateUser({ CloseModal, UserId, updateView, myAccount =
                 novasenha: novaSenha,
                 tipo: tipo,
                 adm: false,
-                mudarSenha: true,
+                mudarSenha: false,
                 changeType: false
             };
             if (isAdm) params.changeType = true;
+            if (novaSenha) params.mudarSenha = true;
 
         } else {
 
@@ -123,17 +124,24 @@ export default function UpdateUser({ CloseModal, UserId, updateView, myAccount =
                 if (myAccount) {
                     const senha = document.querySelector('#password').value;
 
-                    if (novaSenha.length < 8 || senha.length < 8) {
-                        setAlert('Warning', 'As senhas devem ter no mínimo 8 caracteres');
+                    if (senha.length < 8) {
+                        setAlert('Error', 'Senha incorreta');
                         return;
                     }
+                    else if(novaSenha != '') {
+                        if (novaSenha.length < 8) {
+                            setAlert('Warning', 'As senhas devem ter no mínimo 8 caracteres');
+                            return;
+                        }
+    
+                        if (novaSenha != confirmarSenha) {
+                            setAlert('Warning', 'As senhas informadas são diferentes');
+                            return;
+                        }
 
-                    if (novaSenha != confirmarSenha) {
-                        setAlert('Warning', 'As senhas informadas são diferentes');
-                        return;
+                        UpdateUser(email, telefone, sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha), sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, novaSenha));
                     }
-
-                    UpdateUser(email, telefone, sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha), sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, novaSenha));
+                    else UpdateUser(email, telefone, sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha));
 
                 } else {
 
@@ -180,8 +188,8 @@ export default function UpdateUser({ CloseModal, UserId, updateView, myAccount =
                         {myAccount ? (
                             <>
                                 <Input type={'password'} placeholder={'Senha'} id={'password'} required={true} />
-                                <Input type={'password'} placeholder={'Nova senha'} id={'newPassword'} required={true} />
-                                <Input type={'password'} placeholder={'Confirmar nova senha'} id={'confirmPassword'} required={true} />
+                                <Input type={'password'} placeholder={'Nova senha'} id={'newPassword'} />
+                                <Input type={'password'} placeholder={'Confirmar nova senha'} id={'confirmPassword'} />
                                 {isAdm ? (
                                     <Input type={'dropdown'} values={accoutTypes} placeholder={'Tipo de Usuário'} id={'accoutType'} required={true} />
                                 ) : (

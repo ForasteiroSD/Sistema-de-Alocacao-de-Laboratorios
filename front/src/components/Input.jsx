@@ -123,12 +123,12 @@ export default function Input({ type, label, placeholder, id, values, callback, 
                 <div className="flex v" style={{gap: '15px'}}>
                     <div className="flex v" style={{gap: '5px', position: 'relative'}}>
                         <p>Não </p>
-                        <input type="radio" name={id} onClick={() => setSeeSelectNumber(false)} defaultChecked />
+                        <input type="radio" id={id + 'Nao'} name={id} onClick={() => setSeeSelectNumber(false)} defaultChecked />
                         <GiCheckMark className="CheckIcon" />
                     </div>
                     <div className="flex v" style={{gap: '5px', position: 'relative'}}>
                         <p>Sim </p>
-                        <input type="radio" name={id} onClick={() => setSeeSelectNumber(true)} />
+                        <input type="radio" id={id + 'Sim'} name={id} onClick={() => setSeeSelectNumber(true)} />
                         <GiCheckMark className="CheckIcon" />
                     </div>
                     {seeSelectNumber ? (

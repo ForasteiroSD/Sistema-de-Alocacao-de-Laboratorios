@@ -27,7 +27,7 @@ const reserveTypes = [
 ]
 import { durationMask, hourMask } from "../../GlobalVariables";
 
-export default function NewReserve({ CloseModal, labName }) {
+export default function NewReserve({ CloseModal, labName, updateView }) {
     const { setAlert } = useContext(AlertContext);
     const { user } = useContext(UserContext);
     const [reserveType, setReserveType] = useState('Única');
@@ -58,6 +58,7 @@ export default function NewReserve({ CloseModal, labName }) {
             })).data;
 
             setAlert('Success', 'Reserva Cadastrada');
+            updateView();
             CloseModal(false);
         } catch (error) {
             setAlert('Error', error.response.data);

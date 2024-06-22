@@ -16,7 +16,7 @@ import api from '../../lib/Axios';
 import { AlertContext } from '../../context/AlertContext';
 import { UserContext } from '../../context/UserContext';
 
-export default function UpdateLab({ labId, CloseModal }) {
+export default function UpdateLab({ labId, CloseModal, updateView }) {
     const { user } = useContext(UserContext);
     const { setAlert } = useContext(AlertContext);
     const [responsaveis, setResponsaveis] = useState([]);
@@ -34,11 +34,28 @@ export default function UpdateLab({ labId, CloseModal }) {
             }
             document.querySelector('#name').value = response.nome;
             document.querySelector('#capacity').value = response.capacidade;
-            document.querySelector('#projetores').value = response.projetores !== 'Não possui' ? response.projetores : '';
-            document.querySelector('#quadros').value = response.quadros !== 'Não possui' ? response.quadros : '';
-            document.querySelector('#televisoes').value = response.televisoes !== 'Não possui' ? response.televisoes : '';
-            document.querySelector('#ar_condicionados').value = response.ar_condicionados !== 'Não possui' ? response.ar_condicionados : '';
-            document.querySelector('#computadores').value = response.computadores !== 'Não possui' ? response.computadores : '';
+
+            if(response.projetores != 'Não possui') {
+                document.querySelector('#projetoresSim').click();
+                document.querySelector('#projetores').value = response.projetores
+            }
+            if(response.quadros != 'Não possui') {
+                document.querySelector('#quadrosSim').click();
+                document.querySelector('#quadros').value = response.quadros
+            }
+            if(response.televisoes != 'Não possui') {
+                document.querySelector('#televisoesSim').click();
+                document.querySelector('#televisoes').value = response.televisoes
+            }
+            if(response.ar_condicionados != 'Não possui') {
+                document.querySelector('#ar_condicionadosSim').click();
+                document.querySelector('#ar_condicionados').value = response.ar_condicionados
+            }
+            if(response.computadores != 'Não possui') {
+                document.querySelector('#computadoresSim').click();
+                document.querySelector('#computadores').value = response.computadores
+            }
+
             document.querySelector('#outro').value = response.outro;
 
         } catch (error) {
@@ -71,11 +88,13 @@ export default function UpdateLab({ labId, CloseModal }) {
         if(isAdm) responsavel = document.querySelector('#responsible').value;
         const nome = document.querySelector('#name').value;
         const capacidade = Number(document.querySelector('#capacity').value);
-        const projetores = Number(document.querySelector('#projetores').value);
-        const quadros = Number(document.querySelector('#quadros').value);
-        const televisoes = Number(document.querySelector('#televisoes').value);
-        const ar_condicionados = Number(document.querySelector('#ar_condicionados').value);
-        const computadores = Number(document.querySelector('#computadores').value);
+
+        let projetores, quadros, televisoes, ar_condicionados, computadores;
+        if(document.querySelector('#projetores')) projetores = Number(document.querySelector('#projetores').value); else projetores = 0;
+        if(document.querySelector('#quadros')) quadros = Number(document.querySelector('#quadros').value); else quadros = 0;
+        if(document.querySelector('#televisoes')) televisoes = Number(document.querySelector('#televisoes').value); else televisoes = 0;
+        if(document.querySelector('#ar_condicionados')) ar_condicionados = Number(document.querySelector('#ar_condicionados').value); else ar_condicionados = 0;
+        if(document.querySelector('#computadores')) computadores = Number(document.querySelector('#computadores').value); else computadores = 0;
         const outro = document.querySelector('#outro').value;
 
         const data = {
@@ -94,6 +113,7 @@ export default function UpdateLab({ labId, CloseModal }) {
             (await api.patch('lab', data)).data;
 
             setAlert('Success', 'Laboratório alterado');
+            updateView();
             CloseModal(false);
         } catch (e) {
             setAlert('Error', e.response.data);
@@ -117,12 +137,14 @@ export default function UpdateLab({ labId, CloseModal }) {
                         <Input type={'number'} placeholder={'Capacidade'} id={'capacity'} required={true} min={0} />
                         <hr />
                         <p className='recursos'>Recursos:</p>
-                        <Input type={'number'} placeholder={'Projetores'} id={'projetores'} min={0} />
-                        <Input type={'number'} placeholder={'Quadros'} id={'quadros'} min={0} />
-                        <Input type={'number'} placeholder={'Televisões'} id={'televisoes'} min={0} />
-                        <Input type={'number'} placeholder={'Ar-Condicionados'} id={'ar_condicionados'} min={0} />
-                        <Input type={'number'} placeholder={'Computadores'} id={'computadores'} min={0} />
-                        <Input type={'text'} placeholder={'Outro'} id={'outro'} />
+                        <div className=' flex c' style={{gap: '20px'}}>
+                            <Input type={'optionalQuant'} label={'Projetor:'} id={'projetores'} />
+                            <Input type={'optionalQuant'} label={'Quadro:'} id={'quadros'} />
+                            <Input type={'optionalQuant'} label={'Televisão:'} id={'televisoes'} />
+                            <Input type={'optionalQuant'} label={'Ar Condicionado:'} id={'ar_condicionados'} />
+                            <Input type={'optionalQuant'} label={'Computador:'} id={'computadores'} />
+                            <Input type={'textArea'} placeholder={'Outro'} id={'outro'} />
+                        </div>
                     </div>
                     <Input type={'submit'} placeholder={'Atualizar'} />
                     <p className='CancelButton' onClick={() => { CloseModal(false) }}>Cancelar</p>

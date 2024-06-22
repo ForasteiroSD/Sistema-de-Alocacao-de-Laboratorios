@@ -12,7 +12,7 @@
     margin: 0;
 }
 
-.ModalWrapper .InputBox:last-child .Input {
+.ModalWrapper .InputBox:last-child textarea {
     height: 60px;
 }
 

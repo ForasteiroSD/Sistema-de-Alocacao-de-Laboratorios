@@ -16,7 +16,7 @@ import './LabModal.css';
 import { AlertContext } from '../../context/AlertContext';
 import { UserContext } from '../../context/UserContext';
 
-export default function NewLab({ CloseModal }) {
+export default function NewLab({ CloseModal, updateView }) {
     const { setAlert } = useContext(AlertContext);
     const { user } = useContext(UserContext);
     const [responsaveis, setResponsaveis] = useState([]);
@@ -71,6 +71,7 @@ export default function NewLab({ CloseModal }) {
         try {
             await api.post('lab', data);
             setAlert('Success', 'Laboratório criado');
+            updateView();
         } catch (e) {
             setAlert('Error', e.response.data);
         }

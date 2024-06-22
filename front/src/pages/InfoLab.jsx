@@ -79,7 +79,7 @@ export default function InfoLab() {
     }
 
     async function getReservasDia(e) {
-        e.preventDefault();
+        e && e.preventDefault();
 
         try {
             const data = document.querySelector('#diaSearch').value;
@@ -109,11 +109,11 @@ export default function InfoLab() {
         <section className="InfoLab PageContent flex c">
 
             <AnimatePresence>
-                {showEdit && <UpdateLab CloseModal={setShowEdit} labId={nome} />}
+                {showEdit && <UpdateLab CloseModal={setShowEdit} labId={nome} updateView={getLabData} />}
             </AnimatePresence>
 
             <AnimatePresence>
-                {showNewReserve && <NewReserve CloseModal={setShowNewReserve} labName={nome} />}
+                {showNewReserve && <NewReserve CloseModal={setShowNewReserve} labName={nome} updateView={getReservasDia} />}
             </AnimatePresence>
 
             <h1>Laboratório {nome}</h1>

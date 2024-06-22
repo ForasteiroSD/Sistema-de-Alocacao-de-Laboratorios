@@ -41,16 +41,11 @@ export default function Labs() {
     }, []);
 
     const searchLabs = async (e) => {
-        let responsavel = '';
-        let nome = '';
-        let capacidade = '';
+        e && e.preventDefault();
 
-        if (e) {
-            e.preventDefault();
-            nome = document.querySelector('#nameSearch').value;
-            responsavel = document.querySelector('#responsavelSearch').value;
-            capacidade = document.querySelector('#capacidadeSearch').value;
-        }
+        const nome = document.querySelector('#nameSearch').value;
+        const responsavel = document.querySelector('#responsavelSearch').value;
+        const capacidade = document.querySelector('#capacidadeSearch').value;
 
         try {
             const response = (await api.get('labs', {
@@ -106,7 +101,7 @@ export default function Labs() {
     return (
         <section className="Labs PageContent flex c">
             <AnimatePresence>
-                {showNewLab && <NewLab CloseModal={setShowNewLab} />}
+                {showNewLab && <NewLab CloseModal={setShowNewLab} updateView={searchLabs} />}
             </AnimatePresence>
 
             <h1>Laboratórios Cadastrados</h1>
