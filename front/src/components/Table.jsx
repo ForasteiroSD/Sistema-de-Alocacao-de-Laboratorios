@@ -16,17 +16,19 @@ export default function Table({ header, data, editable, expandable, deletable, s
     return (
         <div className='Table'>
             {header && (
-                <div className='grid TableHeader' style={{ gridTemplateColumns: `repeat(${header.length}, 1fr) ${(editable || expandable) && deletable ? '69px' : (editable || expandable) && !deletable ? '39px' : ''}` }}>
+                <div className='flex sb TableHeader' >
                     {header.map((value, index) => (
                         <p key={index} className='TableItem'>{value}</p>
                     ))}
+                    {((editable || expandable) && deletable) && <p style={{minWidth: '69px'}}></p>}
+                    {((editable || expandable) && !deletable) && <p style={{minWidth: '39px'}}></p>}
                 </div>
             )}
 
             {data && (
                 <div className='TableData'>
                     {data.map((line, i) => (
-                        <div key={i} className='grid TableLine' style={{ gridTemplateColumns: `repeat(${editable || expandable ? line.length - 1 : line.length}, 1fr) ${(editable || expandable) ? 'auto' : ''}` }}>
+                        <div key={i} className='flex sb TableLine' >
                             {line.map((item, j) => (
                                 (j > 0 && (editable || expandable)) || (!editable && !expandable) ? (
                                     <p key={j} className='TableItem'>{item}</p>

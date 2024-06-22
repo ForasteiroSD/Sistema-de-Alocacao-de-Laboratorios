@@ -57,3 +57,55 @@
     width: inherit;
     flex-grow: 1;
 }
+
+@media (max-width: 1130px) {
+    .Configs {
+        width: 100%;
+    }
+}
+
+@media (max-width: 690px) {
+    .Configs .DivUserData {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .Configs .MainUserDiv .NameUser {
+        font-size: 37px;
+    }
+
+    .Configs .MainUserDiv .cpfUser {
+        font-size: 19px;
+    }
+}
+
+@media (max-width:550px) {
+    .Configs .MainUserDiv {
+        flex-direction: column;
+        border: 0;
+        box-shadow: 0 0 0;
+        padding: 0 0 20px 0;
+    }
+
+    .Configs .MainUserDiv .userIcon {
+        min-width: 200px;
+        min-height: 200px;
+    }
+
+    .Configs .MainUserDiv .NameUser {
+        text-align: center;
+    }
+
+    .Configs .MainUserDiv .cpfUser {
+        text-align: center;
+    }
+}
+
+@media (max-width: 470px) {
+    .Configs .MainUserDiv .NameUser {
+        font-size: 30px;
+    }
+
+    .Configs .MainUserDiv .cpfUser {
+        font-size: 17px;
+    }
+}

@@ -9,8 +9,16 @@
     
 .Table .TableHeader {
     border-bottom: solid var(--gray) 1px;
+    display: flex;
     /* padding-right: 8px; */
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    min-height: 31px;
 }
+    
+/* .Table .TableHeader p {
+    overflow-y: hidden;
+} */
     
 .Table .TableData {
     /* height: 435px; */
@@ -19,6 +27,7 @@
     /* height: 406px; */
     overflow-y: auto;
     position: relative;
+    scrollbar-gutter: stable;
 }
 
 .Table .TableLine {
@@ -32,8 +41,13 @@
     color: red;
 }
 
-.Table .TableLine p {
+.Table .TableItem {
     margin: 0;
+    overflow: hidden;
+}
+
+.Table .TableHeader .TableItem {
+    min-height: 31px;
 }
 
 .Table .TableItem {
@@ -41,4 +55,5 @@
     overflow-x: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    flex: 1 1 0px;
 }

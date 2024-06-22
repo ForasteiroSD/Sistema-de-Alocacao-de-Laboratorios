@@ -2,6 +2,23 @@
     margin-bottom: 10px;
 }
 
+.MyReserves .Table .TableData .TableLine .TableItem:nth-child(1),
+.MyReserves .Table .TableHeader .TableItem:nth-child(1) {
+    min-width: 90px;
+}
+
+.MyReserves .Table .TableData .TableLine .TableItem:nth-child(2),
+.MyReserves .Table .TableHeader .TableItem:nth-child(2),
+.MyReserves .Table .TableData .TableLine .TableItem:nth-child(3),
+.MyReserves .Table .TableHeader .TableItem:nth-child(3) {
+    min-width: 120px;
+}
+
+.MyReserves .Table .TableData .TableLine .TableItem:nth-child(4),
+.MyReserves .Table .TableHeader .TableItem:nth-child(4) {
+    min-width: 130px;
+}
+
 .MyReserves .SearchForm {
     grid-template-columns: repeat(4, 1fr) auto;
     margin-bottom: 8px;
@@ -54,10 +71,24 @@
     }
 }
 
+@media (max-width: 630px) {
+    .MyReserves .Table .TableData .TableLine .TableItem:nth-child(4),
+    .MyReserves .Table .TableHeader .TableItem:nth-child(4) {
+        display: none;
+    }
+}
+
 @media (max-width: 570px) {
     .MyReserves .SearchForm {
         grid-template-areas: 'lab tipo' 'dinicio dfim' 'pesq pesq';
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 485px) {
+    .MyReserves .Table .TableData .TableLine .TableItem:nth-child(3),
+    .MyReserves .Table .TableHeader .TableItem:nth-child(3) {
+        display: none;
     }
 }
 

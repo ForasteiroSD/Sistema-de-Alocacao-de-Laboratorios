@@ -2,6 +2,20 @@
     margin-bottom: 10px;
 }
 
+.Labs .Table .TableData .TableLine .TableItem:nth-child(1),
+.Labs .Table .TableHeader .TableItem:nth-child(1) {
+    min-width: 90px;
+}
+
+.Labs .Table .TableData .TableLine .TableItem:nth-child(2),
+.Labs .Table .TableHeader .TableItem:nth-child(2) {
+    min-width: 300px;
+}
+
+.Labs .Table .TableData .TableLine .TableItem:nth-child(3),
+.Labs .Table .TableHeader .TableItem:nth-child(3) {
+    min-width: 90px;
+}
 
 .Labs .SearchForm {
     grid-template-columns: repeat(3, 1fr) auto;
@@ -46,6 +60,13 @@
     }
 }
 
+@media (max-width: 640px) {
+    .Labs .Table .TableData .TableLine .TableItem:nth-child(3),
+    .Labs .Table .TableHeader .TableItem:nth-child(3) {
+        display: none;
+    }
+}
+
 @media (max-width: 600px) {
     .Labs .SearchForm {
         grid-template-columns: repeat(2, 1fr);
@@ -57,5 +78,10 @@
     .Labs .SearchForm {
         grid-template-columns: repeat(1, 1fr);
         grid-template-areas: 'nome' 'resp' 'cap' 'pesq';
+    }
+
+    .Labs .Table .TableData .TableLine .TableItem:nth-child(2),
+    .Labs .Table .TableHeader .TableItem:nth-child(2) {
+        display: none;
     }
 }

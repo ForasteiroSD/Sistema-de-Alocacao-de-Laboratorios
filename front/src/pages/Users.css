@@ -2,6 +2,26 @@
     margin-bottom: 10px;
 }
 
+.Users .Table .TableData .TableLine .TableItem:nth-child(1),
+.Users .Table .TableHeader .TableItem:nth-child(1) {
+    min-width: 300px;
+}
+
+.Users .Table .TableData .TableLine .TableItem:nth-child(2),
+.Users .Table .TableHeader .TableItem:nth-child(2) {
+    min-width: 140px;
+}
+
+.Users .Table .TableData .TableLine .TableItem:nth-child(3),
+.Users .Table .TableHeader .TableItem:nth-child(3) {
+    min-width: 200px;
+}
+
+.Users .Table .TableData .TableLine .TableItem:nth-child(4),
+.Users .Table .TableHeader .TableItem:nth-child(4) {
+    min-width: 130px;
+}
+
 .Users .SearchForm {
     grid-template-columns: repeat(4, 1fr) auto;
 }
@@ -49,10 +69,46 @@
     }
 }
 
+@media (max-width: 1075px) {
+    .Users .Table .TableData .TableLine .TableItem:nth-child(1),
+    .Users .Table .TableHeader .TableItem:nth-child(1) {
+        min-width: 200px;
+    }
+
+    .Users .Table .TableData .TableLine .TableItem:nth-child(3),
+    .Users .Table .TableHeader .TableItem:nth-child(3) {
+        min-width: 180px;
+    }
+}
+
+@media (max-width: 815px) {
+    .Users .Table .TableData .TableLine .TableItem:nth-child(1),
+    .Users .Table .TableHeader .TableItem:nth-child(1) {
+        min-width: 250px;
+    }
+    
+    .Users .Table .TableData .TableLine .TableItem:nth-child(3),
+    .Users .Table .TableHeader .TableItem:nth-child(3) {
+        display: none;
+    }
+}
+
 @media (max-width: 768px) {
     .Users .SearchForm {
         grid-template-areas: 'nome nome nome nome email email email email' 'cpf cpf cpf tipo tipo tipo pesq pesq';
         grid-template-columns: repeat(8, 1fr);
+    }
+}
+
+@media (max-width: 675px) {
+    .Users .Table .TableData .TableLine .TableItem:nth-child(1),
+    .Users .Table .TableHeader .TableItem:nth-child(1) {
+        min-width: 200px;
+    }
+    
+    .Users .Table .TableData .TableLine .TableItem:nth-child(4),
+    .Users .Table .TableHeader .TableItem:nth-child(4) {
+        display: none;
     }
 }
 
