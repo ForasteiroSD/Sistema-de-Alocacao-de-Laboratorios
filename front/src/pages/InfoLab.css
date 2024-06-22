@@ -4,7 +4,7 @@
     height: 100%;
     /* max-height: 663px; */
     /* height: 713px; */
-    height: 663px;
+    height: 633px;
 }
 
 .InfoLab .reserves .Table {
@@ -22,7 +22,8 @@
 }
 
 .InfoLab .info {
-    height: 663px;
+    width: calc(50% - 50px);
+    height: 630px;
 }
 
 .InfoLab .title {
@@ -42,7 +43,7 @@
     /* grid-template-rows: repeat(5, auto); */
     /* grid-template-areas: 'resp resp' 'nome nome' 'cap quadr' 'proj ar' 'tel comp' 'outro outro'; */
     display: grid;
-    grid-template-rows: repeat(5, 77px);
+    grid-template-rows: repeat(4, 77px) auto;
     /* padding-right: 10px;
     grid-template-columns: repeat(1, auto);
     grid-template-rows: repeat(9, 74px); */
@@ -97,6 +98,7 @@
 
 .InfoLab .info .infosLab .UserData .IconDiv {
     width: 50px;
+    min-width: 50px;
 }
 
 .InfoLab .info .infosLab .UserData .Data {
@@ -126,7 +128,7 @@
 
 .InfoLab .vertical-divider {
     color: var(--gray);
-    height: calc(100% - 50px);
+    /* height: calc(100% - 50px); */
 }
 
 .InfoLab .info button:hover {
