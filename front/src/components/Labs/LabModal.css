@@ -12,6 +12,10 @@
     margin: 0;
 }
 
+.ModalWrapper .InputBox:last-child .Input {
+    height: 60px;
+}
+
 @media (max-height: 880px) {
     .labModal {
         max-height: 420px;

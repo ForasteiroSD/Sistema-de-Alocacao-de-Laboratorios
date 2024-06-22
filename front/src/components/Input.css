@@ -41,6 +41,60 @@
     cursor: pointer;
 }
 
+.optionalQuant p {
+    margin-bottom: 0 !important;
+    font-size: 17px;
+    vertical-align: middle;
+}
+
+.optionalQuant .CheckIcon {
+    position: absolute;
+    right: 0;
+    color: var(--gray);
+    transition: scale .1s;
+    overflow: hidden;
+    scale: 0 1;
+}
+
+.optionalQuant .ArrowIcon {
+    width: 21px;
+    height: 21px;
+    color: var(--gray);
+    cursor: pointer;
+}
+
+.optionalQuant .NumberSelector {
+    width: 32px;
+    background-color: #CCCCCC;
+    border: none;
+    border-radius: 5px;
+    appearance: none;
+    text-align: center;
+    font-family: Antic;
+    font-size: 16px;
+}
+
+.InputBox .Input .InputNumber::-webkit-outer-spin-button,
+.InputBox .Input .InputNumber::-webkit-inner-spin-button,
+.optionalQuant .NumberSelector::-webkit-outer-spin-button,
+.optionalQuant .NumberSelector::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.optionalQuant input[type=radio] {
+    appearance: none;
+    background-color: #CCCCCC;
+    border-radius: 5px;
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+}
+
+.optionalQuant input[type=radio]:checked~.CheckIcon {
+    scale: 1;
+}
+
 .Submit {
     background-color: var(--buttonBlue);
     border: 0;
@@ -112,4 +166,11 @@ input:-webkit-autofill:active{
 
 ::-ms-reveal {
     display: none;
+}
+
+.InputBox .TextArea {
+    width: 317px;
+    resize: none;
+    font-family: Antic;
+    font-size: 14px;
 }
