@@ -101,6 +101,7 @@ router.post("/user/login", async (req: Request, res: Response) => {
                 return;
             }
         } catch (error1) {
+            console.log(error1);
             res.status(400).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
             return;
             }
