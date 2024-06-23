@@ -13,7 +13,7 @@
 }
 
 .login-register-container .left-half .imgLogo {
-    background-image: url('./logos/Big-Logo-White.png');
+    background-image: url('/logos/Big-Logo-White.png');
     background-size: cover;
     width: calc(100px * 5.5);
     height: 100px;
