@@ -29,7 +29,7 @@ export function stringData(data: Date, time: boolean) {
         else string_aux1 += data.getUTCDate();
         
         let string_aux2 = '';
-        if (data.getUTCMonth() <= 10) string_aux2 = '0'+(data.getUTCMonth()+1);
+        if (data.getUTCMonth() < 10) string_aux2 = '0'+(data.getUTCMonth()+1);
         else string_aux2 += (data.getUTCMonth()+1);
 
         return `${string_aux1}/${string_aux2}/${data.getUTCFullYear()}`;

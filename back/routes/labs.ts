@@ -106,8 +106,6 @@ router.patch("/lab", async (req: Request, res: Response) => {
 
     } catch (error: any) {
 
-        console.log(error)
-
         if (error.code === 'P2025') {
             res.status(404).send('Responsável não encontrado');
             return;

@@ -214,8 +214,8 @@ router.post('/reserva', async (req: Request, res: Response) => {
                 for (let dia of dias_res_semana) {
 
                     if (dia.dia === dia_semana) {
-                        const inicio = Number(dia.horario.split(':')[0]) + Number(dia.horario.split(':')[1]) / 60;
-                        const fim = inicio + Number(dia.duracao.split(':')[0]) + Number(dia.duracao.split(':')[1]) / 60;
+                        const inicio = Number(dia.horario.split(':')[0])*60 + Number(dia.horario.split(':')[1]);
+                        const fim = inicio + Number(dia.duracao.split(':')[0])*60 + Number(dia.duracao.split(':')[1]);
                         dias_reserva.push({
                             dia: new Date(diaInicio),
                             inicio: inicio,
@@ -234,8 +234,8 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
         } else if (tipo === 'Diária') {
 
-            const inicio = Number(hora_inicio.split(':')[0]) + Number(hora_inicio.split(':')[1]) / 60;
-            const fim = inicio + Number(duracao.split(':')[0]) + Number(duracao.split(':')[1]) / 60;
+            const inicio = Number(hora_inicio.split(':')[0])*60 + Number(hora_inicio.split(':')[1]);
+            const fim = inicio + Number(duracao.split(':')[0])*60 + Number(duracao.split(':')[1]);
 
             while (diaInicio.getTime() <= diaFim.getTime()) {
 
@@ -253,8 +253,8 @@ router.post('/reserva', async (req: Request, res: Response) => {
         } else if (tipo === 'Única') {
             //Reserva única
 
-            const inicio = Number(hora_inicio.split(':')[0]) + Number(hora_inicio.split(':')[1]) / 60;
-            const fim = inicio + Number(duracao.split(':')[0]) + Number(duracao.split(':')[1]) / 60;
+            const inicio = Number(hora_inicio.split(':')[0])*60 + Number(hora_inicio.split(':')[1]);
+            const fim = inicio + Number(duracao.split(':')[0])*60 + Number(duracao.split(':')[1]);
 
             dias_reserva.push({
                 dia: new Date(diaInicio),
@@ -268,8 +268,8 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
             for (const dia of horarios) {
 
-                const inicio = Number(dia.hora_inicio.split(':')[0]) + Number(dia.hora_inicio.split(':')[1]) / 60;
-                const fim = inicio + Number(dia.duracao.split(':')[0]) + Number(dia.duracao.split(':')[1]) / 60;
+                const inicio = Number(dia.hora_inicio.split(':')[0])*60 + Number(dia.hora_inicio.split(':')[1]);
+                const fim = inicio + Number(dia.duracao.split(':')[0])*60 + Number(dia.duracao.split(':')[1]);
 
                 dias_reserva.push({
                     dia: new Date(dia.data),
@@ -296,8 +296,8 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
                     if (reservaIns.dia.toISOString() === dia.toISOString()) {
 
-                        const inicio1 = reserva.data_inicio.getUTCHours() + reserva.data_inicio.getUTCMinutes() / 60;
-                        const fim1 = reserva.data_fim.getUTCHours() + reserva.data_fim.getUTCMinutes() / 60;
+                        const inicio1 = reserva.data_inicio.getUTCHours()*60 + reserva.data_inicio.getUTCMinutes();
+                        const fim1 = reserva.data_fim.getUTCHours()*60 + reserva.data_fim.getUTCMinutes();
 
                         //Horário conflitante entre reservas
                         if (verificaConflito(inicio1, fim1, reservaIns.inicio, reservaIns.fim)) {
@@ -317,13 +317,13 @@ router.post('/reserva', async (req: Request, res: Response) => {
         const reservas: ResIns[] = []
         for (const reservaIns of dias_reserva.reverse()) {
             const inicio = new Date(reservaIns.dia);
-            let hora = Math.floor(reservaIns.inicio);
-            let min = (reservaIns.inicio - hora) * 60;
+            let hora = Math.floor(reservaIns.inicio/60);
+            let min = reservaIns.inicio - hora*60;
             inicio.setUTCHours(hora, min, 0, 0);
 
             const fim = new Date(reservaIns.dia);
-            hora = Math.floor(reservaIns.fim);
-            min = (reservaIns.fim - hora) * 60;
+            hora = Math.floor(reservaIns.fim/60);
+            min = reservaIns.fim - hora*60;
             fim.setUTCHours(hora, min, 0, 0);
 
             reservas.push({
@@ -665,7 +665,6 @@ router.get('/reserva', async (req: Request, res: Response) => {
         if (reserva.tipo === 'Única' || reserva.tipo === 'Diária') {
 
             let string_aux1 = stringData(reserva.dias[0].data_inicio, true);
-
 
             res.status(200).send({
                 usuario: reserva.usuario.nome,

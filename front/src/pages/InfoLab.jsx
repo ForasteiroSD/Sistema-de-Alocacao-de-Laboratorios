@@ -121,7 +121,7 @@ export default function InfoLab() {
             <div className='flex InfoLabWrapper' style={{ gap: '50px' }}>
                 {labData ? (
                     <>
-                        <div className="flex c sb info">
+                        <div className="flex c info" style={showEditButton ? {justifyContent: 'space-between'} : {gap: '25px'}}>
                             <h2 className='title'>Dados do Laboratório</h2>
                             <div className='infosLab'>
                                 <UserData icon={<MdManageAccounts />} title={'Responsável:'} data={labData.responsavelNome} />
