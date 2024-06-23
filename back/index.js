@@ -10,25 +10,23 @@ const user_1 = __importDefault(require("./routes/user"));
 const labs_1 = __importDefault(require("./routes/labs"));
 const reservas_1 = __importDefault(require("./routes/reservas"));
 const node_process_1 = require("node:process");
-const PORT = process.env.PORT || 5000;
+const PORT = node_process_1.env.PORT || 5000;
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-const whitelist = [node_process_1.env.ALLOWED_LINKS]; // lista das urls que podem acessar o back
-app.use((0, cors_1.default)({
-    origin: function (origin, callback) {
-        if (!origin) {
-            callback(new Error('No origin set on headers'));
-        }
-        else if (whitelist.indexOf(origin) !== -1) {
-            callback(null, true);
-        }
-        else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    }
-}));
+// const whitelist = [env.ALLOWED_LINKS]; // lista das urls que podem acessar o back
+// app.use(cors({
+//     origin: function (origin, callback) {
+//         if(!origin) {
+//             callback(new Error('No origin set on headers'))
+//         } else if (whitelist.indexOf(origin) !== -1) {
+//             callback(null, true)
+//         } else {
+//             callback(new Error('Not allowed by CORS'))
+//         }
+//     }
+// }));
 function stringData(data, time) {
     if (!time) {
         let string_aux1 = '';
