@@ -8,16 +8,9 @@ import { env } from "node:process";
 const PORT = env.PORT || 5000;
 const app = express();
 
-app.use((req, res, next) => {
-	//Qual site tem permissão de realizar a conexão, no exemplo abaixo está o "*" indicando que qualquer site pode fazer a conexão
-    console.log(env.ALLOWED_LINKS);
-    res.header("Access-Control-Allow-Origin", env.ALLOWED_LINKS);
-	//Quais são os métodos que a conexão pode realizar na API
-    res.header("Access-Control-Allow-Methods", 'GET,PATCH,POST,DELETE');
-    app.use(cors());
-    next();
-});
-
+app.use(cors({
+    origin: env.ALLOWED_LINKS ? [env.ALLOWED_LINKS] : '*'
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
