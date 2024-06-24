@@ -41,9 +41,9 @@ function App() {
                                     {({ user }) => (
                                         user ? (
                                             <>
-                                                {!user.loading && <SideMenu />}
+                                                <SideMenu />
                                                 <div>
-                                                    {!user.loading && <Header />}
+                                                    <Header />
                                                     <Routes>
                                                         <Route path="/" element={<MainPage />} />
                                                         <Route path="/laboratorios" element={<Labs />} />
