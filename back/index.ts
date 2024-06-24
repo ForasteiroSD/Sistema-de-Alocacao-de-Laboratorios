@@ -11,18 +11,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// const whitelist = [env.ALLOWED_LINKS]; // lista das urls que podem acessar o back
-// app.use(cors({
-//     origin: function (origin, callback) {
-//         if(!origin) {
-//             callback(new Error('No origin set on headers'))
-//         } else if (whitelist.indexOf(origin) !== -1) {
-//             callback(null, true)
-//         } else {
-//             callback(new Error('Not allowed by CORS'))
-//         }
-//     }
-// }));
+const whitelist = [env.ALLOWED_LINKS]; // lista das urls que podem acessar o back
+app.use(cors({
+    origin: function (origin, callback) {
+        if(!origin) {
+            callback(new Error('No origin set on headers'))
+        } else if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+}));
 
 export function stringData(data: Date, time: boolean) {
     if (!time) {
