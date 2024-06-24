@@ -15,11 +15,11 @@ const whitelist = [env.ALLOWED_LINKS]; // lista das urls que podem acessar o bac
 app.use(cors({
     origin: function (origin, callback) {
         if(!origin) {
-            callback(new Error('No origin set on headers'))
+            callback(null, false);
         } else if (whitelist.indexOf(origin) !== -1) {
-            callback(null, true)
+            callback(null, true);
         } else {
-            callback(new Error('Not allowed by CORS'))
+            callback(null, false);
         }
     }
 }));
