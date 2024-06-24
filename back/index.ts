@@ -7,7 +7,7 @@ import { env } from "node:process";
 
 const PORT = env.PORT || 5000;
 const app = express();
-const whitelist = [env.ALLOED_LINKS]
+const whitelist = [env.ALLOWED_LINKS]
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin) {
