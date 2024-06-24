@@ -7,13 +7,11 @@ import { env } from "node:process";
 
 const PORT = env.PORT || 5000;
 const app = express();
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
 app.use(cors({
     origin: env.ALLOWED_LINKS ? [env.ALLOWED_LINKS] : '*'
 }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 export function stringData(data: Date, time: boolean) {
     if (!time) {
