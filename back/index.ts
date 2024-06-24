@@ -7,15 +7,17 @@ import { env } from "node:process";
 
 const PORT = env.PORT || 5000;
 const app = express();
-const whitelist = [env.ALLOWED_LINKS]
+const whitelist = [env.ALLOWED_LINKS];
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin) {
-            callback(new Error('Origin not defined'))
+            callback(new Error('Origin not defined'));
         }
 
         if (whitelist.includes(String(origin))) {
-            callback(null, origin)
+            callback(null, origin);
+        } else {
+            callback(new Error('Origin not allowed'));
         }
     }
 }));
