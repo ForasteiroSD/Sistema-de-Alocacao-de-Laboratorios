@@ -55,6 +55,8 @@ export const durationMask = (inputId) => {
         .replace(/(i[6-9])/, '')
         .replace(/(\d{1})(\d)/, '$1:$2')
         .replace(/(0:)([0-2]|[6-9])/, '$1')
+        .replace(/(5:)([1-9])/, '$1')
+        .replace(/(5:0)([1-9])/, '$1')
         .replace(/(\d{1}):(\d)([1-4]|[6-9])/, '$1:$2')
         .replace(/(:\d{2})\d+?$/, '$1')
 
