@@ -10,6 +10,9 @@ const app = express();
 const whitelist = [env.ALLOWED_LINKS];
 app.use(cors({
     origin: (origin, callback) => {
+        console.log(whitelist);
+        console.log(origin);
+        
         if (!origin) {
             callback(new Error('Origin not defined'));
         }
