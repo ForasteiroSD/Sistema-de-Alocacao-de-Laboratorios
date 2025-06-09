@@ -1,25 +1,64 @@
 import { Request, Response, Router } from 'express'
 import { PrismaClient } from '@prisma/client'
-import { stringData } from '../index';
+import { stringData } from '../utils/formatDate';
+import { z } from 'zod';
 
-interface nextReservas {
-    name: String;
-    date: String;
-    begin: String | null;
-    duration: String | null;
-    dataTotal: number;
-}
 
 const router = Router();
 const prisma = new PrismaClient();
 
+const nomeSchema = z.object({
+    nome: z.string({required_error: "Nome deve ser informado", invalid_type_error: "Nome deve ser uma string"})
+});
+
+const idSchema = z.object({
+    id: z.string({required_error: "Id deve ser informado", invalid_type_error: "Id deve ser uma string"}).uuid("Id deve ser um uuid")
+})
+
+const cpfSchema = z.object({
+    cpf: z.string({required_error: "CPF deve ser informado", invalid_type_error: "CPF deve ser uma string"}).length(11, "CPF deve ter 11 caracteres")
+});
+
+const dataNascSchema = z.object({
+    data_nasc: z.string({required_error: "Data de nascimento deve ser informada", invalid_type_error: "Data de nascimento deve ser uma string"}).refine(val => !isNaN(Date.parse(val)), {
+        message: "Data de nascimento inválida"
+    })
+});
+
+const telefoneSchema = z.object({
+    telefone: z.string({required_error: "Telefone deve ser informado", invalid_type_error: "Telefone deve ser uma string"}).min(8, "Telefone deve ter pelo menos 8 caracteres")
+});
+
+const emailSchema = z.object({
+    email: z.string({required_error: "Email deve ser informado", invalid_type_error: "Email deve ser uma string"}).email({message: "Email inválido"})
+});
+
+const senhaSchema = z.object({
+    senha: z.string({required_error: "Senha deve ser informada", invalid_type_error: "Senha deve ser uma string"}).min(8, "Senha deve ter pelo menos caracteres")
+});
+
+const tipoSchema = z.object({
+    tipo: z.enum(["Administrador", "Responsável", "Comum"], {message: "Tipo de usuário inválido. Deve ser Administrador, Responsável ou Comum"})
+});
+
+const UserCreateSchema = nomeSchema.merge(cpfSchema).merge(dataNascSchema).merge(telefoneSchema).merge(emailSchema).merge(senhaSchema).merge(tipoSchema);
+
 //Cadastrar usuário
-router.post("/user/create", async (req: Request, res: Response) => {
+router.post("/create", async (req: Request, res: Response) => {
+
+    const parse = UserCreateSchema.safeParse(req.body);
+
+    if (!parse.success) {
+        return res.status(402).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
 
     //Dados do usuário a ser criado
-    const { nome, cpf, d_nas, telefone, email, senha, tipo } = req.body;
+    const { nome, cpf, data_nasc, telefone, email, senha, tipo } = parse.data;
 
-    const date = new Date(d_nas);
+    const date = new Date(data_nasc);
 
     if (date.toString() === 'Invalid Date') {
         res.status(400).send('Formato de data inválido');
@@ -39,7 +78,7 @@ router.post("/user/create", async (req: Request, res: Response) => {
             }
         });
 
-        res.status(200).send('Usuário cadastrado');
+        res.status(201).send('Usuário cadastrado');
         return;
 
     } catch (error: any) {
@@ -58,11 +97,21 @@ router.post("/user/create", async (req: Request, res: Response) => {
     }
 });
 
+const UserLoginSchema = emailSchema.merge(senhaSchema);
 
 //Realizar login
-router.post("/user/login", async (req: Request, res: Response) => {
+router.post("/login", async (req: Request, res: Response) => {
 
-    const { email, senha } = req.body;
+    const parse = UserLoginSchema.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(402).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const { email, senha } = parse.data;
 
     try {
         const user = await prisma.user.findFirstOrThrow({
@@ -97,7 +146,7 @@ router.post("/user/login", async (req: Request, res: Response) => {
                     }
                 });
 
-                res.status(201).send({ id: user.id, nome: user.nome, tipo: user.tipo, first: true });
+                res.status(200).send({ id: user.id, nome: user.nome, tipo: user.tipo, first: true });
                 return;
             }
         } catch (error1) {
@@ -112,19 +161,48 @@ router.post("/user/login", async (req: Request, res: Response) => {
 });
 
 
-//Atualizar usuário
-router.patch("/user", async (req: Request, res: Response) => {
+//Dados de busca e a serem atualizados
+//adm = true não precisa informar senha
+//mudarSenha indica se vai mudar a senha ou não
+const UserUpdateSchema = z.object({
+    novasenha: z.string({required_error: "Email deve ser informado", invalid_type_error: "Email deve ser uma string"}).min(8, "Nova senha deve ter pelo menos 8 caracteres").optional(),
+    tipo: tipoSchema.shape.tipo.optional(),
+    adm: z.string().default('0'), //defaults to false
+    mudarSenha: z.string().default('0'), //defaults to false
+    changeType: z.string().default('0') //defaults to false
+}).merge(idSchema).merge(nomeSchema).merge(telefoneSchema).merge(emailSchema).merge(senhaSchema)
 
-    //Dados de busca e a serem atualizados
-    //adm = true não precisa informar senha
-    //mudarSenha usado com adm, caso administrador queira trocar a senha também sem saber a anterior
-    const { id, nome, telefone, email, senha, novasenha, tipo, adm, mudarSenha, changeType } = req.body;
+
+//Atualizar usuário
+router.patch("/", async (req: Request, res: Response) => {
+
+    const parse = UserUpdateSchema.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(402).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    const { id, nome, telefone, email, senha, novasenha, tipo } = parse.data;
+    const adm = parse.data.adm !== '0';
+    const mudarSenha = parse.data.mudarSenha !== '0';
+    const changeType = parse.data.mudarSenha !== '0';
+
+    if(mudarSenha && !novasenha) {
+        return res.status(400).send("Nova senha deve ser informada");
+    }
+
+    if(changeType && !tipo) {
+        return res.status(400).send("Tipo de usuário deve ser informado");
+    }
 
     try {
         await prisma.user.update({
             where: {
                 id: id,
-                ... (!adm && {
+                ... (adm && {
                     senha: senha
                 })
             },
@@ -135,7 +213,7 @@ router.patch("/user", async (req: Request, res: Response) => {
                 ... (changeType && {
                     tipo: tipo,
                 }),
-                ... (adm && !mudarSenha || {
+                ... (mudarSenha && {
                     senha: novasenha
                 })
             }
@@ -160,11 +238,23 @@ router.patch("/user", async (req: Request, res: Response) => {
     }
 });
 
+
+const UserUpdateFirst = idSchema.merge(cpfSchema).merge(cpfSchema).merge(dataNascSchema).merge(emailSchema).merge(nomeSchema).merge(senhaSchema).merge(telefoneSchema);
+
 //Atualizar primeiro usuário do sistema, utilizado somente logo após primeiro usuário fazer login
-router.patch("/user/first", async (req: Request, res: Response) => {
+router.patch("/first", async (req: Request, res: Response) => {
+
+    const parse = UserUpdateFirst.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(402).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
 
     //Dados do primeiro adm do sistema
-    const { id, cpf, data_nasc, email, nome, senha, telefone, } = req.body;
+    const { id, cpf, data_nasc, email, nome, senha, telefone } = parse.data;
 
     try {
         await prisma.user.update({
@@ -192,10 +282,29 @@ router.patch("/user/first", async (req: Request, res: Response) => {
 });
 
 
-//Deletar usuário
-router.delete("/user", async (req: Request, res: Response) => {
+const UserDelete = z.object({
+    senha: senhaSchema.shape.senha.optional(),
+    minhaConta: z.string().default('1') //defaults to true
+}).merge(idSchema);
 
-    const { id, senha, minhaConta } = req.query;
+//Deletar usuário
+router.delete("/", async (req: Request, res: Response) => {
+
+    const parse = UserDelete.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(402).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    const { id, senha } = parse.data;
+    const minhaConta = parse.data.minhaConta === '1';
+
+    if(minhaConta && !senha) {
+        return res.status(400).send("A senha da conta deve ser informada");
+    }
 
     try {
 
@@ -246,11 +355,34 @@ router.delete("/user", async (req: Request, res: Response) => {
 });
 
 
+interface UsersGet {
+    nome?: string;
+    cpf?: string;
+    email?: string;
+    tipo?: string;
+}
+
+const UsersGet = z.object({
+    nome: z.string().optional(),
+    cpf: z.string().optional(),
+    email: z.string().optional(),
+    tipo: z.string().optional()
+});
+
 //Ver usuários
-router.get("/users", async (req: Request, res: Response) => {
+router.get("/all", async (req: Request, res: Response) => {
+
+    const parse = UsersGet.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(402).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
 
     //Filtros de busca
-    const { nome, cpf, email, tipo } = req.query;
+    const { nome, cpf, email, tipo } = parse.data;
 
     try {
         const users = await prisma.user.findMany({
@@ -294,11 +426,25 @@ router.get("/users", async (req: Request, res: Response) => {
     }
 });
 
+
+const UserRespGet = z.object({
+    cpf: z.string().default('0') //defaults to false
+});
+
 //Recuperar nomes do usuário responsáveis
-router.get("/users/responsavel", async (req: Request, res: Response) => {
+router.get("/responsaveis", async (req: Request, res: Response) => {
+
+    const parse = UserRespGet.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(402).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
 
     //Caso também queira retornar cpf dos responsáveis
-    const { cpf } = req.query;
+    const cpf  = parse.data.cpf !== '0';
 
     try {
         const users = await prisma.user.findMany({
@@ -323,12 +469,26 @@ router.get("/users/responsavel", async (req: Request, res: Response) => {
 })
 
 
+const UserData = z.object({
+    saveContext: z.string().default('0') //defaults to false
+}).merge(idSchema);
+
 //Recuperar dados de um usuário
-router.post("/user/data", async (req: Request, res: Response) => {
+router.post("/data", async (req: Request, res: Response) => {
+
+    const parse = UserData.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(402).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
 
     //Filtros para busca de usuário
     //saveContext especifica que deseja retornar somente o nome e tipo de usuário
-    const { id, saveContext } = req.body;
+    const { id } = parse.data;
+    const saveContext = parse.data.saveContext !== '0';
 
     try {
         const user = await prisma.user.findFirstOrThrow({
@@ -362,11 +522,29 @@ router.post("/user/data", async (req: Request, res: Response) => {
     }
 });
 
+interface nextReservas {
+    name: String;
+    date: String;
+    begin: String | null;
+    duration: String | null;
+    dataTotal: number;
+}
+
 
 //Recupera dados da página inicial
-router.post("/mainpageinfo", async (req: Request, res: Response) => {
+router.get("/mainpageinfo", async (req: Request, res: Response) => {
 
-    const { id } = req.body;
+    const parse = idSchema.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(402).json({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    const { id } = parse.data;
+
     let today = new Date();
 
     if (today.getUTCHours() < 3) today.setUTCDate(today.getUTCDate() - 1)

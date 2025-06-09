@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express'
 import { PrismaClient } from '@prisma/client'
-import { stringData } from '../index';
+import { stringData } from '../utils/formatDate'
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -41,7 +41,7 @@ router.post("/lab", async (req: Request, res: Response) => {
             }
         });
 
-        res.status(200).send('Laboratório criado');
+        res.status(201).send('Laboratório criado');
         return;
 
     } catch (error: any) {

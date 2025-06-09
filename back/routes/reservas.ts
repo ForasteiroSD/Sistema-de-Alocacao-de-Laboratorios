@@ -1,25 +1,12 @@
 import { Request, Response, Router } from 'express';
 import { PrismaClient } from '@prisma/client';
-import nodemailer from 'nodemailer';
 import { env } from 'node:process';
-import { stringData } from '../index';
-
-
-interface ResTeste {
-    dia: Date;
-    inicio: number;
-    fim: number;
-    duracao: string;
-}
-
-interface ResIns {
-    data_inicio: Date;
-    data_fim: Date;
-    duracao: string;
-}
+import { stringData } from '../utils/formatDate';
+import { sendEmail } from '../utils/sendEmail';
 
 const router = Router();
 const prisma = new PrismaClient();
+
 const dias_semana = [
     'Domingo',
     'Segunda',
@@ -37,43 +24,9 @@ function verificaConflito(inicio1: Number, fim1: Number, inicio2: Number, fim2: 
     if (inicio2 >= inicio1 && inicio2 < fim1) return true;
 
     return false;
-
 }
 
-function sendEmail(email: string, text: string, texthtml: string, type: string) {
-    const transport = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        auth: {
-            user: env.EMAIL_USER,
-            pass: env.EMAIL_PASS
-        },
-        tls: {
-            rejectUnauthorized: false
-        }
-    });
-
-    const mailOptions = {
-        from: `"LabHub Reservas" <${env.EMAIL_USER}>`,
-        to: email,
-        subject: `LabHub - ${type}`,
-        text: text,
-        ... (texthtml && {
-            html: texthtml
-        })
-    };
-
-    transport.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log('Não foi possível enviar o email');
-        }
-    });
-
-    return;
-}
-
-function createText(tipo: string, labName: string, userName: string, data_inicio: string, data_fim: string, hora_inicio: string, duracao: string,
+function createEmailText(tipo: string, labName: string, userName: string, data_inicio: string, data_fim: string, hora_inicio: string, duracao: string,
     horarios: any, email: string) {
     
 
@@ -107,48 +60,55 @@ function createText(tipo: string, labName: string, userName: string, data_inicio
     sendEmail(email, text1, text2, 'Nova Reserva');
 }
 
+interface ReservaParcial {
+    dia: Date;
+    inicio: number;
+    fim: number;
+    duracao: string;
+}
+
+interface ReservaInsercao {
+    data_inicio: Date;
+    data_fim: Date;
+    duracao: string;
+}
+
+interface HorariosSemanal {
+    dia_semana: string | Date;
+    hora_inicio: string;
+    duracao: string;
+}
+
+interface HorariosPersonaliza {
+    data: string | Date;
+    hora_inicio: string;
+    duracao: string;
+}
+
+interface ReservaPost {
+    userId: string;
+    userName: string;
+    labName: string;
+    tipo: 'Única' | 'Semanal' | 'Personalizada' | 'Diária'
+    data_inicio?: string;
+    data_fim?: string;
+    hora_inicio?: string;
+    duracao?: string;
+    horarios?: HorariosSemanal[] | HorariosPersonaliza[];
+}
+
+
 //Inserir reservas
-//Tipo Única não precisa informar data_fim
-//Somente reservas do tipo Semanal e Personalizada precisam informar o parâmetro horarios
-//Reservas do tipo Semanal não precisam informar parâmetros hora_inicio e duracao
-//Reservas do tipo Personalizada não precisam informar parâmetros hora_inicio, duracao, data_inicio e data_fim
-//Formato do parâmetro horarios para tipo Semanal:
-// horarios = [
-//     {
-//         dia_semana: "Sexta",
-//         hora_inicio: "18:00",
-//         duracao: "01:30"
-//     },
-//     {
-//         dia_semana: "Sábado",
-//         hora_inicio: "13:00",
-//         duracao: "02:00"
-//     }
-// ]
-//Formato do parâmetro horarios para tipo Personalizada:
-// horarios = [
-//     {
-//         data: "2024-06-07",
-//         hora_inicio: "17:30",
-//         duracao: "01:30",
-//     },
-//     {
-//         data: "2024-06-09",
-//         hora_inicio: "08:30",
-//         duracao: "03:30"
-//     }
-// ]
-//Informar userName para envio no email e evitar busca pelo nome no banco
 router.post('/reserva', async (req: Request, res: Response) => {
 
     const { userId, userName, labName, tipo, data_inicio, data_fim, hora_inicio, duracao, horarios } = req.body;
 
     let dataSearch1, dataSearch2;
 
-    if (tipo === 'Personalizada') {
+    if (tipo === 'Personalizada' && horarios) {
 
         for (let dia of horarios) {
-            dia.data = new Date(dia.data);
+            if(dia.data) dia.data = new Date(dia.data);
         }
 
         horarios.sort((a: any, b: any) =>
@@ -192,7 +152,7 @@ router.post('/reserva', async (req: Request, res: Response) => {
             }
         });
 
-        const dias_reserva: ResTeste[] = []
+        const dias_reserva: ReservaParcial[] = []
 
         const diaInicio = new Date(data_inicio);
         const diaFim = data_fim ? new Date(data_fim) : new Date(diaInicio)
@@ -314,7 +274,7 @@ router.post('/reserva', async (req: Request, res: Response) => {
             }
         }
 
-        const reservas: ResIns[] = []
+        const reservas: ReservaInsercao[] = []
         for (const reservaIns of dias_reserva.reverse()) {
             const inicio = new Date(reservaIns.dia);
             let hora = Math.floor(reservaIns.inicio/60);
@@ -348,7 +308,7 @@ router.post('/reserva', async (req: Request, res: Response) => {
             }
         });
 
-        createText(tipo, labName, userName, data_inicio, data_fim, hora_inicio, duracao, horarios, labReservas.responsavel.email);
+        createEmailText(tipo, labName, userName, data_inicio, data_fim, hora_inicio, duracao, horarios, labReservas.responsavel.email);
 
         res.status(200).send('Reserva realizada');
         return;
