@@ -1,47 +1,82 @@
-import { Request, Response, Router } from 'express'
-import { PrismaClient } from '@prisma/client'
+import { Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
 import { stringData } from '../utils/formatDate';
-import { z } from 'zod';
-
+import { idSchema, UserCreateSchema, UserData, UserDelete, UserLoginSchema, UserRespGet, UsersGet, UserUpdateFirst, UserUpdateSchema } from '../schemas';
+import { comparePasswords, hashPassword } from '../utils/auth';
+import { env } from '../utils/env';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-const nomeSchema = z.object({
-    nome: z.string({required_error: "Nome deve ser informado", invalid_type_error: "Nome deve ser uma string"})
+//Realizar login
+router.post("/login", async (req: Request, res: Response) => {
+
+    const parse = UserLoginSchema.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    const { email, senha } = parse.data;
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                email: email,
+            },
+            select: {
+                id: true,
+                nome: true,
+                tipo: true,
+                senha: true
+            }
+        });
+
+        if(!user || !(await comparePasswords(senha, user.senha))) {
+            return res.status(401).send('Email ou senha incorretos');
+        }
+
+
+
+        return res.status(200).send({ id: user.id, nome: user.nome, tipo: user.tipo });
+
+    } catch (error: any) {
+
+        try {
+            const count = await prisma.user.count();
+            if (count === 0) {
+                const hashedPassword = await hashPassword(senha);
+                const user = await prisma.user.create({
+                    data: {
+                        email: email,
+                        cpf: 'Master',
+                        nome: 'Master',
+                        senha: hashedPassword,
+                        data_nasc: new Date('2000-01-01'),
+                        telefone: '(00) 00000-0000',
+                        tipo: 'Administrador'
+                    }
+                });
+
+                res.status(200).send({ id: user.id, nome: user.nome, tipo: user.tipo, first: true });
+                return;
+            }
+        } catch (error1) {
+            res.status(500).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
+            return;
+            }
+            
+        res.status(401).send('Email ou senha incorretos');
+        return;
+
+    }
 });
 
-const idSchema = z.object({
-    id: z.string({required_error: "Id deve ser informado", invalid_type_error: "Id deve ser uma string"}).uuid("Id deve ser um uuid")
-})
 
-const cpfSchema = z.object({
-    cpf: z.string({required_error: "CPF deve ser informado", invalid_type_error: "CPF deve ser uma string"}).length(11, "CPF deve ter 11 caracteres")
-});
 
-const dataNascSchema = z.object({
-    data_nasc: z.string({required_error: "Data de nascimento deve ser informada", invalid_type_error: "Data de nascimento deve ser uma string"}).refine(val => !isNaN(Date.parse(val)), {
-        message: "Data de nascimento inválida"
-    })
-});
-
-const telefoneSchema = z.object({
-    telefone: z.string({required_error: "Telefone deve ser informado", invalid_type_error: "Telefone deve ser uma string"}).min(8, "Telefone deve ter pelo menos 8 caracteres")
-});
-
-const emailSchema = z.object({
-    email: z.string({required_error: "Email deve ser informado", invalid_type_error: "Email deve ser uma string"}).email({message: "Email inválido"})
-});
-
-const senhaSchema = z.object({
-    senha: z.string({required_error: "Senha deve ser informada", invalid_type_error: "Senha deve ser uma string"}).min(8, "Senha deve ter pelo menos caracteres")
-});
-
-const tipoSchema = z.object({
-    tipo: z.enum(["Administrador", "Responsável", "Comum"], {message: "Tipo de usuário inválido. Deve ser Administrador, Responsável ou Comum"})
-});
-
-const UserCreateSchema = nomeSchema.merge(cpfSchema).merge(dataNascSchema).merge(telefoneSchema).merge(emailSchema).merge(senhaSchema).merge(tipoSchema);
 
 //Cadastrar usuário
 router.post("/create", async (req: Request, res: Response) => {
@@ -49,7 +84,7 @@ router.post("/create", async (req: Request, res: Response) => {
     const parse = UserCreateSchema.safeParse(req.body);
 
     if (!parse.success) {
-        return res.status(402).send({
+        return res.status(422).send({
             message: "Dados inválidos",
             errors: parse.error.flatten()
         })
@@ -71,7 +106,7 @@ router.post("/create", async (req: Request, res: Response) => {
                 email: email,
                 cpf: cpf,
                 nome: nome,
-                senha: senha,
+                senha: await hashPassword(senha),
                 data_nasc: date,
                 telefone: telefone,
                 tipo: tipo
@@ -97,81 +132,6 @@ router.post("/create", async (req: Request, res: Response) => {
     }
 });
 
-const UserLoginSchema = emailSchema.merge(senhaSchema);
-
-//Realizar login
-router.post("/login", async (req: Request, res: Response) => {
-
-    const parse = UserLoginSchema.safeParse(req.body);
-
-    if(!parse.success) {
-        return res.status(402).send({
-            message: "Dados inválidos",
-            errors: parse.error.flatten()
-        })
-    }
-
-    const { email, senha } = parse.data;
-
-    try {
-        const user = await prisma.user.findFirstOrThrow({
-            where: {
-                email: email,
-                senha: senha
-            },
-            select: {
-                id: true,
-                nome: true,
-                tipo: true
-            }
-        });
-
-        res.status(200).send({ id: user.id, nome: user.nome, tipo: user.tipo });
-        return;
-
-    } catch (error: any) {
-
-        try {
-            const count = await prisma.user.count();
-            if (count === 0) {
-                const user = await prisma.user.create({
-                    data: {
-                        email: email,
-                        cpf: 'Master',
-                        nome: 'Master',
-                        senha: senha,
-                        data_nasc: new Date('2000-01-01'),
-                        telefone: '(00) 00000-0000',
-                        tipo: 'Administrador'
-                    }
-                });
-
-                res.status(200).send({ id: user.id, nome: user.nome, tipo: user.tipo, first: true });
-                return;
-            }
-        } catch (error1) {
-            res.status(400).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
-            return;
-            }
-            
-        res.status(404).send('Email ou senha incorretos');
-        return;
-
-    }
-});
-
-
-//Dados de busca e a serem atualizados
-//adm = true não precisa informar senha
-//mudarSenha indica se vai mudar a senha ou não
-const UserUpdateSchema = z.object({
-    novasenha: z.string({required_error: "Email deve ser informado", invalid_type_error: "Email deve ser uma string"}).min(8, "Nova senha deve ter pelo menos 8 caracteres").optional(),
-    tipo: tipoSchema.shape.tipo.optional(),
-    adm: z.string().default('0'), //defaults to false
-    mudarSenha: z.string().default('0'), //defaults to false
-    changeType: z.string().default('0') //defaults to false
-}).merge(idSchema).merge(nomeSchema).merge(telefoneSchema).merge(emailSchema).merge(senhaSchema)
-
 
 //Atualizar usuário
 router.patch("/", async (req: Request, res: Response) => {
@@ -179,32 +139,51 @@ router.patch("/", async (req: Request, res: Response) => {
     const parse = UserUpdateSchema.safeParse(req.body);
 
     if(!parse.success) {
-        return res.status(402).send({
+        return res.status(422).send({
             message: "Dados inválidos",
             errors: parse.error.flatten()
         });
     }
 
     const { id, nome, telefone, email, senha, novasenha, tipo } = parse.data;
-    const adm = parse.data.adm !== '0';
-    const mudarSenha = parse.data.mudarSenha !== '0';
-    const changeType = parse.data.mudarSenha !== '0';
+    const adm = parse.data.adm === 1;
+    const mudarSenha = parse.data.mudarSenha === 1;
+    const changeType = parse.data.changeType === 1;
+    let novasenhaHash;
 
-    if(mudarSenha && !novasenha) {
-        return res.status(400).send("Nova senha deve ser informada");
+    if(mudarSenha) {
+        if(!novasenha) return res.status(422).send("Nova senha deve ser informada");
+        else novasenhaHash = await hashPassword(novasenha);
     }
 
     if(changeType && !tipo) {
-        return res.status(400).send("Tipo de usuário deve ser informado");
+        return res.status(422).send("Tipo de usuário deve ser informado");
+    }
+    
+    if(!adm && !senha) {
+        return res.status(422).send("Senha deve ser informada");
     }
 
     try {
+        if(!adm) {
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: id
+                }
+            });
+
+            if(!user) {
+                return res.status(404).send('Usuário não encontrado');
+            }
+
+            if(!(await comparePasswords(senha || "", user.senha))) {
+                return res.status(401).send('Senha inválida');
+            }
+        }
+
         await prisma.user.update({
             where: {
-                id: id,
-                ... (adm && {
-                    senha: senha
-                })
+                id: id
             },
             data: {
                 nome: nome,
@@ -214,7 +193,7 @@ router.patch("/", async (req: Request, res: Response) => {
                     tipo: tipo,
                 }),
                 ... (mudarSenha && {
-                    senha: novasenha
+                    senha: novasenhaHash
                 })
             }
         });
@@ -224,10 +203,6 @@ router.patch("/", async (req: Request, res: Response) => {
 
     } catch (error: any) {
 
-        if (error.code === 'P2025') {
-            res.status(404).send('Senha inválida');
-            return;
-        }
         if (error.code === 'P2002' && error.meta.target[0] === 'email') {
             res.status(409).send('Email já cadastrado');
             return;
@@ -239,15 +214,13 @@ router.patch("/", async (req: Request, res: Response) => {
 });
 
 
-const UserUpdateFirst = idSchema.merge(cpfSchema).merge(cpfSchema).merge(dataNascSchema).merge(emailSchema).merge(nomeSchema).merge(senhaSchema).merge(telefoneSchema);
-
 //Atualizar primeiro usuário do sistema, utilizado somente logo após primeiro usuário fazer login
 router.patch("/first", async (req: Request, res: Response) => {
 
     const parse = UserUpdateFirst.safeParse(req.body);
 
     if(!parse.success) {
-        return res.status(402).send({
+        return res.status(422).send({
             message: "Dados inválidos",
             errors: parse.error.flatten()
         });
@@ -266,7 +239,7 @@ router.patch("/first", async (req: Request, res: Response) => {
                 data_nasc: new Date(data_nasc),
                 email: email,
                 nome: nome,
-                senha: senha,
+                senha: await hashPassword(senha),
                 telefone: telefone
             }
         });
@@ -282,10 +255,7 @@ router.patch("/first", async (req: Request, res: Response) => {
 });
 
 
-const UserDelete = z.object({
-    senha: senhaSchema.shape.senha.optional(),
-    minhaConta: z.string().default('1') //defaults to true
-}).merge(idSchema);
+
 
 //Deletar usuário
 router.delete("/", async (req: Request, res: Response) => {
@@ -293,14 +263,14 @@ router.delete("/", async (req: Request, res: Response) => {
     const parse = UserDelete.safeParse(req.query);
 
     if(!parse.success) {
-        return res.status(402).send({
+        return res.status(422).send({
             message: "Dados inválidos",
             errors: parse.error.flatten()
         });
     }
 
     const { id, senha } = parse.data;
-    const minhaConta = parse.data.minhaConta === '1';
+    const minhaConta = parse.data.minhaConta === 1;
 
     if(minhaConta && !senha) {
         return res.status(400).send("A senha da conta deve ser informada");
@@ -330,24 +300,30 @@ router.delete("/", async (req: Request, res: Response) => {
             return;
         }
 
+        await prisma.user.findUnique({
+            where: {
+                id: String(id)
+            }
+        });
+
+        if(!user) {
+            return res.status(404).send("Usuário não encontrado");
+        }
+
+        if(minhaConta && !(await comparePasswords(senha, user.senha))) {
+            return res.status(401).send("Senha inválida");
+        }
+
         await prisma.user.delete({
             where: {
-                id: String(id),
-                ... (minhaConta && {
-                    senha: String(senha)
-                })
+                id: user.id
             }
         });
 
         res.status(200).send("Usuário excluido");
         return;
 
-    } catch (error: any) {
-
-        if (error.code === 'P2025') {
-            res.status(404).send("Senha inválida");
-            return;
-        }
+    } catch (error) {
 
         res.status(400).send('Desculpe, não foi possível remover o usuário. Tente novamente mais tarde');
         return;
@@ -355,27 +331,13 @@ router.delete("/", async (req: Request, res: Response) => {
 });
 
 
-interface UsersGet {
-    nome?: string;
-    cpf?: string;
-    email?: string;
-    tipo?: string;
-}
-
-const UsersGet = z.object({
-    nome: z.string().optional(),
-    cpf: z.string().optional(),
-    email: z.string().optional(),
-    tipo: z.string().optional()
-});
-
 //Ver usuários
 router.get("/all", async (req: Request, res: Response) => {
 
     const parse = UsersGet.safeParse(req.query);
 
     if(!parse.success) {
-        return res.status(402).send({
+        return res.status(422).send({
             message: "Dados inválidos",
             errors: parse.error.flatten()
         });
@@ -427,24 +389,20 @@ router.get("/all", async (req: Request, res: Response) => {
 });
 
 
-const UserRespGet = z.object({
-    cpf: z.string().default('0') //defaults to false
-});
-
-//Recuperar nomes do usuário responsáveis
+//Recuperar nomes dos usuário responsáveis
 router.get("/responsaveis", async (req: Request, res: Response) => {
 
     const parse = UserRespGet.safeParse(req.query);
 
     if(!parse.success) {
-        return res.status(402).send({
+        return res.status(422).send({
             message: "Dados inválidos",
             errors: parse.error.flatten()
         });
     }
 
     //Caso também queira retornar cpf dos responsáveis
-    const cpf  = parse.data.cpf !== '0';
+    const cpf  = parse.data.cpf === 1;
 
     try {
         const users = await prisma.user.findMany({
@@ -469,17 +427,13 @@ router.get("/responsaveis", async (req: Request, res: Response) => {
 })
 
 
-const UserData = z.object({
-    saveContext: z.string().default('0') //defaults to false
-}).merge(idSchema);
-
 //Recuperar dados de um usuário
 router.post("/data", async (req: Request, res: Response) => {
 
     const parse = UserData.safeParse(req.body);
 
     if(!parse.success) {
-        return res.status(402).send({
+        return res.status(422).send({
             message: "Dados inválidos",
             errors: parse.error.flatten()
         });
@@ -488,7 +442,7 @@ router.post("/data", async (req: Request, res: Response) => {
     //Filtros para busca de usuário
     //saveContext especifica que deseja retornar somente o nome e tipo de usuário
     const { id } = parse.data;
-    const saveContext = parse.data.saveContext !== '0';
+    const saveContext = parse.data.saveContext === 1;
 
     try {
         const user = await prisma.user.findFirstOrThrow({
@@ -522,6 +476,7 @@ router.post("/data", async (req: Request, res: Response) => {
     }
 });
 
+
 interface nextReservas {
     name: String;
     date: String;
@@ -530,14 +485,13 @@ interface nextReservas {
     dataTotal: number;
 }
 
-
 //Recupera dados da página inicial
 router.get("/mainpageinfo", async (req: Request, res: Response) => {
 
     const parse = idSchema.safeParse(req.query);
 
     if(!parse.success) {
-        return res.status(402).json({
+        return res.status(422).send({
             message: "Dados inválidos",
             errors: parse.error.flatten()
         });

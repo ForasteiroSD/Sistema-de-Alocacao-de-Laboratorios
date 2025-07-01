@@ -58,7 +58,7 @@ export default function InfoLab() {
 
     async function verifyUser() {
         try {
-            const response = (await api.post('userLabs', { user_id: user.id })).data;
+            const response = (await api.post('lab/user', { user_id: user.id })).data;
             if ((response.find((lab) => lab.nome === nome))) setShowEditButton(true)
             else setShowEditButton(false);
 

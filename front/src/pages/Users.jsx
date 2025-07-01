@@ -53,7 +53,7 @@ export default function Users() {
         const tipo = document.querySelector('#accoutTypeSearch').value;
 
         try {
-            const response = (await api.get('users?' , {
+            const response = (await api.get('user/all' , {
                 params: {
                     nome: nome,
                     cpf: cpf,

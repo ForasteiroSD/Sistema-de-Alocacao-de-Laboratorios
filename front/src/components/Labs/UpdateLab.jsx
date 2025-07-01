@@ -65,7 +65,7 @@ export default function UpdateLab({ labId, CloseModal, updateView }) {
 
     async function getResponsaveis() {
         try {
-            const response = (await api.get('users/responsavel', { params: { cpf: true } })).data;
+            const response = (await api.get('user/responsaveis', { params: { cpf: 1 } })).data;
             const users = response.map(user => ({
                 value: user.cpf,
                 name: `${user.cpf}-${user.nome}`,

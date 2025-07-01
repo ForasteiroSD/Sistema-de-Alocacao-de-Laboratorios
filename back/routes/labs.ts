@@ -1,17 +1,27 @@
 import { Request, Response, Router } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { stringData } from '../utils/formatDate'
+import { LabCreate, LabNames, LabReserves, LabsGet, LabUpdateSchema, nomeSchema } from '../schemas';
 
 const router = Router();
 const prisma = new PrismaClient();
 
 //Cadastrar laboratório
-router.post("/lab", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response) => {
 
     //Dados do laboratório a ser criado
     //Utilizar responsavel_cpf caso seja administrador que esteja criado laboratório, responsavel_id caso contrário
-    const { responsavel_cpf, nome, capacidade, projetor, quadro, televisao, ar_condicionado, computador, outro } = req.body;
-    let { responsavel_id } = req.body;
+    const parse = LabCreate.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const { ar_condicionado, capacidade, computador, nome, projetor, quadro, televisao, outro, responsavel_cpf } = parse.data;
+    let { responsavel_id } = parse.data;
 
     try {
         if (responsavel_cpf) {
@@ -25,6 +35,10 @@ router.post("/lab", async (req: Request, res: Response) => {
                 }
             });
             responsavel_id = user.id;
+        }
+
+        if(!responsavel_id) {
+            return res.status(400).send("Id ou cpf do responsável pelo laboratório deve ser informado");
         }
 
         await prisma.laboratorio.create({
@@ -63,11 +77,18 @@ router.post("/lab", async (req: Request, res: Response) => {
 });
 
 //Atualizar laboratório
-router.patch("/lab", async (req: Request, res: Response) => {
+router.patch("/", async (req: Request, res: Response) => {
 
-    //Dados de busca e a serem atualizados
-    //novoResponsavel é o cpf do usuário que será responsável pelo laboratório (opcional)
-    const { nome, capacidade, projetor, quadro, televisao, ar_condicionado, computador, outro, novo_responsavel } = req.body;
+    const parse = LabUpdateSchema.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const { nome, capacidade, projetor, quadro, televisao, ar_condicionado, computador, outro, novo_responsavel } = parse.data;
     
     try {
         if (novo_responsavel) {
@@ -117,10 +138,18 @@ router.patch("/lab", async (req: Request, res: Response) => {
 });
 
 //Consultar laboratórios
-router.get("/labs", async (req: Request, res: Response) => {
+router.get("/all", async (req: Request, res: Response) => {
 
-    //Filtros de busca
-    const { nome, responsavel, capacidade_minima } = req.query;
+    const parse = LabsGet.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    const { nome, responsavel, capacidade_minima } = parse.data;
 
     try {
         const labs = await prisma.laboratorio.findMany({
@@ -170,9 +199,18 @@ router.get("/labs", async (req: Request, res: Response) => {
 });
 
 
-router.get("/lab", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
 
-    const { nome } = req.query;
+    const parse = nomeSchema.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errros: parse.error.flatten()
+        });
+    }
+
+    const { nome } = parse.data;
 
     try {
 
@@ -215,9 +253,18 @@ router.get("/lab", async (req: Request, res: Response) => {
 });
 
 //Recupera nomes dos laboratórios de um usuário ou todos os laboratórios caso nenhum nome id seja passado
-router.post("/userLabs", async (req: Request, res: Response) => {
+router.post("/user", async (req: Request, res: Response) => {
 
-    const { user_id } = req.body;
+    const parse = LabNames.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    const { user_id } = parse.data;
 
     try {
 
@@ -242,9 +289,19 @@ router.post("/userLabs", async (req: Request, res: Response) => {
 
 });
 
-router.get('/lab/reservasdia', async (req: Request, res: Response) => {
+router.get('/reservasdia', async (req: Request, res: Response) => {
 
-    const { nome, dia } = req.query;
+    const parse = LabReserves.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const { nome, dia } = parse.data;
+
     let data = new Date(String(dia));
     let data1 = new Date(String(dia));
     data1.setUTCDate(data1.getUTCDate() + 1)

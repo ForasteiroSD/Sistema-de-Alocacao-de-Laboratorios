@@ -48,7 +48,7 @@ export default function MyReserves({ Id }) {
     async function getData() {
 
         try {
-            const response = (await api.post('userLabs')).data;
+            const response = (await api.post('lab/user')).data;
 
             const inputValues = [{ value: '', name: 'Qualquer Laboratório' }];
             for (let lab of response) {

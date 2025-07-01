@@ -1,5 +1,4 @@
 /* Packages */
-import { sha256 } from "js-sha256";
 import { z } from "zod";
 import { cpf as CPF } from 'cpf-cnpj-validator';
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,7 +36,7 @@ export default function NewUser({ CloseModal, updateView }) {
             await api.post('user/create', {
                 nome: nome,
                 cpf: cpf,
-                d_nas: d_nas,
+                data_nasc: d_nas,
                 telefone: telefone,
                 email: email,
                 senha: senha,
@@ -68,7 +67,7 @@ export default function NewUser({ CloseModal, updateView }) {
                     z.string().email().parse(email);
                     if (senha.length < 8) setAlert('Warning', 'A senha deve ter no mínimo 8 caracteres')
                     else if (senha != confirmarSenha) setAlert('Warning', 'As senhas informadas são diferentes')
-                    else CreateNewUser(sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha), email, cpf, telefone);
+                    else CreateNewUser(senha, email, cpf, telefone);
                 } catch (error) {
                     setAlert('Warning', 'Email inválido')
                 }

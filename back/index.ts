@@ -3,7 +3,7 @@ import cors from "cors";
 import user from "./routes/user";
 import labs from "./routes/labs";
 import reservas from "./routes/reservas";
-import { env } from "node:process";
+import { env } from "./utils/env";
 
 const PORT = env.PORT || 5000;
 const app = express();
@@ -21,6 +21,7 @@ const app = express();
 //         }
 //     }
 // }));
+app.use(cors({credentials: true}));
 app.use(express.json({limit: '2mb'}));
 app.use(express.urlencoded({ extended: true, limit: "2mb", parameterLimit: 5000 }));
 
@@ -34,7 +35,8 @@ app.get('/', (req, res) => {
 });
 
 app.use("/user", user);
-app.use(labs);
+
+app.use("/lab", labs);
 app.use(reservas);
 
 export default app;
