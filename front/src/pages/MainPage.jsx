@@ -37,7 +37,6 @@ export default function MainPage() {
                 setNextReserves(response.nextReserves);
 
             } catch (error) {
-                console.log(error)
                 setMainInfo('Desculpe, não foi possível realizar a pesquisa. Tente novamente mais tarde.');
                 setNextReserves('Desculpe, não foi possível realizar a pesquisa. Tente novamente mais tarde.');
             }

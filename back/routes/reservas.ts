@@ -2,8 +2,8 @@ import { Request, Response, Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { stringData } from '../utils/formatDate';
 import { createReserveEmailText, sendEmail } from '../utils/sendEmail';
-import { env } from '../utils/env';
 import { idSchema, ReserveRemove, Reserves, ReservesRespLab, ReservesUser } from '../schemas';
+import { adm_authorization } from '../middlewares/adm_middleware';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -28,7 +28,6 @@ function verificaConflito(inicio1: Number, fim1: Number, inicio2: Number, fim2: 
 }
 
 
-
 interface ReservaParcial {
     dia: Date;
     inicio: number;
@@ -42,35 +41,12 @@ interface ReservaInsercao {
     duracao: string;
 }
 
-interface HorariosSemanal {
-    dia_semana: string | Date;
-    hora_inicio: string;
-    duracao: string;
-}
-
-interface HorariosPersonaliza {
-    data: string | Date;
-    hora_inicio: string;
-    duracao: string;
-}
-
-interface ReservaPost {
-    userId: string;
-    userName: string;
-    labName: string;
-    tipo: 'Única' | 'Semanal' | 'Personalizada' | 'Diária'
-    data_inicio?: string;
-    data_fim?: string;
-    hora_inicio?: string;
-    duracao?: string;
-    horarios?: HorariosSemanal[] | HorariosPersonaliza[];
-}
-
 
 //Inserir reservas
 router.post('/reserva', async (req: Request, res: Response) => {
 
-    const { userId, userName, labName, tipo, data_inicio, data_fim, hora_inicio, duracao, horarios } = req.body;
+    const { userName, labName, tipo, data_inicio, data_fim, hora_inicio, duracao, horarios } = req.body;
+    const userId = (req as any).userData.id;
 
     let dataSearch1, dataSearch2;
 
@@ -311,7 +287,8 @@ router.post('/reservas/lab', async (req: Request, res: Response) => {
         })
     }
 
-    const { resp_id, userName, labName, data_inicio, data_fim, tipo } = parse.data;
+    const { userName, labName, data_inicio, data_fim, tipo } = parse.data;
+    const resp_id = (req as any).userData.id;
 
     const dataSearch1 = new Date(String(data_inicio));
     dataSearch1.setUTCHours(0, 0, 0, 0);
@@ -416,7 +393,8 @@ router.post('/reservas/user', async (req: Request, res: Response) => {
         })
     }
 
-    const { userId, labName, data_inicio, data_fim, tipo } = parse.data;
+    const { labName, data_inicio, data_fim, tipo } = parse.data;
+    const userId = (req as any).userData.id;
 
     const dataSearch1 = new Date(String(data_inicio));
     dataSearch1.setUTCHours(0, 0, 0, 0);
@@ -492,7 +470,7 @@ router.post('/reservas/user', async (req: Request, res: Response) => {
 });
 
 //Recuperar reservas do sistema
-router.get('/reservas', async (req: Request, res: Response) => {
+router.get('/reservas', adm_authorization, async (req: Request, res: Response) => {
 
     const parse = Reserves.safeParse(req.query);
 
@@ -605,7 +583,7 @@ router.get('/reserva', async (req: Request, res: Response) => {
         })
     }
 
-    const { id } = parse.data;
+    const { id } = (req as any).userData.id;
 
     try {
 
@@ -722,7 +700,8 @@ router.delete('/minhareserva', async (req: Request, res: Response) => {
 
         await prisma.reserva.delete({
             where: {
-                id: String(id)
+                id: String(id),
+                user_id: (req as any).userData.id
             }
         });
 
@@ -752,6 +731,11 @@ router.delete('/reserva', async (req: Request, res: Response) => {
         })
     }
 
+    const tokenData =(req as any).userData;
+    if(tokenData.tipo !== "Administrador" && tokenData.tipo !== "Responsável") {
+        return res.status(403).send("Você não pode excluir essa reserva");
+    }
+
     const { id, motivo } = parse.data;
 
     let dia_min = new Date();
@@ -769,7 +753,12 @@ router.delete('/reserva', async (req: Request, res: Response) => {
 
         const reserva = await prisma.reserva.findUnique({
             where: {
-                id: String(id)
+                id: String(id),
+                ...(tokenData.tipo === "Responsável" && {
+                    laboratorio: {
+                        responsavel_id: tokenData.id
+                    }
+                })
             },
             include: {
                 usuario: true,

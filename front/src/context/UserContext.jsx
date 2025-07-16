@@ -45,6 +45,7 @@ export const UserProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     Cookies.remove('user');
+    Cookies.remove('jwtToken');
   };
 
   return (

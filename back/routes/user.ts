@@ -3,7 +3,10 @@ import { PrismaClient } from '@prisma/client';
 import { stringData } from '../utils/formatDate';
 import { idSchema, UserCreateSchema, UserData, UserDelete, UserLoginSchema, UserRespGet, UsersGet, UserUpdateFirst, UserUpdateSchema } from '../schemas';
 import { comparePasswords, hashPassword } from '../utils/auth';
+import jwt from "jsonwebtoken";
 import { env } from '../utils/env';
+import { authenticate } from '../middlewares/auth_middleware';
+import { adm_authorization } from '../middlewares/adm_middleware';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -40,8 +43,30 @@ router.post("/login", async (req: Request, res: Response) => {
         }
 
 
+        const jwtToken = jwt.sign({
+                id: user.id,
+                tipo: user.tipo
+            },
+            env.JWT_SECRET,
+            {
+                expiresIn: "1d"
+            }
+        );
 
-        return res.status(200).send({ id: user.id, nome: user.nome, tipo: user.tipo });
+        res.cookie("jwtToken", jwtToken, {
+            httpOnly: true,
+            ...(env.NODE_ENV?.toLowerCase().includes("production") && {
+                secure: true, //true para https e sameSite = none
+                sameSite: "none",
+            }),
+            maxAge: 60*60*24*1000
+        });
+
+        return res.status(200).json({
+            id: user.id,
+            nome: user.nome,
+            tipo: user.tipo
+        });
 
     } catch (error: any) {
 
@@ -76,61 +101,8 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 
-
-
-//Cadastrar usuário
-router.post("/create", async (req: Request, res: Response) => {
-
-    const parse = UserCreateSchema.safeParse(req.body);
-
-    if (!parse.success) {
-        return res.status(422).send({
-            message: "Dados inválidos",
-            errors: parse.error.flatten()
-        })
-    }
-
-    //Dados do usuário a ser criado
-    const { nome, cpf, data_nasc, telefone, email, senha, tipo } = parse.data;
-
-    const date = new Date(data_nasc);
-
-    if (date.toString() === 'Invalid Date') {
-        res.status(400).send('Formato de data inválido');
-        return;
-    }
-
-    try {
-        await prisma.user.create({
-            data: {
-                email: email,
-                cpf: cpf,
-                nome: nome,
-                senha: await hashPassword(senha),
-                data_nasc: date,
-                telefone: telefone,
-                tipo: tipo
-            }
-        });
-
-        res.status(201).send('Usuário cadastrado');
-        return;
-
-    } catch (error: any) {
-
-        if (error.code === 'P2002' && error.meta.target[0] === 'cpf') {
-            res.status(409).send('CPF já cadastrado');
-            return;
-        } else if (error.code === 'P2002' && error.meta.target[0] === 'email') {
-            res.status(409).send('Email já cadastrado');
-            return;
-        }
-
-        res.status(400).send('Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
-        return;
-
-    }
-});
+//Middleware de autênticação para próximas rotas
+router.use(authenticate);
 
 
 //Atualizar usuário
@@ -145,11 +117,17 @@ router.patch("/", async (req: Request, res: Response) => {
         });
     }
 
+    const tokenData = (req as any).userData;
     const { id, nome, telefone, email, senha, novasenha, tipo } = parse.data;
     const adm = parse.data.adm === 1;
     const mudarSenha = parse.data.mudarSenha === 1;
     const changeType = parse.data.changeType === 1;
     let novasenhaHash;
+
+    //Valida se usuáio realmente é um administrador
+    if((adm || id != tokenData.id) && tokenData.tipo !== "Administrador") {
+        return res.status(403).send("Função não permitida");
+    }
 
     if(mudarSenha) {
         if(!novasenha) return res.status(422).send("Nova senha deve ser informada");
@@ -214,49 +192,6 @@ router.patch("/", async (req: Request, res: Response) => {
 });
 
 
-//Atualizar primeiro usuário do sistema, utilizado somente logo após primeiro usuário fazer login
-router.patch("/first", async (req: Request, res: Response) => {
-
-    const parse = UserUpdateFirst.safeParse(req.body);
-
-    if(!parse.success) {
-        return res.status(422).send({
-            message: "Dados inválidos",
-            errors: parse.error.flatten()
-        });
-    }
-
-    //Dados do primeiro adm do sistema
-    const { id, cpf, data_nasc, email, nome, senha, telefone } = parse.data;
-
-    try {
-        await prisma.user.update({
-            where: {
-                id: id
-            },
-            data: {
-                cpf: cpf,
-                data_nasc: new Date(data_nasc),
-                email: email,
-                nome: nome,
-                senha: await hashPassword(senha),
-                telefone: telefone
-            }
-        });
-
-        res.status(200).send({ nome: nome });
-        return;
-
-    } catch (error: any) {
-
-        res.status(400).send('database off');
-        return;
-    }
-});
-
-
-
-
 //Deletar usuário
 router.delete("/", async (req: Request, res: Response) => {
 
@@ -269,8 +204,13 @@ router.delete("/", async (req: Request, res: Response) => {
         });
     }
 
+    const tokenData = (req as any).userData;
     const { id, senha } = parse.data;
     const minhaConta = parse.data.minhaConta === 1;
+
+    if((!minhaConta || id != tokenData.id) && tokenData.tipo !== "Administrador") {
+        return res.status(403).send("Função não permitida")
+    }
 
     if(minhaConta && !senha) {
         return res.status(400).send("A senha da conta deve ser informada");
@@ -331,65 +271,7 @@ router.delete("/", async (req: Request, res: Response) => {
 });
 
 
-//Ver usuários
-router.get("/all", async (req: Request, res: Response) => {
-
-    const parse = UsersGet.safeParse(req.query);
-
-    if(!parse.success) {
-        return res.status(422).send({
-            message: "Dados inválidos",
-            errors: parse.error.flatten()
-        });
-    }
-
-    //Filtros de busca
-    const { nome, cpf, email, tipo } = parse.data;
-
-    try {
-        const users = await prisma.user.findMany({
-            where: {
-                ... (nome && {
-                    nome: { contains: String(nome) }
-                }),
-                ... (cpf && {
-                    cpf: { contains: String(cpf) }
-                }),
-                ... (email && {
-                    email: { contains: String(email) }
-                }),
-                ... (tipo && {
-                    tipo: { contains: String(tipo) }
-                })
-            },
-            select: {
-                id: true,
-                nome: true,
-                cpf: true,
-                email: true,
-                tipo: true
-            },
-            orderBy: [
-                {
-                    tipo: 'asc'
-                },
-                {
-                    nome: 'asc'
-                },
-            ]
-        });
-
-        res.status(200).send(users);
-        return;
-
-    } catch (error) {
-        res.status(400).send('database off');
-        return;
-    }
-});
-
-
-//Recuperar nomes dos usuário responsáveis
+//Recuperar nomes dos usuários responsáveis
 router.get("/responsaveis", async (req: Request, res: Response) => {
 
     const parse = UserRespGet.safeParse(req.query);
@@ -437,6 +319,12 @@ router.post("/data", async (req: Request, res: Response) => {
             message: "Dados inválidos",
             errors: parse.error.flatten()
         });
+    }
+    
+    const tokenData = (req as any).userData;
+    if(parse.data.id != tokenData.id && tokenData.tipo !== "Administrador")
+    {
+        return res.status(403).send("Função não permitida");
     }
 
     //Filtros para busca de usuário
@@ -497,7 +385,7 @@ router.get("/mainpageinfo", async (req: Request, res: Response) => {
         });
     }
 
-    const { id } = parse.data;
+    const { id } = (req as any).userData;
 
     let today = new Date();
 
@@ -610,6 +498,162 @@ router.get("/mainpageinfo", async (req: Request, res: Response) => {
         return;
     }
 
+});
+
+//ROTAS DE ADMIN
+router.use(adm_authorization);
+
+//Cadastrar usuário
+router.post("/create", async (req: Request, res: Response) => {
+
+    const parse = UserCreateSchema.safeParse(req.body);
+
+    if (!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    //Dados do usuário a ser criado
+    const { nome, cpf, data_nasc, telefone, email, senha, tipo } = parse.data;
+
+    const date = new Date(data_nasc);
+
+    if (date.toString() === 'Invalid Date') {
+        res.status(400).send('Formato de data inválido');
+        return;
+    }
+
+    try {
+        await prisma.user.create({
+            data: {
+                email: email,
+                cpf: cpf,
+                nome: nome,
+                senha: await hashPassword(senha),
+                data_nasc: date,
+                telefone: telefone,
+                tipo: tipo
+            }
+        });
+
+        res.status(201).send('Usuário cadastrado');
+        return;
+
+    } catch (error: any) {
+
+        if (error.code === 'P2002' && error.meta.target[0] === 'cpf') {
+            res.status(409).send('CPF já cadastrado');
+            return;
+        } else if (error.code === 'P2002' && error.meta.target[0] === 'email') {
+            res.status(409).send('Email já cadastrado');
+            return;
+        }
+
+        res.status(400).send('Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
+        return;
+
+    }
+});
+
+
+//Atualizar primeiro usuário do sistema, utilizado somente logo após primeiro usuário fazer login
+router.patch("/first", async (req: Request, res: Response) => {
+
+    const parse = UserUpdateFirst.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    //Dados do primeiro adm do sistema
+    const { id, cpf, data_nasc, email, nome, senha, telefone } = parse.data;
+
+    try {
+        await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                cpf: cpf,
+                data_nasc: new Date(data_nasc),
+                email: email,
+                nome: nome,
+                senha: await hashPassword(senha),
+                telefone: telefone
+            }
+        });
+
+        res.status(200).send({ nome: nome });
+        return;
+
+    } catch (error: any) {
+
+        res.status(400).send('database off');
+        return;
+    }
+});
+
+
+//Ver usuários
+router.get("/all", async (req: Request, res: Response) => {
+
+    const parse = UsersGet.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    //Filtros de busca
+    const { nome, cpf, email, tipo } = parse.data;
+
+    try {
+        const users = await prisma.user.findMany({
+            where: {
+                ... (nome && {
+                    nome: { contains: String(nome) }
+                }),
+                ... (cpf && {
+                    cpf: { contains: String(cpf) }
+                }),
+                ... (email && {
+                    email: { contains: String(email) }
+                }),
+                ... (tipo && {
+                    tipo: { contains: String(tipo) }
+                })
+            },
+            select: {
+                id: true,
+                nome: true,
+                cpf: true,
+                email: true,
+                tipo: true
+            },
+            orderBy: [
+                {
+                    tipo: 'asc'
+                },
+                {
+                    nome: 'asc'
+                },
+            ]
+        });
+
+        res.status(200).send(users);
+        return;
+
+    } catch (error) {
+        res.status(400).send('database off');
+        return;
+    }
 });
 
 export default router;

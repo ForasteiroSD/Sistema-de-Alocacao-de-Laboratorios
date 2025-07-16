@@ -52,7 +52,6 @@ export default function Exclude({ type, CloseModal, Id, updateView }) {
             }
             updateView && updateView();
         } catch (error) {
-            console.log(error);
             const erro = error.response.data;
             setAlert('Error', erro);
         }

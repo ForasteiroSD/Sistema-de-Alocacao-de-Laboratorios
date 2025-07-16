@@ -20,6 +20,11 @@ router.post("/", async (req: Request, res: Response) => {
         })
     }
 
+    const tokenData = (req as any).userData;
+    if(tokenData.tipo !== "Administador" && tokenData.tipo !== "Responsável") {
+        return res.status(403).send("Função não permitida");
+    }
+
     const { ar_condicionado, capacidade, computador, nome, projetor, quadro, televisao, outro, responsavel_cpf } = parse.data;
     let { responsavel_id } = parse.data;
 
@@ -88,9 +93,32 @@ router.patch("/", async (req: Request, res: Response) => {
         })
     }
 
+    const tokenData = (req as any).userData;
+    if(tokenData.tipo !== "Administador" && tokenData.tipo !== "Responsável") {
+        return res.status(403).send("Função não permitida");
+    }
+
     const { nome, capacidade, projetor, quadro, televisao, ar_condicionado, computador, outro, novo_responsavel } = parse.data;
     
     try {
+        if(tokenData.tipo === "Responsável") {
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: tokenData.id,
+                },
+                include: {
+                    laboratorios: {
+                        where: {
+                            nome: nome
+                        }
+                    }
+                }
+            });
+
+            if(user && !user.laboratorios.length) {
+                return res.status(403).send("Você não tem permissão para atualizar esse laboratório");
+            }
+        }
         if (novo_responsavel) {
             await prisma.user.update({
                 where: {
