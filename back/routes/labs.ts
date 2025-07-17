@@ -1,10 +1,9 @@
-import { Request, Response, Router } from 'express'
-import { PrismaClient } from '@prisma/client'
-import { stringData } from '../utils/formatDate'
+import { Request, Response, Router } from 'express';
+import { prisma } from '../utils/prisma';
+import { stringData } from '../utils/formatDate';
 import { LabCreate, LabNames, LabReserves, LabsGet, LabUpdateSchema, nomeSchema } from '../schemas';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 //Cadastrar laboratório
 router.post("/", async (req: Request, res: Response) => {

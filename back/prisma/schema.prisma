@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url = "file:./dev.db" // uses connection pooling
+  url = env("DATABASE_URL") // uses connection pooling
 }
 
 model user {

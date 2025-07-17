@@ -1,15 +1,14 @@
 import { Request, Response, Router } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { stringData } from '../utils/formatDate';
 import { idSchema, UserCreateSchema, UserData, UserDelete, UserLoginSchema, UserRespGet, UsersGet, UserUpdateFirst, UserUpdateSchema } from '../schemas';
 import { comparePasswords, hashPassword } from '../utils/auth';
 import jwt from "jsonwebtoken";
+import { prisma } from '../utils/prisma';
 import { env } from '../utils/env';
 import { authenticate } from '../middlewares/auth_middleware';
 import { adm_authorization } from '../middlewares/adm_middleware';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 //Realizar login
 router.post("/login", async (req: Request, res: Response) => {
@@ -41,7 +40,6 @@ router.post("/login", async (req: Request, res: Response) => {
         if(!user || !(await comparePasswords(senha, user.senha))) {
             return res.status(401).send('Email ou senha incorretos');
         }
-
 
         const jwtToken = jwt.sign({
                 id: user.id,
@@ -86,13 +84,36 @@ router.post("/login", async (req: Request, res: Response) => {
                     }
                 });
 
-                res.status(200).send({ id: user.id, nome: user.nome, tipo: user.tipo, first: true });
-                return;
+                const jwtToken = jwt.sign({
+                        id: user.id,
+                        tipo: user.tipo
+                    },
+                    env.JWT_SECRET,
+                    {
+                        expiresIn: "1d"
+                    }
+                );
+
+                res.cookie("jwtToken", jwtToken, {
+                    httpOnly: true,
+                    ...(env.NODE_ENV?.toLowerCase().includes("production") && {
+                        secure: true, //true para https e sameSite = none
+                        sameSite: "none",
+                    }),
+                    maxAge: 60*60*24*1000
+                });
+
+                return res.status(200).json({
+                    id: user.id,
+                    nome: user.nome,
+                    tipo: user.tipo,
+                    first: true
+                });
             }
         } catch (error1) {
             res.status(500).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
             return;
-            }
+        }
             
         res.status(401).send('Email ou senha incorretos');
         return;

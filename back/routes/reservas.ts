@@ -1,12 +1,11 @@
 import { Request, Response, Router } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../utils/prisma';
 import { stringData } from '../utils/formatDate';
 import { createReserveEmailText, sendEmail } from '../utils/sendEmail';
 import { idSchema, ReserveRemove, Reserves, ReservesRespLab, ReservesUser } from '../schemas';
 import { adm_authorization } from '../middlewares/adm_middleware';
 
 const router = Router();
-const prisma = new PrismaClient();
 
 const dias_semana = [
     'Domingo',
