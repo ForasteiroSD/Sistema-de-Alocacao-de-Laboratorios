@@ -1,20 +1,20 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
-import { env } from "../utils/env";
+import { verifyJWTToken } from "../utils/auth";
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
-    try {
-        const token = req.cookies?.jwtToken;
-        
-        if(!token) {
-            return res.status(401).send("Token não fornecido");
-        }
+    const token = req.cookies?.jwtToken;
+    
+    if(!token) {
+        return res.status(401).send("Token não fornecido");
+    }
 
-        const decoded = jwt.verify(token, env.JWT_SECRET);
-        (req as any).userData = decoded;
+    const decoded = verifyJWTToken(token);
 
-        next();
-    } catch (err) {
+    if(!decoded) {
         return res.status(401).send("Usuário não autenticado");
     }
+
+    (req as any).userData = decoded;
+
+    next();
 }

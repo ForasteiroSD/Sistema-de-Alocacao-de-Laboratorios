@@ -21,3 +21,11 @@ export function generateJWTToken(payload: object) {
         }
     );
 }
+
+export function verifyJWTToken(token: string) {
+    try {
+        return jwt.verify(token, env.JWT_SECRET);
+    } catch (error) {
+        return false;
+    }
+}
