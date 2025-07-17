@@ -8,9 +8,9 @@
     "dev": "nodemon ./server.ts",
     "build": "tsc",
     "postinstall": "prisma generate",
-    "test": "cross-env DATABASE_URL=file:./../tests/integration/test.db NODE_ENV=test jest",
-    "test:integration": "cross-env DATABASE_URL=file:./../tests/integration/test.db NODE_ENV=test jest --selectProjects integration",
-    "test:unit": "cross-env NODE_ENV=test jest --selectProjects unit"
+    "test": "cross-env DATABASE_URL=file:./../tests/integration/test.db NODE_ENV=test jest --coverage",
+    "test:integration": "cross-env DATABASE_URL=file:./../tests/integration/test.db NODE_ENV=test jest --coverage --selectProjects integration",
+    "test:unit": "cross-env NODE_ENV=test jest --coverage --selectProjects unit"
   },
   "keywords": [],
   "author": "",
