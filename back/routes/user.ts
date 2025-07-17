@@ -203,23 +203,23 @@ router.delete("/", async (req: Request, res: Response) => {
             return;
         }
 
-        await prisma.user.findUnique({
+        const userDelete = await prisma.user.findUnique({
             where: {
                 id: String(id)
             }
         });
 
-        if(!user) {
+        if(!userDelete) {
             return res.status(404).send("Usuário não encontrado");
         }
 
-        if(minhaConta && !(await comparePasswords(senha, user.senha))) {
+        if(minhaConta && !(await comparePasswords(senha || "", userDelete.senha))) {
             return res.status(401).send("Senha inválida");
         }
 
         await prisma.user.delete({
             where: {
-                id: user.id
+                id: userDelete.id
             }
         });
 

@@ -108,7 +108,7 @@ export const UserUpdateSchema = z.object({
 export const UserUpdateFirst = idSchema.merge(cpfSchema).merge(cpfSchema).merge(dataNascSchema).merge(emailSchema).merge(nomeSchema).merge(senhaSchema).merge(telefoneSchema);
 
 export const UserDelete = z.object({
-    senha: senhaSchema.shape.senha,
+    senha: senhaSchema.shape.senha.optional(),
     minhaConta: z.coerce.number({invalid_type_error: "minhaConta deve ser 0 ou 1"}).min(0, "minhaConta deve ser 0 ou 1").max(1, "minhaConta deve ser 0 ou 1").default(1) //defaults to true
 }).merge(idSchema);
 
