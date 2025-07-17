@@ -85,7 +85,7 @@ describe("Update", () => {
         expect(res.status).toBe(401);
     });
 
-    it("deve retornar 422 - dados inválidos", async () => {
+    it("deve retornar 422 - dados inválidos (parse falha)", async () => {
         const res = await request(app)
             .patch("/user")
             .send({
@@ -120,6 +120,37 @@ describe("Update", () => {
 
         expect(res.status).toBe(403);
         expect(res.text).toBe("Função não permitida")
+    });
+
+    it("deve retornar 422 - dados inválidos (tipo não informado)", async () => {
+        const res = await request(app)
+            .patch("/user")
+            .send({
+                id: userId,
+                nome: "User",
+                telefone: "99999999999",
+                email: "user1@gmail.com",
+                changeType: 1
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.text).toBe("Tipo de usuário deve ser informado")
+    });
+
+    it("deve retornar 422 - dados inválidos (senha não informada)", async () => {
+        const res = await request(app)
+            .patch("/user")
+            .send({
+                id: userId,
+                nome: "User",
+                telefone: "99999999999",
+                email: "user1@gmail.com",
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.text).toBe("Senha deve ser informada")
     });
 
     it("deve retornar 401 - senha incorreta", async () => {
@@ -244,6 +275,18 @@ describe("Get user data", () => {
         expect(res.text).toBe("Função não permitida");
     });
 
+    it("deve retornar 404 - usuário não encontrado", async () => {
+        const res = await request(app)
+            .post("/user/data")
+            .send({
+                id: "5b3c5675-d7ef-435a-88ef-e3781548e3cc",
+            })
+            .set("Cookie", [`jwtToken=${admToken}`])
+
+        expect(res.status).toBe(404);
+        expect(res.text).toBe("Usuário inexistente");
+    });
+
     it("deve retornar 200 - dados corretos", async () => {
         const res = await request(app)
             .post("/user/data")
@@ -315,7 +358,7 @@ describe("Create", () => {
         expect(res.body.message).toBe("Dados inválidos");
     });
 
-    it("deve retornar 409 - dados conflitantes", async () => {
+    it("deve retornar 409 - dados conflitantes (email)", async () => {
         const res = await request(app)
             .post("/user/create")
             .send({
@@ -331,6 +374,24 @@ describe("Create", () => {
 
         expect(res.status).toBe(409);
         expect(res.text).toBe("Email já cadastrado");
+    });
+
+    it("deve retornar 409 - dados conflitantes (cpf)", async () => {
+        const res = await request(app)
+            .post("/user/create")
+            .send({
+                nome: "New User",
+                cpf: "000.000.000-00",
+                data_nasc: "2000-01-01",
+                telefone: "99999999999",
+                email: "email1@gmail.com",
+                senha: "12345678",
+                tipo: "Responsável"
+            })
+            .set("Cookie", [`jwtToken=${admToken}`]);
+
+        expect(res.status).toBe(409);
+        expect(res.text).toBe("CPF já cadastrado");
     });
 
     it("deve retornar 201 - dados corretos", async () => {
@@ -378,6 +439,31 @@ describe("Delete", () => {
 
         expect(res.status).toBe(403);
         expect(res.text).toBe("Função não permitida");
+    });
+
+    it("deve retornar 422 - dados inválidos (senha não informada)", async () => {
+        const res = await request(app)
+            .delete("/user")
+            .query({
+                id: userId,
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.text).toBe("A senha da conta deve ser informada");
+    });
+
+    it("deve retornar 401 - senha errada", async () => {
+        const res = await request(app)
+            .delete("/user")
+            .query({
+                id: userId,
+                senha: "Senha2@123"
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(401);
+        expect(res.text).toBe("Senha inválida");
     });
 
     it("deve retornar 200 - dados corretos", async () => {

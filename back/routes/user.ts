@@ -109,15 +109,11 @@ router.patch("/", async (req: Request, res: Response) => {
         if(!adm) {
             const user = await prisma.user.findUnique({
                 where: {
-                    id: id
+                    id: tokenData.id
                 }
             });
 
-            if(!user) {
-                return res.status(404).send('Usuário não encontrado');
-            }
-
-            if(!(await comparePasswords(senha || "", user.senha))) {
+            if(!user || !(await comparePasswords(senha || "", user.senha))) {
                 return res.status(401).send('Senha inválida');
             }
         }
@@ -130,7 +126,7 @@ router.patch("/", async (req: Request, res: Response) => {
                 nome: nome,
                 telefone: telefone,
                 email: email,
-                ... (changeType && {
+                ... (changeType && adm && {
                     tipo: tipo,
                 }),
                 ... (mudarSenha && {
@@ -149,7 +145,7 @@ router.patch("/", async (req: Request, res: Response) => {
             return;
         }
 
-        res.status(400).send('Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde');
+        res.status(500).send('Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde');
         return;
     }
 });
@@ -176,7 +172,7 @@ router.delete("/", async (req: Request, res: Response) => {
     }
 
     if(minhaConta && !senha) {
-        return res.status(400).send("A senha da conta deve ser informada");
+        return res.status(422).send("A senha da conta deve ser informada");
     }
 
     try {
@@ -228,7 +224,7 @@ router.delete("/", async (req: Request, res: Response) => {
 
     } catch (error) {
 
-        res.status(400).send('Desculpe, não foi possível remover o usuário. Tente novamente mais tarde');
+        res.status(500).send('Desculpe, não foi possível remover o usuário. Tente novamente mais tarde');
         return;
     }
 });
@@ -266,7 +262,7 @@ router.get("/responsaveis", async (req: Request, res: Response) => {
         return;
 
     } catch (error) {
-        res.status(400).send('database off');
+        res.status(500).send('Desculpe, não foi recuperar os usuários. Tente novamente mais tarde');
         return;
     }
 })

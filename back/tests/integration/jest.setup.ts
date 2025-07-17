@@ -29,7 +29,7 @@ beforeAll(async () => {
             },
             {
                 nome: "User",
-                cpf: "2",
+                cpf: "000.000.000-00",
                 data_nasc: new Date("2000-01-01"),
                 email: "user@gmail.com",
                 senha: await hashPassword("Senha1@123"),
