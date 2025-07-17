@@ -9,7 +9,8 @@
     "build": "tsc",
     "postinstall": "prisma generate",
     "test": "cross-env DATABASE_URL=file:./../tests/integration/test.db NODE_ENV=test jest",
-    "test:watch": "cross-env DATABASE_URL=file:./../tests/integration/test.db NODE_ENV=test jest --watch"
+    "test:integration": "cross-env DATABASE_URL=file:./../tests/integration/test.db NODE_ENV=test jest --selectProjects integration",
+    "test:unit": "cross-env NODE_ENV=test jest --selectProjects unit"
   },
   "keywords": [],
   "author": "",

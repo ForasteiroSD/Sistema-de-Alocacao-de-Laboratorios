@@ -16,22 +16,22 @@ app.use(cors({
         }
 
         if (!origin) {
-            return callback(new Error('Origin not defined'));
+            return callback(new Error("Origin not defined"));
         }
 
         if (whitelist.includes(String(origin))) {
             callback(null, origin);
         } else {
-            callback(new Error('Origin not allowed'));
+            callback(new Error("Origin not allowed"));
         }
     },
     credentials: true
 }));
 app.use(cookieParser());
-app.use(express.json({limit: '2mb'}));
+app.use(express.json({limit: "2mb"}));
 app.use(express.urlencoded({ extended: true, limit: "2mb", parameterLimit: 5000 }));
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
     res.send("Vercel server");
 });
 
