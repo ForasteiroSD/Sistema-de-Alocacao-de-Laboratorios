@@ -219,7 +219,7 @@ describe("Get responsaveis", () => {
 });
 
 describe("Get user data", () => {
-    it("deve retornar 422 - dados incorretos", async () => {
+    it("deve retornar 422 - dados inválidos", async () => {
         const res = await request(app)
             .post("/user/data")
             .send({
@@ -230,5 +230,191 @@ describe("Get user data", () => {
 
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
+    });
+
+    it("deve retornar 403 - token não é de adm", async () => {
+        const res = await request(app)
+            .post("/user/data")
+            .send({
+                id: admId
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(403);
+        expect(res.text).toBe("Função não permitida");
+    });
+
+    it("deve retornar 200 - dados corretos", async () => {
+        const res = await request(app)
+            .post("/user/data")
+            .send({
+                id: userId
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toBeInstanceOf(Object);
+        expect(res.body.nome).toBeDefined();
+        expect(res.body.tipo).toBeDefined();
+    });
+});
+
+describe("Main page info", () => {
+    it("deve retornar 422 - dados inválidos", async () => {
+        const res = await request(app)
+            .get("/user/mainpageinfo")
+            .query({
+                id: "id-invalido"
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.body.message).toBe("Dados inválidos");
+    });
+
+    it("deve retornar 200 - dados corretos", async () => {
+        const res = await request(app)
+            .get("/user/mainpageinfo")
+            .query({
+                id: userId
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toBeInstanceOf(Object);
+        expect(res.body.mainInfo).toHaveLength(4);
+        expect(res.body.nextReserves).toBeInstanceOf(Array);
+    });
+});
+
+describe("Create", () => {
+    it("deve retornar 403 - token não é de adm", async () => {
+        const res = await request(app)
+            .post("/user/create")
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(403);
+        expect(res.text).toBe("Função não permitida");
+    });
+
+    it("deve retornar 422 - dados inválidos", async () => {
+        const res = await request(app)
+            .post("/user/create")
+            .send({
+                nome: "New User",
+                cpf: "123.123",
+                data_nasc: "2000-14-01",
+                telefone: "99af99",
+                email: "email1@gmail.com",
+                senha: "12345678",
+                tipo: "Novo tipo"
+            })
+            .set("Cookie", [`jwtToken=${admToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.body.message).toBe("Dados inválidos");
+    });
+
+    it("deve retornar 409 - dados conflitantes", async () => {
+        const res = await request(app)
+            .post("/user/create")
+            .send({
+                nome: "New User",
+                cpf: "123.123.123-12",
+                data_nasc: "2000-01-01",
+                telefone: "99999999999",
+                email: "user@gmail.com",
+                senha: "12345678",
+                tipo: "Responsável"
+            })
+            .set("Cookie", [`jwtToken=${admToken}`]);
+
+        expect(res.status).toBe(409);
+        expect(res.text).toBe("Email já cadastrado");
+    });
+
+    it("deve retornar 201 - dados corretos", async () => {
+        const res = await request(app)
+            .post("/user/create")
+            .send({
+                nome: "New User",
+                cpf: "123.123.123-12",
+                data_nasc: "2000-01-01",
+                telefone: "99999999999",
+                email: "email1@gmail.com",
+                senha: "12345678",
+                tipo: "Responsável"
+            })
+            .set("Cookie", [`jwtToken=${admToken}`]);
+
+        expect(res.status).toBe(201);
+        expect(res.text).toBe("Usuário cadastrado");
+    });
+});
+
+describe("Delete", () => {
+    it("deve retornar 422 - dados inválidos", async () => {
+        const res = await request(app)
+            .delete("/user")
+            .query({
+                id: userId,
+                senha: "123458",
+            })
+            .set("Cookie", [`jwtToken=${admToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.body.message).toBe("Dados inválidos");
+    });
+
+    it("deve retornar 403 - token não é de adm", async () => {
+        const res = await request(app)
+            .delete("/user")
+            .query({
+                id: admId,
+                senha: "12345678",
+                minhaConta: 0,
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(403);
+        expect(res.text).toBe("Função não permitida");
+    });
+
+    it("deve retornar 200 - dados corretos", async () => {
+        const res = await request(app)
+            .delete("/user")
+            .query({
+                id: userId,
+                senha: "Senha1@123"
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(200);
+        expect(res.text).toBe("Usuário excluido");
+    });
+});
+
+describe("Get all", () => {
+    it("deve retornar 403 - token não é de adm", async () => {
+        const res = await request(app)
+            .get("/user/all")
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(403);
+        expect(res.text).toBe("Função não permitida");
+    });
+
+    it("deve retornar 200 - dados corretos", async () => {
+        const res = await request(app)
+            .get("/user/all")
+            .set("Cookie", [`jwtToken=${admToken}`]);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body[0]).toHaveProperty("id");
+        expect(res.body[0]).toHaveProperty("nome");
+        expect(res.body[0]).toHaveProperty("cpf");
+        expect(res.body[0]).toHaveProperty("email");
+        expect(res.body[0]).toHaveProperty("tipo");
     });
 });
