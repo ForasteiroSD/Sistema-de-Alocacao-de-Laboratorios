@@ -2,26 +2,14 @@
     "version": 2,
     "builds": [
       {
-        "src": "index.js",
-        "use": "@vercel/node"
-      },
-      {
-        "src": "./routes/labs.js",
-        "use": "@vercel/node"
-      },
-      {
-        "src": "./routes/user.js",
-        "use": "@vercel/node"
-      },
-      {
-        "src": "./routes/reservas.js",
+        "src": "dist/server.js",
         "use": "@vercel/node"
       }
     ],
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "index.js"
+        "dest": "dist/server.js"
       }
     ],
     "git": {
