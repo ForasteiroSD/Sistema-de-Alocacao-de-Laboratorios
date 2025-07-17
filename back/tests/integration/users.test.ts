@@ -1,9 +1,9 @@
 import request from "supertest";
-import app from "../index";
+import app from "../../index";
 
 let admToken: string, admId: string, userToken: string, userId: string;
 
-//get tokens and ids to use
+//salva tokens e ids para uso
 beforeAll(async () => {
     const res = await request(app)
         .post("/user/login")
@@ -26,9 +26,7 @@ beforeAll(async () => {
     userToken = res1.headers["set-cookie"][0].split(";")[0].replace("jwtToken=", "");
 });
 
-
 describe("Login", () => {
-
     it("deve retornar 422 - dados inválidos", async () => {
         const res = await request(app)
             .post("/user/login")
@@ -158,7 +156,6 @@ describe("Update", () => {
 
     it("deve retornar 200 - dados corretos", async () => {
         const novoNome = "User1";
-
         const res = await request(app)
             .patch("/user")
             .send({
@@ -178,7 +175,6 @@ describe("Update", () => {
 
     it("deve retornar 200 (adm atualizando) - dados corretos", async () => {
         const novoNome = "User";
-
         const res = await request(app)
             .patch("/user")
             .send({
@@ -196,5 +192,43 @@ describe("Update", () => {
 
         expect(res.status).toBe(200);
         expect(res.body.nome).toBe(novoNome);
+    });
+});
+
+describe("Get responsaveis", () => {
+    it("deve retornar 422 - dados inválidos", async () => {
+        const res = await request(app)
+            .get("/user/responsaveis")
+            .query({
+                cpf: 3
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.body.message).toBe("Dados inválidos");
+    });
+
+    it("deve retornar 200 - dados corretos", async () => {
+        const res = await request(app)
+            .get("/user/responsaveis")
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toBeInstanceOf(Array);
+    });
+});
+
+describe("Get user data", () => {
+    it("deve retornar 422 - dados incorretos", async () => {
+        const res = await request(app)
+            .post("/user/data")
+            .send({
+                id: userId,
+                saveContext: 2
+            })
+            .set("Cookie", [`jwtToken=${userToken}`])
+
+        expect(res.status).toBe(422);
+        expect(res.body.message).toBe("Dados inválidos");
     });
 });

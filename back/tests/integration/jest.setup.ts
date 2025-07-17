@@ -1,7 +1,21 @@
-import { prisma } from "../utils/prisma";
-import { hashPassword } from "../utils/auth";
+import fs from 'fs';
+import path from 'path';
+import { execSync } from "child_process";
+import { prisma } from "../../utils/prisma";
+import { hashPassword } from "../../utils/auth";
 
+const testDbPath = path.resolve(__dirname, 'test.db');
+
+//faz configurações iniciais para testes
 beforeAll(async () => {
+    //apaga arquivo do banco
+    if (fs.existsSync(testDbPath)) {
+        fs.unlinkSync(testDbPath);
+    }
+
+    //cria arquivo do banco
+    execSync('npx prisma migrate deploy', { stdio: 'inherit' });
+
     await prisma.user.createMany({
         data: [
             {
@@ -24,4 +38,13 @@ beforeAll(async () => {
             }
         ],
     });
+});
+
+//apaga arquivo do banco
+afterAll(async () => {
+    await prisma.$disconnect();
+
+    if (fs.existsSync(testDbPath)) {
+        fs.unlinkSync(testDbPath);
+    }
 });

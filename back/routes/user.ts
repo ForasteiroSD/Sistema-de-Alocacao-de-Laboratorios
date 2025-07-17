@@ -1,8 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { stringData } from '../utils/formatDate';
 import { idSchema, UserCreateSchema, UserData, UserDelete, UserLoginSchema, UserRespGet, UsersGet, UserUpdateFirst, UserUpdateSchema } from '../schemas';
-import { comparePasswords, hashPassword } from '../utils/auth';
-import jwt from "jsonwebtoken";
+import { comparePasswords, generateJWTToken, hashPassword } from '../utils/auth';
 import { prisma } from '../utils/prisma';
 import { env } from '../utils/env';
 import { authenticate } from '../middlewares/auth_middleware';
@@ -41,15 +40,7 @@ router.post("/login", async (req: Request, res: Response) => {
             return res.status(401).send('Email ou senha incorretos');
         }
 
-        const jwtToken = jwt.sign({
-                id: user.id,
-                tipo: user.tipo
-            },
-            env.JWT_SECRET,
-            {
-                expiresIn: "1d"
-            }
-        );
+        const jwtToken = generateJWTToken({id: user.id, tipo: user.tipo});
 
         res.cookie("jwtToken", jwtToken, {
             httpOnly: true,
@@ -67,57 +58,8 @@ router.post("/login", async (req: Request, res: Response) => {
         });
 
     } catch (error: any) {
-
-        try {
-            const count = await prisma.user.count();
-            if (count === 0) {
-                const hashedPassword = await hashPassword(senha);
-                const user = await prisma.user.create({
-                    data: {
-                        email: email,
-                        cpf: 'Master',
-                        nome: 'Master',
-                        senha: hashedPassword,
-                        data_nasc: new Date('2000-01-01'),
-                        telefone: '(00) 00000-0000',
-                        tipo: 'Administrador'
-                    }
-                });
-
-                const jwtToken = jwt.sign({
-                        id: user.id,
-                        tipo: user.tipo
-                    },
-                    env.JWT_SECRET,
-                    {
-                        expiresIn: "1d"
-                    }
-                );
-
-                res.cookie("jwtToken", jwtToken, {
-                    httpOnly: true,
-                    ...(env.NODE_ENV?.toLowerCase().includes("production") && {
-                        secure: true, //true para https e sameSite = none
-                        sameSite: "none",
-                    }),
-                    maxAge: 60*60*24*1000
-                });
-
-                return res.status(200).json({
-                    id: user.id,
-                    nome: user.nome,
-                    tipo: user.tipo,
-                    first: true
-                });
-            }
-        } catch (error1) {
-            res.status(500).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
-            return;
-        }
-            
-        res.status(401).send('Email ou senha incorretos');
+        res.status(500).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
         return;
-
     }
 });
 
@@ -341,7 +283,7 @@ router.post("/data", async (req: Request, res: Response) => {
             errors: parse.error.flatten()
         });
     }
-    
+
     const tokenData = (req as any).userData;
     if(parse.data.id != tokenData.id && tokenData.tipo !== "Administrador")
     {

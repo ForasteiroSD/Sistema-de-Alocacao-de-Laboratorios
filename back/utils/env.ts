@@ -1,4 +1,7 @@
+import dotenv from 'dotenv';
 import { z } from 'zod';
+
+dotenv.config({ path: '.env', quiet: true });
 
 const envSchema = z.object({
     JWT_SECRET: z.string(),

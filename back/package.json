@@ -8,8 +8,8 @@
     "dev": "nodemon ./server.ts",
     "build": "tsc",
     "postinstall": "prisma generate",
-    "test": "cross-env DATABASE_URL=file:./test.db NODE_ENV=test jest",
-    "test:watch": "cross-env DATABASE_URL=file:./test.db NODE_ENV=test jest --watch"
+    "test": "cross-env DATABASE_URL=file:./../tests/integration/test.db NODE_ENV=test jest",
+    "test:watch": "cross-env DATABASE_URL=file:./../tests/integration/test.db NODE_ENV=test jest --watch"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,7 @@
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.13",
