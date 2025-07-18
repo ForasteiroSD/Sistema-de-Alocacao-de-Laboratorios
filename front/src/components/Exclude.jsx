@@ -44,7 +44,7 @@ export default function Exclude({ type, CloseModal, Id, updateView }) {
         }
 
         try {
-            await api.delete('user', { params: { id: Id, senha: senha, minhaConta: 1 } });
+            await api.delete('user', { params: { id: Id, senha: senha, minhaConta: selfAccount ? 1 : 0 } });
             setAlert('Success', 'Usuário excluído');
             if (selfAccount) {
                 logout();
