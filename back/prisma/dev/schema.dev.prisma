@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output = "./dev-client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url       = env("DATABASE_URL")
+}
+
+model user {
+  id String @id @default(uuid())
+  email String @unique
+  cpf String @unique
+  nome String
+  senha String
+  data_nasc DateTime
+  telefone String
+  tipo String
+  laboratorios laboratorio[]
+  reservas reserva[]
+}
+
+model laboratorio {
+  id String @id @default(uuid())
+  nome String @unique
+  capacidade Int
+  projetor Int?
+  quadro Int?
+  televisao Int?
+  ar_contidionado Int?
+  computador Int?
+  outro String?
+  responsavel user @relation(fields: [responsavel_id], references: [id], onUpdate: Cascade)
+  responsavel_id String
+  reservas reserva[]
+}
+
+model reserva {
+  id String @id @default(uuid())
+  data_inicio DateTime
+  data_fim DateTime
+  tipo String
+  laboratorio laboratorio @relation(fields: [laboratorio_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  laboratorio_id String
+  usuario user @relation(fields: [user_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  user_id String
+  dias dia[]
+}
+
+model dia {
+  id Int @id @default(autoincrement())
+  data_inicio DateTime
+  data_fim DateTime
+  duracao String
+  reserva reserva @relation(fields: [reserva_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  reserva_id String
+}

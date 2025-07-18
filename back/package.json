@@ -2,15 +2,18 @@
   "name": "back",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node ./dist/server.js",
+    "start": "cross-env NODE_ENV=production node ./dist/server.js",
     "dev": "nodemon ./server.ts",
+    "dev:production": "cross-env NODE_ENV=production nodemon ./server.ts",
+
     "build": "tsc",
     "postinstall": "prisma generate",
-    "test": "jest --coverage --runInBand",
-    "test:integration": "jest --coverage --runInBand --selectProjects integration",
-    "test:unit": "jest --coverage --selectProjects unit"
+
+    "test": "cross-env NODE_ENV=test DATABASE_URL=file:./../../tests/integration/test.db jest --coverage --runInBand",
+    "test:integration": "cross-env NODE_ENV=test DATABASE_URL=file:./../../tests/integration/test.db jest --coverage --runInBand --selectProjects integration",
+    "test:unit": "cross-env NODE_ENV=test jest --coverage --selectProjects unit"
   },
   "keywords": [],
   "author": "",
