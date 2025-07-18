@@ -85,6 +85,26 @@ describe("Update", () => {
         expect(res.status).toBe(401);
     });
 
+    it("deve retornar 401 - token inválido", async () => {
+        const res = await request(app)
+            .patch("/user")
+            .send({
+                id: "",
+                nome: "",
+                telefone: "",
+                email: "",
+                novasenha: "",
+                tipo: "",
+                senha: "",
+                adm: "",
+                mudarSenha: "",
+                changeType: ""
+            })
+            .set("Cookie", [`jwtToken=tokenQualquer`]);
+        
+        expect(res.status).toBe(401);
+    });
+
     it("deve retornar 422 - dados inválidos (parse falha)", async () => {
         const res = await request(app)
             .patch("/user")
