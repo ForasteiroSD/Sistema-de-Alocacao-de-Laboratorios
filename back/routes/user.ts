@@ -36,6 +36,37 @@ router.post("/login", async (req: Request, res: Response) => {
             }
         });
 
+        if(!user) {
+            const count = await prisma.user.count();
+            if (count === 0) {
+                const user = await prisma.user.create({
+                    data: {
+                        email: email,
+                        cpf: 'Master',
+                        nome: 'Master',
+                        senha: await hashPassword(senha),
+                        data_nasc: new Date('2000-01-01'),
+                        telefone: '(00) 00000-0000',
+                        tipo: 'Administrador'
+                    }
+                });
+
+                const jwtToken = generateJWTToken({id: user.id, tipo: user.tipo});
+
+                res.cookie("jwtToken", jwtToken, {
+                    httpOnly: true,
+                    ...(env.NODE_ENV?.toLowerCase().includes("production") && {
+                        secure: true, //true para https e sameSite = none
+                        sameSite: "none",
+                    }),
+                    maxAge: 60*60*24*1000
+                });
+
+                res.status(201).send({ id: user.id, nome: user.nome, tipo: user.tipo, first: true });
+                return;
+            }
+        }
+
         if(!user || !(await comparePasswords(senha, user.senha))) {
             return res.status(401).send('Email ou senha incorretos');
         }

@@ -20,7 +20,7 @@ router.post("/", async (req: Request, res: Response) => {
     }
 
     const tokenData = (req as any).userData;
-    if(tokenData.tipo !== "Administador" && tokenData.tipo !== "Responsável") {
+    if(tokenData.tipo !== "Administrador" && tokenData.tipo !== "Responsável") {
         return res.status(403).send("Função não permitida");
     }
 
