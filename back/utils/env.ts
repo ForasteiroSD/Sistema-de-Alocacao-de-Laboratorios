@@ -13,5 +13,4 @@ const envSchema = z.object({
     NODE_ENV: z.string().optional()
 });
 
-console.log('EMAIL_USER:', process.env.EMAIL_USER);
 export const env = envSchema.parse(process.env);
