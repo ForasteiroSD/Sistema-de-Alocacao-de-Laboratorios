@@ -4,6 +4,18 @@
       {
         "src": "dist/server.js",
         "use": "@vercel/node"
+      },
+      {
+        "src": "dist/routes/labs.js",
+        "use": "@vercel/node"
+      },
+      {
+        "src": "dist/routes/user.js",
+        "use": "@vercel/node"
+      },
+      {
+        "src": "dist/routes/reservas.js",
+        "use": "@vercel/node"
       }
     ],
     "routes": [
@@ -11,10 +23,5 @@
         "src": "/(.*)",
         "dest": "dist/server.js"
       }
-    ],
-    "git": {
-        "deploymentEnabled": {
-            "dev": false
-        }
-    }
+    ]
   }
