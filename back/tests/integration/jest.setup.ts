@@ -16,7 +16,7 @@ beforeAll(async () => {
     //cria arquivo do banco
     execSync("npx prisma migrate deploy --schema=prisma/dev/schema.dev.prisma", { stdio: "inherit" });
 
-    await prisma.user.createMany({
+    const users = await prisma.user.createManyAndReturn({
         data: [
             {
                 nome: "Adm",
@@ -35,9 +35,56 @@ beforeAll(async () => {
                 senha: await hashPassword("Senha1@123"),
                 telefone: "1",
                 tipo: "Usuário",
+            },
+            {
+                nome: "Resp",
+                cpf: "111.111.111-11",
+                data_nasc: new Date("2000-01-01"),
+                email: "resp@gmail.com",
+                senha: await hashPassword("Senha1@123"),
+                telefone: "2",
+                tipo: "Responsável",
             }
         ],
     });
+
+    const lab = await prisma.laboratorio.create({
+        data: {
+            nome: "Lab",
+            capacidade: 30,
+            ar_contidionado: 1,
+            computador: 10,
+            projetor: 1,
+            quadro: 2,
+            televisao: 0,
+            responsavel_id: users[0].id
+        },
+    });
+
+    const dataReserva = new Date("2000-01-01");
+
+    dataReserva.setUTCHours(0, 0, 0, 0);
+    const reserva = await prisma.reserva.create({
+        data: {
+            tipo: "Única",
+            data_fim: dataReserva,
+            data_inicio: dataReserva,
+            laboratorio_id: lab.id,
+            user_id: users[2].id
+        }
+    });
+
+    const dataReservaAux = new Date(dataReserva);
+    dataReserva.setUTCHours(14, 0, 0, 0);
+    dataReservaAux.setUTCHours(16, 0, 0, 0);
+    const dia = await prisma.dia.create({
+        data: {
+            data_inicio: dataReserva,
+            data_fim: dataReservaAux,
+            duracao: "2:00",
+            reserva_id: reserva.id
+        }
+    })
 });
 
 //apaga arquivo do banco
