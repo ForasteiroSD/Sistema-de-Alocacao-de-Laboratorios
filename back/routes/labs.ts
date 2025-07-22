@@ -93,7 +93,7 @@ router.patch("/", async (req: Request, res: Response) => {
     }
 
     const tokenData = (req as any).userData;
-    if(tokenData.tipo !== "Administador" && tokenData.tipo !== "Responsável") {
+    if(tokenData.tipo !== "Administrador" && tokenData.tipo !== "Responsável") {
         return res.status(403).send("Função não permitida");
     }
 
@@ -279,7 +279,7 @@ router.get("/", async (req: Request, res: Response) => {
 
 });
 
-//Recupera nomes dos laboratórios de um usuário ou todos os laboratórios caso nenhum nome id seja passado
+//Recupera nomes dos laboratórios de um usuário ou todos os laboratórios caso nenhum id seja passado
 router.post("/user", async (req: Request, res: Response) => {
 
     const parse = LabNames.safeParse(req.body);

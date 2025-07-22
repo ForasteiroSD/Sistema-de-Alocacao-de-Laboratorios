@@ -155,7 +155,6 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
 
         } else if (tipo === 'Única') {
-            //Reserva única
 
             const inicio = Number(hora_inicio.split(':')[0])*60 + Number(hora_inicio.split(':')[1]);
             const fim = inicio + Number(duracao.split(':')[0])*60 + Number(duracao.split(':')[1]);
