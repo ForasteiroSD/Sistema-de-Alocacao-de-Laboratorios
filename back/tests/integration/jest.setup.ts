@@ -57,7 +57,7 @@ beforeAll(async () => {
             projetor: 1,
             quadro: 2,
             televisao: 0,
-            responsavel_id: users[0].id
+            responsavel_id: users[2].id
         },
     });
 

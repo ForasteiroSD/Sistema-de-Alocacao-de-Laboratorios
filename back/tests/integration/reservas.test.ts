@@ -147,27 +147,6 @@ describe("Create", () => {
         expect(res.text).toBe("Laboratório Inexistente");
     });
 
-    it("deve retornar 404 - laboratório inexistente", async () => {
-        const date = new Date();
-        date.setDate(date.getDate()+7); //date 7 days from today
-
-        const res = await request(app)
-            .post("/reserva")
-            .send({
-                userId: userId,
-                userName: "Nome",
-                tipo: "Única",
-                labName: "Lab 1",
-                data_inicio: date.toISOString(),
-                hora_inicio: "14:00",
-                duracao: "1:00"
-            })
-            .set("Cookie", [`jwtToken=${userToken}`]);
-
-        expect(res.status).toBe(404);
-        expect(res.text).toBe("Laboratório Inexistente");
-    });
-
     it("deve retornar 200 - dados corretos (reserva Única)", async () => {
         const date = new Date();
         date.setDate(date.getDate()+7); //date 7 days from today
@@ -409,5 +388,248 @@ describe("Create", () => {
 
         expect(res.status).toBe(200);
         expect(res.text).toBe("Reserva realizada");
+    });
+});
+
+
+describe("Get reservas lab", () => {
+    it("deve retornar 422 - dados incorretos", async () => {
+        const res = await request(app)
+            .post("/reservas/lab")
+            .send({
+                resp_id: respId,
+                data_inicio: "2025-02-30",
+                tipo: "Diaria"
+            })
+            .set("Cookie", [`jwtToken=${respToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.body.message).toBe("Dados inválidos");
+    });
+
+    it("deve retornar 200 - dados corretos", async () => {
+        const res = await request(app)
+            .post("/reservas/lab")
+            .send({
+                resp_id: respId,
+                data_inicio: new Date().toISOString()
+            })
+            .set("Cookie", [`jwtToken=${respToken}`]);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toBeGreaterThan(1);
+    });
+});
+
+describe("Get reservas user", () => {
+    it("deve retonar 422 - dados incorretos", async () => {
+        const res = await request(app)
+            .post("/reservas/user")
+            .send({
+                userId: userId,
+                data_inicio: "2025-11--1",
+                data_fim: "data",
+                tipo: "Tipo errado",
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+        
+        expect(res.status).toBe(422);
+        expect(res.body.message).toBe("Dados inválidos");
+    });
+
+    it("deve retonar 200 - dados corretos", async () => {
+        const res = await request(app)
+            .post("/reservas/user")
+            .send({
+                userId: userId,
+                tipo: "Única",
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+        
+        expect(res.status).toBe(200);
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toBe(1);
+    });
+});
+
+describe("Get reservas", () => {
+    it("deve retonar 403 - token não é de adm", async () => {
+        const res = await request(app)
+            .get("/reservas")
+            .set("Cookie", [`jwtToken=${respToken}`]);
+
+        expect(res.status).toBe(403);
+        expect(res.text).toBe("Função não permitida");
+    });
+
+    it("deve retonar 422 - dados incorretos", async () => {
+        const res = await request(app)
+            .get("/reservas")
+            .query({
+                labName: "Lab 1",
+                data_inicio: "2025-12-06",
+                data_fim: "data",
+                tipo: "Tipo errado",
+            })
+            .set("Cookie", [`jwtToken=${admToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.body.message).toBe("Dados inválidos");
+    });
+
+    it("deve retonar 200 - dados corretos", async () => {
+        const res = await request(app)
+            .get("/reservas")
+            .query({
+                labName: "Lab",
+            })
+            .set("Cookie", [`jwtToken=${admToken}`]);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toBeInstanceOf(Array);
+        expect(res.body.length).toBeGreaterThan(1);
+    });
+});
+
+describe("Get reserva", () => {
+    it("deve retornar 422 - dados incorretos", async () => {
+        const res = await request(app)
+            .get("/reserva")
+            .query({
+                id: "iderrado"
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.body.message).toBe("Dados inválidos");
+    });
+
+    it("deve retornar 200 - dados corretos", async () => {
+        const reserves = await request(app)
+            .post("/reservas/user")
+            .send({
+                userId: userId,
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+            
+        for(const reserve of reserves.body) {
+            const res = await request(app)
+                .get("/reserva")
+                .query({
+                    id: reserve.id
+                })
+                .set("Cookie", [`jwtToken=${userToken}`]);
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty("usuario");
+            expect(res.body).toHaveProperty("laboratorio");
+            expect(res.body).toHaveProperty("tipo");
+            expect(res.body).toHaveProperty("data_inicio");
+            expect(res.body).toHaveProperty("data_fim");
+        }
+    });
+});
+
+describe("Delete minha reserva", () => {
+    it("deve retornar 422 - dados incorretos", async () => {
+        const res = await request(app)
+            .delete("/minhareserva")
+            .query({
+                id: "iderrado"
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.body.message).toBe("Dados inválidos");
+    });
+
+    it("deve retornar 404 - reserva inexistente", async () => {
+        const res = await request(app)
+            .delete("/minhareserva")
+            .query({
+                id: userId
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(404);
+        expect(res.text).toBe("Reserva inexistente");
+    });
+
+    it("deve retornar 200 - reserva removida", async () => {
+        const reserves = await request(app)
+            .post("/reservas/user")
+            .send({
+                userId: userId,
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+
+        const res = await request(app)
+            .delete("/minhareserva")
+            .query({
+                id: reserves.body[0].id
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(200);
+        expect(res.text).toBe("Reserva removida");
+    });
+});
+
+describe("Delete reserva", () => {
+    it("deve retornar 422 - dados incorretos", async () => {
+        const res = await request(app)
+            .delete("/reserva")
+            .query({
+                id: "iderrado"
+            })
+            .set("Cookie", [`jwtToken=${respToken}`]);
+
+        expect(res.status).toBe(422);
+        expect(res.body.message).toBe("Dados inválidos");
+    });
+
+    it("deve retornar 403 - token não tem permissão", async () => {
+        const res = await request(app)
+            .delete("/reserva")
+            .query({
+                id: userId
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        expect(res.status).toBe(403);
+        expect(res.text).toBe("Você não pode excluir essa reserva");
+    });
+
+    it("deve retornar 404 - reserva inexistente", async () => {
+        const res = await request(app)
+            .delete("/reserva")
+            .query({
+                id: userId
+            })
+            .set("Cookie", [`jwtToken=${respToken}`]);
+
+        expect(res.status).toBe(404);
+        expect(res.text).toBe("Reserva não encontrada");
+    });
+
+    it("deve retornar 200 - reserva removida", async () => {
+        const reserves = await request(app)
+            .post("/reservas/user")
+            .send({
+                userId: userId,
+            })
+            .set("Cookie", [`jwtToken=${userToken}`]);
+
+        const res = await request(app)
+            .delete("/reserva")
+            .query({
+                id: reserves.body[0].id
+            })
+            .set("Cookie", [`jwtToken=${respToken}`]);
+
+        expect(res.status).toBe(200);
+        expect(res.text).toBe("Reserva removida");
     });
 });
