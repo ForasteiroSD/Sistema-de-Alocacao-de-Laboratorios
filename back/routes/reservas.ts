@@ -52,8 +52,8 @@ router.post('/reserva', async (req: Request, res: Response) => {
         })
     }
 
-    const { userName, labName, tipo, data_inicio, data_fim, hora_inicio, duracao, horarios, userId } = req.body;
-    // const userId = (req as any).userData.id;
+    const { userName, labName, tipo, data_inicio, data_fim, hora_inicio, duracao, horarios } = req.body;
+    const userId = (req as any).userData.id;
 
     let newParse;
     let dataSearch1, dataSearch2;
@@ -259,7 +259,7 @@ router.post('/reserva', async (req: Request, res: Response) => {
                         //Horário conflitante entre reservas
                         if (verificaConflito(inicio1, fim1, reservaIns.inicio, reservaIns.fim)) {
                             let string = `Conflito no dia ${stringData(reserva.data_inicio, false)}`
-                            res.status(400).send(string)
+                            res.status(409).send(string)
                             return;
                         }
 
@@ -314,9 +314,6 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
         if (error.code === 'P2025') {
             res.status(404).send('Laboratório Inexistente');
-            return;
-        } else if (error.code === 'P2003') {
-            res.status(404).send('Usuário Inexistente');
             return;
         }
 

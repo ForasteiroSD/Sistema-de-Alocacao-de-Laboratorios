@@ -246,7 +246,7 @@ export const PersonalizedReserves = z.object({
     horarios: z.array(PersonalizedReserve).min(1, "Pelo menos uma reserva deve ser feita")
 });
 
-export const UniqueReserve = initialDateSchema.merge(finalDateSchema).merge(horaInicioSchema).merge(duracaoSchema);
+export const UniqueReserve = initialDateSchema.merge(horaInicioSchema).merge(duracaoSchema);
 
 export const DailyReserve = initialDateSchema.merge(finalDateSchema).merge(horaInicioSchema).merge(duracaoSchema);
 
