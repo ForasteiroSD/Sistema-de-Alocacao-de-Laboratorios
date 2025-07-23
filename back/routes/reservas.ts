@@ -632,7 +632,7 @@ router.get('/reserva', async (req: Request, res: Response) => {
         })
     }
 
-    const { id } = (req as any).userData.id;
+    const { id } = parse.data;
 
     try {
 
