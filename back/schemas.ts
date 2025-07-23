@@ -70,19 +70,79 @@ const reserveTypeSchema = z.object({
 });
 
 const initialDateSchema = z.object({
-    data_inicio: z.string({invalid_type_error: "Data de início deve ser uma string"}).refine(val => !isNaN(Date.parse(val)), {
+    data_inicio: z.string({required_error: "Data inicial deve ser informada", invalid_type_error: "Data de início deve ser uma string"}).refine(val => !isNaN(Date.parse(val)), {
         message: "Data de início inválida"
     })
 });
 
 const finalDateSchema = z.object({
-    data_fim: z.string({invalid_type_error: "Data final deve ser uma string"}).refine(val => !isNaN(Date.parse(val)), {
+    data_fim: z.string({required_error: "Data final deve ser informada", invalid_type_error: "Data final deve ser uma string"}).refine(val => !isNaN(Date.parse(val)), {
         message: "Data final inválida"
     })
 });
 
 const labNameSchema = z.object({
     labName: z.string({required_error: "Nome do laboratório deve ser informado", invalid_type_error: "Nome do laboratório deve ser uma string"}).min(1, "Nome do laboratório deve ser informado")
+});
+
+const horaInicioSchema = z.object({
+    hora_inicio: z.string({required_error: "Hora de início deve ser informada", invalid_type_error: "Hora de início deve ser uma string"}).min(4, "Horário deve ter pelo menos quatro caracteres").max(5, {
+        message: "Horário deve ter no máximo cinco caracteres"
+    }).refine((val) => {
+        const valSplit = val.split(":");
+        if(valSplit.length !== 2) return false;
+
+        if(valSplit[0].length > 2 || valSplit[1].length !== 2) return false;
+        
+        let hour, minutes;
+        try {
+            hour = Number(valSplit[0]);
+            minutes = Number(valSplit[1]);
+        } catch (error) {
+            return false;
+        }
+
+        if(isNaN(hour) || isNaN(minutes)) return false;
+
+        if(minutes % 5 !== 0) return false;
+
+        if(hour < 0 || hour > 23) return false;
+
+        return true;
+    }, {
+        message: "Horário inválido"
+    })
+});
+
+const duracaoSchema = z.object({
+    duracao: z.string({required_error: "Duração deve ser informada", invalid_type_error: "Duração deve ser uma string"}).min(4, "Duração deve ter pelo menos quatro caracteres").max(5, {
+        message: "Duração deve ter no máximo cinco caracteres"
+    }).refine((val) => {
+        let valSplit = val.split(":");
+        if(valSplit.length !== 2) return false;
+
+        if(valSplit[0].length > 2 || valSplit[1].length !== 2) return false;
+        
+        let hour, minutes;
+        try {
+            hour = Number(valSplit[0]);
+            minutes = Number(valSplit[1]);
+        } catch (error) {
+            return false;
+        }
+
+        if(isNaN(hour) || isNaN(minutes)) return false;
+
+        if(minutes < 0 || minutes % 5 !== 0) return false;
+
+        if(hour < 0 || hour > 23) return false;
+
+        if(hour === 0 && minutes < 30) return false;
+
+        return true;
+    }, {
+        message: "Duração inválida"
+    })
 });
 
 //------------------------------------ Route Schemas ------------------------------------ //
@@ -168,28 +228,31 @@ export const LabReserves = z.object({
 
 //----------------- Reservas Schemas ----------------- //
 
-const WeeklyReserves = z.object({
-    dia_semana: z.enum(["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"], {required_error: "Dia da semana deve ser informado", invalid_type_error: "Dia da semana deve ser: Domingo, Segunda, Terça, Quarta, Quinta, Sexta ou Sábado"}),
-    hora_inicio: z.string({required_error: "Hora de início deve ser informada", invalid_type_error: "Hora de início deve ser uma string"}),
-    duracao: z.string({required_error: "Duração deve ser informada", invalid_type_error: "Duração deve ser uma string"})
-});
+const WeeklyReserve = z.object({
+    dia_semana: z.enum(["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"], {required_error: "Dia da semana deve ser informado", invalid_type_error: "Dia da semana deve ser: Domingo, Segunda, Terça, Quarta, Quinta, Sexta ou Sábado", message: "Dia da semana deve ser: Domingo, Segunda, Terça, Quarta, Quinta, Sexta ou Sábado"}),
+}).merge(horaInicioSchema).merge(duracaoSchema);
 
-const PersonalizedReserves = z.object({
+export const WeeklyReserves = z.object({
+    horarios: z.array(WeeklyReserve).min(1, "Pelo menos uma reserva deve ser feita")
+}).merge(initialDateSchema).merge(finalDateSchema);
+
+const PersonalizedReserve = z.object({
     data: z.string({required_error: "Data deve ser informada", invalid_type_error: "Data deve ser uma string"}).refine(val => !isNaN(Date.parse(val)), {
         message: "Data inválida"
     }),
-    hora_inicio: z.string({required_error: "Hora de início deve ser informada", invalid_type_error: "Hora de início deve ser uma string"}),
-    duracao: z.string({required_error: "Duração deve ser informada", invalid_type_error: "Duração deve ser uma string"})
+}).merge(horaInicioSchema).merge(duracaoSchema);
+
+export const PersonalizedReserves = z.object({
+    horarios: z.array(PersonalizedReserve).min(1, "Pelo menos uma reserva deve ser feita")
 });
+
+export const UniqueReserve = initialDateSchema.merge(finalDateSchema).merge(horaInicioSchema).merge(duracaoSchema);
+
+export const DailyReserve = initialDateSchema.merge(finalDateSchema).merge(horaInicioSchema).merge(duracaoSchema);
 
 export const ReserveInsert = z.object({
     userId: idSchema.shape.id,
     userName: nomeSchema.shape.nome,
-    data_inicio: initialDateSchema.shape.data_inicio.optional(),
-    data_fim: finalDateSchema.shape.data_fim.optional(),
-    hora_inicio: z.string({invalid_type_error: "Hora de início deve ser uma string"}).optional(),
-    duracao: z.string({invalid_type_error: "Duração deve ser uma string"}).optional(),
-    horarios: z.union([z.array(WeeklyReserves), z.array(PersonalizedReserves)]).optional()
 }).merge(reserveTypeSchema).merge(labNameSchema);
 
 export const ReservesRespLab = z.object({

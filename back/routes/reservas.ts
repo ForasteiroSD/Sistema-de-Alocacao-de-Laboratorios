@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express';
 import { prisma } from '../utils/prisma';
 import { stringData } from '../utils/formatDate';
 import { createReserveEmailText, sendEmail } from '../utils/sendEmail';
-import { idSchema, ReserveRemove, Reserves, ReservesRespLab, ReservesUser } from '../schemas';
+import { DailyReserve, idSchema, PersonalizedReserves, ReserveInsert, ReserveRemove, Reserves, ReservesRespLab, ReservesUser, UniqueReserve, WeeklyReserves } from '../schemas';
 import { adm_authorization } from '../middlewares/adm_middleware';
 
 const router = Router();
@@ -40,19 +40,49 @@ interface ReservaInsercao {
     duracao: string;
 }
 
-
 //Inserir reservas
 router.post('/reserva', async (req: Request, res: Response) => {
 
-    const { userName, labName, tipo, data_inicio, data_fim, hora_inicio, duracao, horarios } = req.body;
-    const userId = (req as any).userData.id;
+    const parse = ReserveInsert.safeParse(req.body);
 
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const { userName, labName, tipo, data_inicio, data_fim, hora_inicio, duracao, horarios, userId } = req.body;
+    // const userId = (req as any).userData.id;
+
+    let newParse;
     let dataSearch1, dataSearch2;
+    const today = new Date();
+    if (today.getUTCHours() < 3) today.setUTCDate(today.getUTCDate() - 1)
+    today.setUTCHours(0, 0, 0, 0);
 
-    if (tipo === 'Personalizada' && horarios) {
+    if (tipo === "Personalizada") {
+        newParse = PersonalizedReserves.safeParse(req.body);
+
+        if(!newParse.success) {
+            return res.status(422).send({
+                message: "Dados inválidos",
+                errors: newParse.error.flatten()
+            });
+        }
 
         for (let dia of horarios) {
-            if(dia.data) dia.data = new Date(dia.data);
+            dia.data = new Date(dia.data);
+            if(dia.data.getTime() < today.getTime()) {
+                return res.status(422).send({
+                    message: "Dados inválidos",
+                    errors: {
+                        fieldErrors: {
+                            data: ["Data da reserva não pode ser inferior ao dia de hoje"],
+                        }
+                    }
+                });
+            }
         }
 
         horarios.sort((a: any, b: any) =>
@@ -65,12 +95,36 @@ router.post('/reserva', async (req: Request, res: Response) => {
     } else {
 
         dataSearch1 = new Date(data_inicio);
-        dataSearch1.setUTCHours(0, 0, 0, 0);
+        dataSearch2 = data_fim ? new Date(data_fim) : new Date(data_inicio);
+        dataSearch1.setUTCHours(23, 59, 0, 0);
+        dataSearch2.setUTCHours(23, 59, 0, 0);
 
-        dataSearch2 = data_fim ? new Date(data_fim) : new Date(data_inicio)
+        if(dataSearch1.getTime() < today.getTime() || dataSearch1.getTime() > dataSearch2.getTime()) {
+            return res.status(422).send({
+                message: "Dados inválidos",
+                errors: {
+                    fieldErrors: {
+                        data_inicio: ["Data inicial não pode ser inferior ao dia de hoje"],
+                        data_fim: ["Data final deve ser após data inicial"]
+                    }
+                }
+            });
+        }
+        
+        dataSearch1.setUTCHours(0, 0, 0, 0);
         dataSearch2.setUTCHours(0, 0, 0, 0);
         dataSearch2.setDate(dataSearch2.getDate());
 
+        if(tipo === "Única") newParse = UniqueReserve.safeParse(req.body);
+        else if(tipo === "Diária") newParse = DailyReserve.safeParse(req.body);
+        else newParse = WeeklyReserves.safeParse(req.body);
+
+        if(!newParse.success) {
+            return res.status(422).send({
+                message: "Dados inválidos",
+                errors: newParse.error.flatten()
+            });
+        }
     }
 
     try {
