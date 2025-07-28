@@ -1,0 +1,41 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [main, thiago]
+  pull_request:
+    branches: [main, thiago]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+        NODE_ENV: ${{ secrets.NODE_ENV }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        EMAIL_USER: ${{ secrets.EMAIL_USER }}
+        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+        ALLOWED_LINKS: ${{ secrets.ALLOWED_LINKS }}
+        PAGE_LINK: ${{ secrets.PAGE_LINK }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+    
+      - name: Install dependencies
+        run: npm install
+        working-directory: back
+
+      - name: Generate Prisma Client with test schema
+        run: npx prisma generate --schema=prisma/dev/schema.dev.prisma
+        working-directory: back
+
+      - name: Run tests
+        run: npm test
+        working-directory: back

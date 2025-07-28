@@ -50,7 +50,7 @@ export default function Reserves({ Id }) {
   async function getData() {
 
     try {
-      const response = (await api.post('userLabs', {
+      const response = (await api.post('lab/user', {
         user_id: Id
       })).data;
 

@@ -1,25 +1,12 @@
 import { Request, Response, Router } from 'express';
-import { PrismaClient } from '@prisma/client';
-import nodemailer from 'nodemailer';
-import { env } from 'node:process';
-import { stringData } from '../index';
-
-
-interface ResTeste {
-    dia: Date;
-    inicio: number;
-    fim: number;
-    duracao: string;
-}
-
-interface ResIns {
-    data_inicio: Date;
-    data_fim: Date;
-    duracao: string;
-}
+import { prisma } from '../utils/prisma';
+import { stringData } from '../utils/formatDate';
+import { createReserveEmailText, sendEmail } from '../utils/sendEmail';
+import { DailyReserve, idSchema, PersonalizedReserves, ReserveInsert, ReserveRemove, Reserves, ReservesRespLab, ReservesUser, UniqueReserve, WeeklyReserves } from '../schemas';
+import { adm_authorization } from '../middlewares/adm_middleware';
 
 const router = Router();
-const prisma = new PrismaClient();
+
 const dias_semana = [
     'Domingo',
     'Segunda',
@@ -37,118 +24,65 @@ function verificaConflito(inicio1: Number, fim1: Number, inicio2: Number, fim2: 
     if (inicio2 >= inicio1 && inicio2 < fim1) return true;
 
     return false;
-
 }
 
-function sendEmail(email: string, text: string, texthtml: string, type: string) {
-    const transport = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        auth: {
-            user: env.EMAIL_USER,
-            pass: env.EMAIL_PASS
-        },
-        tls: {
-            rejectUnauthorized: false
-        }
-    });
 
-    const mailOptions = {
-        from: `"LabHub Reservas" <${env.EMAIL_USER}>`,
-        to: email,
-        subject: `LabHub - ${type}`,
-        text: text,
-        ... (texthtml && {
-            html: texthtml
-        })
-    };
-
-    transport.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log('Não foi possível enviar o email');
-        }
-    });
-
-    return;
+interface ReservaParcial {
+    dia: Date;
+    inicio: number;
+    fim: number;
+    duracao: string;
 }
 
-function createText(tipo: string, labName: string, userName: string, data_inicio: string, data_fim: string, hora_inicio: string, duracao: string,
-    horarios: any, email: string) {
-    
-
-    let text1 = `Nova reserva ${tipo} feita no laboratório ${labName}\n\nDados da Reserva:\nUsuário: ${userName}\n`;
-    let text2 = `<h1>Nova reserva ${tipo} feita no laboratório ${labName}</h1><h3>Dados da Reserva:</h3><p style='margin: 0'>Usuário: ${userName}</p>`
-
-    if (tipo === 'Única') {
-        text1 += `Data: ${data_inicio}\nHorário: ${hora_inicio}\nDuração: ${duracao}\n\n`;
-        text2 += `<div><p style='margin: 0'>Data: ${data_inicio}</p><p style='margin: 0'>Horário: ${hora_inicio}</p><p style='margin: 0'>Duração: ${duracao}</p></div>`;
-    } else if (tipo === 'Personalizada') {
-        for (const dia of horarios) {
-            text1 += `Data: ${stringData(dia.data, false)}\nHorário: ${dia.hora_inicio}\nDuração: ${dia.duracao}\n\n`;
-            text2 += `<div><p style='margin: 0'>Data: ${stringData(dia.data, false)}</p><p style='margin: 0'>Horário: ${dia.hora_inicio}</p><p style='margin: 0'>Duração: ${dia.duracao}</p></div><br>`;
-        }
-    } else if (tipo === 'Semanal') {
-        text1 += `Data Inicial: ${data_inicio}\nData Final: ${data_fim}\n\n`;
-        text2 += `<div><p style='margin: 0'>Data Inicial: ${data_inicio}</p><p style='margin: 0'>Data Final: ${data_fim}</p><br>`;
-        for (const dia of horarios) {
-            text1 += `Dia da semana: ${dia.dia_semana}\nHorário: ${dia.hora_inicio}\nDuração: ${dia.duracao}\n\n`;
-            text2 += `<div><p style='margin: 0'>Dia da semana: ${dia.dia_semana}</p><p style='margin: 0'>Horário: ${dia.hora_inicio}</p><p style='margin: 0'>Duração: ${dia.duracao}</p></div><br>`;
-        }
-        text2 += '</div>';
-    } else {
-        text1 += `Data Inicial: ${data_inicio}\nData Final: ${data_fim}\nHorário: ${hora_inicio}\nDuração: ${duracao}\n\n`;
-        text2 += `<p style='margin: 0'>Data Inicial: ${data_inicio}</p><p style='margin: 0'>Data Final: ${data_fim}</p><p style='margin: 0'>Horário: ${hora_inicio}</p><p style='margin: 0'>Duração: ${duracao}</p><br>`;
-    }
-
-    text1 += `\nAcesse ${env.PAGE_LINK} para ver mais!\n\n\nLabHub - Alocação de Laboratórios`;
-    text2 += `<br><br><p style='margin: 0'>Acesse <a href="${env.PAGE_LINK}">LabHub</a> para ver mais!</p><br><br>LabHub - Alocação de Laboratórios`;
-
-    sendEmail(email, text1, text2, 'Nova Reserva');
+interface ReservaInsercao {
+    data_inicio: Date;
+    data_fim: Date;
+    duracao: string;
 }
 
 //Inserir reservas
-//Tipo Única não precisa informar data_fim
-//Somente reservas do tipo Semanal e Personalizada precisam informar o parâmetro horarios
-//Reservas do tipo Semanal não precisam informar parâmetros hora_inicio e duracao
-//Reservas do tipo Personalizada não precisam informar parâmetros hora_inicio, duracao, data_inicio e data_fim
-//Formato do parâmetro horarios para tipo Semanal:
-// horarios = [
-//     {
-//         dia_semana: "Sexta",
-//         hora_inicio: "18:00",
-//         duracao: "01:30"
-//     },
-//     {
-//         dia_semana: "Sábado",
-//         hora_inicio: "13:00",
-//         duracao: "02:00"
-//     }
-// ]
-//Formato do parâmetro horarios para tipo Personalizada:
-// horarios = [
-//     {
-//         data: "2024-06-07",
-//         hora_inicio: "17:30",
-//         duracao: "01:30",
-//     },
-//     {
-//         data: "2024-06-09",
-//         hora_inicio: "08:30",
-//         duracao: "03:30"
-//     }
-// ]
-//Informar userName para envio no email e evitar busca pelo nome no banco
 router.post('/reserva', async (req: Request, res: Response) => {
 
-    const { userId, userName, labName, tipo, data_inicio, data_fim, hora_inicio, duracao, horarios } = req.body;
+    const parse = ReserveInsert.safeParse(req.body);
 
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const { userName, labName, tipo, data_inicio, data_fim, hora_inicio, duracao, horarios } = req.body;
+    const userId = (req as any).userData.id;
+
+    let newParse;
     let dataSearch1, dataSearch2;
+    const today = new Date();
+    if (today.getUTCHours() < 3) today.setUTCDate(today.getUTCDate() - 1)
+    today.setUTCHours(0, 0, 0, 0);
 
-    if (tipo === 'Personalizada') {
+    if (tipo === "Personalizada") {
+        newParse = PersonalizedReserves.safeParse(req.body);
+
+        if(!newParse.success) {
+            return res.status(422).send({
+                message: "Dados inválidos",
+                errors: newParse.error.flatten()
+            });
+        }
 
         for (let dia of horarios) {
             dia.data = new Date(dia.data);
+            if(dia.data.getTime() < today.getTime()) {
+                return res.status(422).send({
+                    message: "Dados inválidos",
+                    errors: {
+                        fieldErrors: {
+                            data: ["Data da reserva não pode ser inferior ao dia de hoje"],
+                        }
+                    }
+                });
+            }
         }
 
         horarios.sort((a: any, b: any) =>
@@ -161,12 +95,36 @@ router.post('/reserva', async (req: Request, res: Response) => {
     } else {
 
         dataSearch1 = new Date(data_inicio);
-        dataSearch1.setUTCHours(0, 0, 0, 0);
+        dataSearch2 = data_fim ? new Date(data_fim) : new Date(data_inicio);
+        dataSearch1.setUTCHours(23, 59, 0, 0);
+        dataSearch2.setUTCHours(23, 59, 0, 0);
 
-        dataSearch2 = data_fim ? new Date(data_fim) : new Date(data_inicio)
+        if(dataSearch1.getTime() < today.getTime() || dataSearch1.getTime() > dataSearch2.getTime()) {
+            return res.status(422).send({
+                message: "Dados inválidos",
+                errors: {
+                    fieldErrors: {
+                        data_inicio: ["Data inicial não pode ser inferior ao dia de hoje"],
+                        data_fim: ["Data final deve ser após data inicial"]
+                    }
+                }
+            });
+        }
+        
+        dataSearch1.setUTCHours(0, 0, 0, 0);
         dataSearch2.setUTCHours(0, 0, 0, 0);
         dataSearch2.setDate(dataSearch2.getDate());
 
+        if(tipo === "Única") newParse = UniqueReserve.safeParse(req.body);
+        else if(tipo === "Diária") newParse = DailyReserve.safeParse(req.body);
+        else newParse = WeeklyReserves.safeParse(req.body);
+
+        if(!newParse.success) {
+            return res.status(422).send({
+                message: "Dados inválidos",
+                errors: newParse.error.flatten()
+            });
+        }
     }
 
     try {
@@ -192,7 +150,7 @@ router.post('/reserva', async (req: Request, res: Response) => {
             }
         });
 
-        const dias_reserva: ResTeste[] = []
+        const dias_reserva: ReservaParcial[] = []
 
         const diaInicio = new Date(data_inicio);
         const diaFim = data_fim ? new Date(data_fim) : new Date(diaInicio)
@@ -251,7 +209,6 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
 
         } else if (tipo === 'Única') {
-            //Reserva única
 
             const inicio = Number(hora_inicio.split(':')[0])*60 + Number(hora_inicio.split(':')[1]);
             const fim = inicio + Number(duracao.split(':')[0])*60 + Number(duracao.split(':')[1]);
@@ -302,7 +259,7 @@ router.post('/reserva', async (req: Request, res: Response) => {
                         //Horário conflitante entre reservas
                         if (verificaConflito(inicio1, fim1, reservaIns.inicio, reservaIns.fim)) {
                             let string = `Conflito no dia ${stringData(reserva.data_inicio, false)}`
-                            res.status(400).send(string)
+                            res.status(409).send(string)
                             return;
                         }
 
@@ -314,7 +271,7 @@ router.post('/reserva', async (req: Request, res: Response) => {
             }
         }
 
-        const reservas: ResIns[] = []
+        const reservas: ReservaInsercao[] = []
         for (const reservaIns of dias_reserva.reverse()) {
             const inicio = new Date(reservaIns.dia);
             let hora = Math.floor(reservaIns.inicio/60);
@@ -348,7 +305,7 @@ router.post('/reserva', async (req: Request, res: Response) => {
             }
         });
 
-        createText(tipo, labName, userName, data_inicio, data_fim, hora_inicio, duracao, horarios, labReservas.responsavel.email);
+        createReserveEmailText(tipo, labName, userName, data_inicio, data_fim, hora_inicio, duracao, horarios, labReservas.responsavel.email);
 
         res.status(200).send('Reserva realizada');
         return;
@@ -357,9 +314,6 @@ router.post('/reserva', async (req: Request, res: Response) => {
 
         if (error.code === 'P2025') {
             res.status(404).send('Laboratório Inexistente');
-            return;
-        } else if (error.code === 'P2003') {
-            res.status(404).send('Usuário Inexistente');
             return;
         }
 
@@ -373,7 +327,17 @@ router.post('/reserva', async (req: Request, res: Response) => {
 //Recuperar reservas de laboratórios de um usuário específico
 router.post('/reservas/lab', async (req: Request, res: Response) => {
 
-    const { resp_id, userName, labName, data_inicio, data_fim, tipo } = req.body;
+    const parse = ReservesRespLab.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const { userName, labName, data_inicio, data_fim, tipo } = parse.data;
+    const resp_id = (req as any).userData.id;
 
     const dataSearch1 = new Date(String(data_inicio));
     dataSearch1.setUTCHours(0, 0, 0, 0);
@@ -469,7 +433,17 @@ router.post('/reservas/lab', async (req: Request, res: Response) => {
 //Recuperar reservas do usuário
 router.post('/reservas/user', async (req: Request, res: Response) => {
 
-    const { userId, labName, data_inicio, data_fim, tipo } = req.body;
+    const parse = ReservesUser.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const { labName, data_inicio, data_fim, tipo } = parse.data;
+    const userId = (req as any).userData.id;
 
     const dataSearch1 = new Date(String(data_inicio));
     dataSearch1.setUTCHours(0, 0, 0, 0);
@@ -545,9 +519,18 @@ router.post('/reservas/user', async (req: Request, res: Response) => {
 });
 
 //Recuperar reservas do sistema
-router.get('/reservas', async (req: Request, res: Response) => {
+router.get('/reservas', adm_authorization, async (req: Request, res: Response) => {
 
-    const { userName, labName, data_inicio, data_fim, tipo } = req.query;
+    const parse = Reserves.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const { userName, labName, data_inicio, data_fim, tipo } = parse.data;
 
     const dataSearch1 = new Date(String(data_inicio));
     dataSearch1.setUTCHours(0, 0, 0, 0);
@@ -640,7 +623,17 @@ router.get('/reservas', async (req: Request, res: Response) => {
 
 router.get('/reserva', async (req: Request, res: Response) => {
 
-    const { id } = req.query;
+    const parse = idSchema.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const { id } = parse.data;
+
     try {
 
         const reserva = await prisma.reserva.findUniqueOrThrow({
@@ -741,13 +734,23 @@ router.get('/reserva', async (req: Request, res: Response) => {
 
 router.delete('/minhareserva', async (req: Request, res: Response) => {
 
-    const { reserva_id } = req.query;
+    const parse = ReserveRemove.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const { id } = parse.data;
 
     try {
 
         await prisma.reserva.delete({
             where: {
-                id: String(reserva_id)
+                id: String(id),
+                user_id: (req as any).userData.id
             }
         });
 
@@ -768,7 +771,22 @@ router.delete('/minhareserva', async (req: Request, res: Response) => {
 
 router.delete('/reserva', async (req: Request, res: Response) => {
 
-    const { reserva_id, motivo } = req.query;
+    const parse = ReserveRemove.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    const tokenData =(req as any).userData;
+    if(tokenData.tipo !== "Administrador" && tokenData.tipo !== "Responsável") {
+        return res.status(403).send("Você não pode excluir essa reserva");
+    }
+
+    const { id, motivo } = parse.data;
+
     let dia_min = new Date();
     let today = new Date();
 
@@ -784,7 +802,12 @@ router.delete('/reserva', async (req: Request, res: Response) => {
 
         const reserva = await prisma.reserva.findUnique({
             where: {
-                id: String(reserva_id)
+                id: String(id),
+                ...(tokenData.tipo === "Responsável" && {
+                    laboratorio: {
+                        responsavel_id: tokenData.id
+                    }
+                })
             },
             include: {
                 usuario: true,
@@ -815,7 +838,7 @@ router.delete('/reserva', async (req: Request, res: Response) => {
 
         const diasRestantes = await prisma.dia.findMany({
             where: {
-                reserva_id: String(reserva_id)
+                reserva_id: String(id)
             },
         });
 
@@ -825,7 +848,7 @@ router.delete('/reserva', async (req: Request, res: Response) => {
         if (diasRestantes.length === 0) {
             await prisma.reserva.delete({
                 where: {
-                    id: String(reserva_id)
+                    id: String(id)
                 },
             });
             res.status(200).send('Reserva removida');

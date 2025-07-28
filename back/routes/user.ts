@@ -1,88 +1,42 @@
-import { Request, Response, Router } from 'express'
-import { PrismaClient } from '@prisma/client'
-import { stringData } from '../index';
-
-interface nextReservas {
-    name: String;
-    date: String;
-    begin: String | null;
-    duration: String | null;
-    dataTotal: number;
-}
+import { Request, Response, Router } from 'express';
+import { stringData } from '../utils/formatDate';
+import { idSchema, UserCreateSchema, UserData, UserDelete, UserLoginSchema, UserRespGet, UsersGet, UserUpdateFirst, UserUpdateSchema } from '../schemas';
+import { comparePasswords, generateJWTToken, hashPassword } from '../utils/auth';
+import { prisma } from '../utils/prisma';
+import { env } from '../utils/env';
+import { authenticate } from '../middlewares/auth_middleware';
+import { adm_authorization } from '../middlewares/adm_middleware';
 
 const router = Router();
-const prisma = new PrismaClient();
-
-//Cadastrar usuário
-router.post("/user/create", async (req: Request, res: Response) => {
-
-    //Dados do usuário a ser criado
-    const { nome, cpf, d_nas, telefone, email, senha, tipo } = req.body;
-
-    const date = new Date(d_nas);
-
-    if (date.toString() === 'Invalid Date') {
-        res.status(400).send('Formato de data inválido');
-        return;
-    }
-
-    try {
-        await prisma.user.create({
-            data: {
-                email: email,
-                cpf: cpf,
-                nome: nome,
-                senha: senha,
-                data_nasc: date,
-                telefone: telefone,
-                tipo: tipo
-            }
-        });
-
-        res.status(200).send('Usuário cadastrado');
-        return;
-
-    } catch (error: any) {
-
-        if (error.code === 'P2002' && error.meta.target[0] === 'cpf') {
-            res.status(409).send('CPF já cadastrado');
-            return;
-        } else if (error.code === 'P2002' && error.meta.target[0] === 'email') {
-            res.status(409).send('Email já cadastrado');
-            return;
-        }
-
-        res.status(400).send('Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
-        return;
-
-    }
-});
-
 
 //Realizar login
-router.post("/user/login", async (req: Request, res: Response) => {
+router.post("/login", async (req: Request, res: Response) => {
 
-    const { email, senha } = req.body;
+    const parse = UserLoginSchema.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    const { email, senha } = parse.data;
 
     try {
-        const user = await prisma.user.findFirstOrThrow({
+        const user = await prisma.user.findUnique({
             where: {
                 email: email,
-                senha: senha
             },
             select: {
                 id: true,
                 nome: true,
-                tipo: true
+                tipo: true,
+                senha: true
             }
         });
 
-        res.status(200).send({ id: user.id, nome: user.nome, tipo: user.tipo });
-        return;
-
-    } catch (error: any) {
-
-        try {
+        if(!user) {
             const count = await prisma.user.count();
             if (count === 0) {
                 const user = await prisma.user.create({
@@ -90,94 +44,125 @@ router.post("/user/login", async (req: Request, res: Response) => {
                         email: email,
                         cpf: 'Master',
                         nome: 'Master',
-                        senha: senha,
+                        senha: await hashPassword(senha),
                         data_nasc: new Date('2000-01-01'),
                         telefone: '(00) 00000-0000',
                         tipo: 'Administrador'
                     }
                 });
 
+                const jwtToken = generateJWTToken({id: user.id, tipo: user.tipo});
+
+                res.cookie("jwtToken", jwtToken, {
+                    httpOnly: true,
+                    ...(env.NODE_ENV?.toLowerCase().includes("production") && {
+                        secure: true, //true para https e sameSite = none
+                        sameSite: "none",
+                    }),
+                    maxAge: 60*60*24*1000
+                });
+
                 res.status(201).send({ id: user.id, nome: user.nome, tipo: user.tipo, first: true });
                 return;
             }
-        } catch (error1) {
-            res.status(400).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
-            return;
-            }
-            
-        res.status(404).send('Email ou senha incorretos');
-        return;
+        }
 
+        if(!user || !(await comparePasswords(senha, user.senha))) {
+            return res.status(401).send('Email ou senha incorretos');
+        }
+
+        const jwtToken = generateJWTToken({id: user.id, tipo: user.tipo});
+
+        res.cookie("jwtToken", jwtToken, {
+            httpOnly: true,
+            ...(env.NODE_ENV?.toLowerCase().includes("production") && {
+                secure: true, //true para https e sameSite = none
+                sameSite: "none",
+            }),
+            maxAge: 60*60*24*1000
+        });
+
+        return res.status(200).json({
+            id: user.id,
+            nome: user.nome,
+            tipo: user.tipo
+        });
+
+    } catch (error: any) {
+        res.status(500).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
+        return;
     }
 });
+
+
+//Middleware de autênticação para próximas rotas
+router.use(authenticate);
 
 
 //Atualizar usuário
-router.patch("/user", async (req: Request, res: Response) => {
+router.patch("/", async (req: Request, res: Response) => {
 
-    //Dados de busca e a serem atualizados
-    //adm = true não precisa informar senha
-    //mudarSenha usado com adm, caso administrador queira trocar a senha também sem saber a anterior
-    const { id, nome, telefone, email, senha, novasenha, tipo, adm, mudarSenha, changeType } = req.body;
+    const parse = UserUpdateSchema.safeParse(req.body);
 
-    try {
-        await prisma.user.update({
-            where: {
-                id: id,
-                ... (!adm && {
-                    senha: senha
-                })
-            },
-            data: {
-                nome: nome,
-                telefone: telefone,
-                email: email,
-                ... (changeType && {
-                    tipo: tipo,
-                }),
-                ... (adm && !mudarSenha || {
-                    senha: novasenha
-                })
-            }
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
         });
-
-        res.status(200).send({ nome: nome });
-        return;
-
-    } catch (error: any) {
-
-        if (error.code === 'P2025') {
-            res.status(404).send('Senha inválida');
-            return;
-        }
-        if (error.code === 'P2002' && error.meta.target[0] === 'email') {
-            res.status(409).send('Email já cadastrado');
-            return;
-        }
-
-        res.status(400).send('Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde');
-        return;
     }
-});
 
-//Atualizar primeiro usuário do sistema, utilizado somente logo após primeiro usuário fazer login
-router.patch("/user/first", async (req: Request, res: Response) => {
+    const tokenData = (req as any).userData;
+    const { id, nome, telefone, email, senha, novasenha, tipo } = parse.data;
+    const adm = parse.data.adm === 1;
+    const mudarSenha = parse.data.mudarSenha === 1;
+    const changeType = parse.data.changeType === 1;
+    let novasenhaHash;
 
-    //Dados do primeiro adm do sistema
-    const { id, cpf, data_nasc, email, nome, senha, telefone, } = req.body;
+    //Valida se usuáio realmente é um administrador
+    if((adm || id != tokenData.id) && tokenData.tipo !== "Administrador") {
+        return res.status(403).send("Função não permitida");
+    }
+
+    if(mudarSenha) {
+        if(!novasenha) return res.status(422).send("Nova senha deve ser informada");
+        else novasenhaHash = await hashPassword(novasenha);
+    }
+
+    if(changeType && !tipo) {
+        return res.status(422).send("Tipo de usuário deve ser informado");
+    }
+    
+    if(!adm && !senha) {
+        return res.status(422).send("Senha deve ser informada");
+    }
 
     try {
+        if(!adm) {
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: tokenData.id
+                }
+            });
+
+            if(!user || !(await comparePasswords(senha || "", user.senha))) {
+                return res.status(401).send('Senha inválida');
+            }
+        }
+
         await prisma.user.update({
             where: {
                 id: id
             },
             data: {
-                cpf: cpf,
-                data_nasc: new Date(data_nasc),
-                email: email,
                 nome: nome,
-                senha: senha,
-                telefone: telefone
+                telefone: telefone,
+                email: email,
+                ... (changeType && adm && {
+                    tipo: tipo,
+                }),
+                ... (mudarSenha && {
+                    senha: novasenhaHash
+                })
             }
         });
 
@@ -186,16 +171,40 @@ router.patch("/user/first", async (req: Request, res: Response) => {
 
     } catch (error: any) {
 
-        res.status(400).send('database off');
+        if (error.code === 'P2002' && error.meta.target[0] === 'email') {
+            res.status(409).send('Email já cadastrado');
+            return;
+        }
+
+        res.status(500).send('Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde');
         return;
     }
 });
 
 
 //Deletar usuário
-router.delete("/user", async (req: Request, res: Response) => {
+router.delete("/", async (req: Request, res: Response) => {
 
-    const { id, senha, minhaConta } = req.query;
+    const parse = UserDelete.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    const tokenData = (req as any).userData;
+    const { id, senha } = parse.data;
+    const minhaConta = parse.data.minhaConta === 1;
+
+    if((!minhaConta || id != tokenData.id) && tokenData.tipo !== "Administrador") {
+        return res.status(403).send("Função não permitida")
+    }
+
+    if(minhaConta && !senha) {
+        return res.status(422).send("A senha da conta deve ser informada");
+    }
 
     try {
 
@@ -221,84 +230,51 @@ router.delete("/user", async (req: Request, res: Response) => {
             return;
         }
 
+        const userDelete = await prisma.user.findUnique({
+            where: {
+                id: String(id)
+            }
+        });
+
+        if(!userDelete) {
+            return res.status(404).send("Usuário não encontrado");
+        }
+
+        if(minhaConta && !(await comparePasswords(senha || "", userDelete.senha))) {
+            return res.status(401).send("Senha inválida");
+        }
+
         await prisma.user.delete({
             where: {
-                id: String(id),
-                ... (minhaConta && {
-                    senha: String(senha)
-                })
+                id: userDelete.id
             }
         });
 
         res.status(200).send("Usuário excluido");
         return;
 
-    } catch (error: any) {
-
-        if (error.code === 'P2025') {
-            res.status(404).send("Senha inválida");
-            return;
-        }
-
-        res.status(400).send('Desculpe, não foi possível remover o usuário. Tente novamente mais tarde');
-        return;
-    }
-});
-
-
-//Ver usuários
-router.get("/users", async (req: Request, res: Response) => {
-
-    //Filtros de busca
-    const { nome, cpf, email, tipo } = req.query;
-
-    try {
-        const users = await prisma.user.findMany({
-            where: {
-                ... (nome && {
-                    nome: { contains: String(nome) }
-                }),
-                ... (cpf && {
-                    cpf: { contains: String(cpf) }
-                }),
-                ... (email && {
-                    email: { contains: String(email) }
-                }),
-                ... (tipo && {
-                    tipo: { contains: String(tipo) }
-                })
-            },
-            select: {
-                id: true,
-                nome: true,
-                cpf: true,
-                email: true,
-                tipo: true
-            },
-            orderBy: [
-                {
-                    tipo: 'asc'
-                },
-                {
-                    nome: 'asc'
-                },
-            ]
-        });
-
-        res.status(200).send(users);
-        return;
-
     } catch (error) {
-        res.status(400).send('database off');
+
+        res.status(500).send('Desculpe, não foi possível remover o usuário. Tente novamente mais tarde');
         return;
     }
 });
 
-//Recuperar nomes do usuário responsáveis
-router.get("/users/responsavel", async (req: Request, res: Response) => {
+
+//Recuperar nomes dos usuários responsáveis
+router.get("/responsaveis", async (req: Request, res: Response) => {
+
+    const parse = UserRespGet.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
 
     //Caso também queira retornar cpf dos responsáveis
-    const { cpf } = req.query;
+    const cpf  = parse.data.cpf === 1;
 
     try {
         const users = await prisma.user.findMany({
@@ -317,18 +293,34 @@ router.get("/users/responsavel", async (req: Request, res: Response) => {
         return;
 
     } catch (error) {
-        res.status(400).send('database off');
+        res.status(500).send('Desculpe, não foi recuperar os usuários. Tente novamente mais tarde');
         return;
     }
 })
 
 
 //Recuperar dados de um usuário
-router.post("/user/data", async (req: Request, res: Response) => {
+router.post("/data", async (req: Request, res: Response) => {
+
+    const parse = UserData.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    const tokenData = (req as any).userData;
+    if(parse.data.id != tokenData.id && tokenData.tipo !== "Administrador")
+    {
+        return res.status(403).send("Função não permitida");
+    }
 
     //Filtros para busca de usuário
     //saveContext especifica que deseja retornar somente o nome e tipo de usuário
-    const { id, saveContext } = req.body;
+    const { id } = parse.data;
+    const saveContext = parse.data.saveContext === 1;
 
     try {
         const user = await prisma.user.findFirstOrThrow({
@@ -363,10 +355,28 @@ router.post("/user/data", async (req: Request, res: Response) => {
 });
 
 
-//Recupera dados da página inicial
-router.post("/mainpageinfo", async (req: Request, res: Response) => {
+interface nextReservas {
+    name: String;
+    date: String;
+    begin: String | null;
+    duration: String | null;
+    dataTotal: number;
+}
 
-    const { id } = req.body;
+//Recupera dados da página inicial
+router.get("/mainpageinfo", async (req: Request, res: Response) => {
+
+    const parse = idSchema.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    const { id } = (req as any).userData;
+
     let today = new Date();
 
     if (today.getUTCHours() < 3) today.setUTCDate(today.getUTCDate() - 1)
@@ -478,6 +488,162 @@ router.post("/mainpageinfo", async (req: Request, res: Response) => {
         return;
     }
 
+});
+
+//ROTAS DE ADMIN
+router.use(adm_authorization);
+
+//Cadastrar usuário
+router.post("/create", async (req: Request, res: Response) => {
+
+    const parse = UserCreateSchema.safeParse(req.body);
+
+    if (!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        })
+    }
+
+    //Dados do usuário a ser criado
+    const { nome, cpf, data_nasc, telefone, email, senha, tipo } = parse.data;
+
+    const date = new Date(data_nasc);
+
+    if (date.toString() === 'Invalid Date') {
+        res.status(400).send('Formato de data inválido');
+        return;
+    }
+
+    try {
+        await prisma.user.create({
+            data: {
+                email: email,
+                cpf: cpf,
+                nome: nome,
+                senha: await hashPassword(senha),
+                data_nasc: date,
+                telefone: telefone,
+                tipo: tipo
+            }
+        });
+
+        res.status(201).send('Usuário cadastrado');
+        return;
+
+    } catch (error: any) {
+
+        if (error.code === 'P2002' && error.meta.target[0] === 'cpf') {
+            res.status(409).send('CPF já cadastrado');
+            return;
+        } else if (error.code === 'P2002' && error.meta.target[0] === 'email') {
+            res.status(409).send('Email já cadastrado');
+            return;
+        }
+
+        res.status(400).send('Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
+        return;
+
+    }
+});
+
+
+//Atualizar primeiro usuário do sistema, utilizado somente logo após primeiro usuário fazer login
+router.patch("/first", async (req: Request, res: Response) => {
+
+    const parse = UserUpdateFirst.safeParse(req.body);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    //Dados do primeiro adm do sistema
+    const { id, cpf, data_nasc, email, nome, senha, telefone } = parse.data;
+
+    try {
+        await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                cpf: cpf,
+                data_nasc: new Date(data_nasc),
+                email: email,
+                nome: nome,
+                senha: await hashPassword(senha),
+                telefone: telefone
+            }
+        });
+
+        res.status(200).send({ nome: nome });
+        return;
+
+    } catch (error: any) {
+
+        res.status(400).send('database off');
+        return;
+    }
+});
+
+
+//Ver usuários
+router.get("/all", async (req: Request, res: Response) => {
+
+    const parse = UsersGet.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+
+    //Filtros de busca
+    const { nome, cpf, email, tipo } = parse.data;
+
+    try {
+        const users = await prisma.user.findMany({
+            where: {
+                ... (nome && {
+                    nome: { contains: String(nome) }
+                }),
+                ... (cpf && {
+                    cpf: { contains: String(cpf) }
+                }),
+                ... (email && {
+                    email: { contains: String(email) }
+                }),
+                ... (tipo && {
+                    tipo: { contains: String(tipo) }
+                })
+            },
+            select: {
+                id: true,
+                nome: true,
+                cpf: true,
+                email: true,
+                tipo: true
+            },
+            orderBy: [
+                {
+                    tipo: 'asc'
+                },
+                {
+                    nome: 'asc'
+                },
+            ]
+        });
+
+        res.status(200).send(users);
+        return;
+
+    } catch (error) {
+        res.status(400).send('database off');
+        return;
+    }
 });
 
 export default router;

@@ -48,7 +48,7 @@ export default function Labs() {
         const capacidade = document.querySelector('#capacidadeSearch').value;
 
         try {
-            const response = (await api.get('labs', {
+            const response = (await api.get('lab/all', {
                 params: {
                     nome: nome,
                     responsavel: responsavel,
@@ -83,7 +83,7 @@ export default function Labs() {
     async function getResponsaveis() {
         try {
             const users = [{ value: '', name: 'Qualquer Responsável' }];
-            const response = (await api.get('users/responsavel')).data;
+            const response = (await api.get('user/responsaveis')).data;
             for (let user of response) {
                 users.push({ value: user.nome, name: user.nome });
             }

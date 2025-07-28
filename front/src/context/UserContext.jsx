@@ -20,7 +20,7 @@ export const UserProvider = ({ children }) => {
         try {
           const response = (await api.post('user/data', {
             id: userData,
-            saveContext: true
+            saveContext: 1
           })).data;
 
           response.id = userData;
@@ -45,6 +45,7 @@ export const UserProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     Cookies.remove('user');
+    Cookies.remove('jwtToken');
   };
 
   return (

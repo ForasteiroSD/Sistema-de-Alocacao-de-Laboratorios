@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z } from "zod";
-import { sha256 } from "js-sha256";
 import { AnimatePresence } from 'framer-motion'; // Certifique-se de importar o AnimatePresence corretamente
 
 /* Components */
@@ -41,7 +40,7 @@ const LoginPage = () => {
         try {
             z.string().email().parse(email);
             if (senha.length < 8) setAlert('Warning', 'A senha deve ter no mínimo 8 caracteres');
-            else Login(sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha), email);
+            else Login(senha, email);
         } catch (error) {
             setAlert('Warning', 'Email inválido');
         }

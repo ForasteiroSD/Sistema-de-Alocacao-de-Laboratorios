@@ -1,5 +1,4 @@
 /* Packages */
-import { sha256 } from "js-sha256";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from 'react';
@@ -66,15 +65,15 @@ export default function UpdateUser({ CloseModal, UserId, updateView, myAccount =
                 nome: nome,
                 telefone: telefone,
                 email: email,
-                senha: senha,
-                novasenha: novaSenha,
+                senha: senha || undefined,
+                novasenha: novaSenha || undefined,
                 tipo: tipo,
-                adm: false,
-                mudarSenha: false,
-                changeType: false
+                adm: 0,
+                mudarSenha: 0,
+                changeType: 0
             };
-            if (isAdm) params.changeType = true;
-            if (novaSenha) params.mudarSenha = true;
+            if (isAdm) params.changeType = 1;
+            if (novaSenha) params.mudarSenha = 1;
 
         } else {
 
@@ -83,14 +82,14 @@ export default function UpdateUser({ CloseModal, UserId, updateView, myAccount =
                 nome: nome,
                 telefone: telefone,
                 email: email,
-                senha: senha,
-                novasenha: novaSenha,
+                senha: senha || undefined,
+                novasenha: novaSenha || undefined,
                 tipo: tipo,
-                adm: true,
-                mudarSenha: false,
-                changeType: true
+                adm: 1,
+                mudarSenha: 0,
+                changeType: 1
             };
-            if (novaSenha) params.mudarSenha = true;
+            if (novaSenha) params.mudarSenha = 1;
         }
 
         if (document.querySelector("#cpf").value === "Master" && tipo !== "Administrador") {
@@ -139,13 +138,13 @@ export default function UpdateUser({ CloseModal, UserId, updateView, myAccount =
                             return;
                         }
 
-                        UpdateUser(email, telefone, sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha), sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, novaSenha));
+                        UpdateUser(email, telefone, senha, novaSenha);
                     }
-                    else UpdateUser(email, telefone, sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha));
+                    else UpdateUser(email, telefone, senha);
 
                 } else {
 
-                    if (novaSenha > 0) {
+                    if (novaSenha.length > 0) {
 
                         if (novaSenha.length < 8) {
                             setAlert('Warning', 'A nova senha deve ter no mínimo 8 caracteres');
@@ -157,7 +156,7 @@ export default function UpdateUser({ CloseModal, UserId, updateView, myAccount =
                             return;
                         }
 
-                        UpdateUser(email, telefone, null, sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, novaSenha));
+                        UpdateUser(email, telefone, null, novaSenha);
 
                     } else {
                         UpdateUser(email, telefone, null, null);

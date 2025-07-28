@@ -24,8 +24,10 @@ export default function MainPage() {
         if(!user?.id) return;
         async function buscaDados() {
             try {
-                const response = (await api.post('mainpageinfo', {
-                    id: user.id
+                const response = (await api.get('user/mainpageinfo', {
+                    params: {
+                        id: user.id
+                    }
                 })).data;
                 setMainInfo(response.mainInfo);
 

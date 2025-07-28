@@ -1,0 +1,6 @@
+jest.config.*
+*.test.ts
+*.spec.ts
+coverage
+node_modules
+.env*

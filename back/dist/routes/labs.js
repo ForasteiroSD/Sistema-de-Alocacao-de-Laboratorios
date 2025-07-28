@@ -10,19 +10,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const client_1 = require("@prisma/client");
-const index_1 = require("../index");
+const prisma_1 = require("../utils/prisma");
+const formatDate_1 = require("../utils/formatDate");
+const schemas_1 = require("../schemas");
 const router = (0, express_1.Router)();
-const prisma = new client_1.PrismaClient();
 //Cadastrar laboratório
-router.post("/lab", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //Dados do laboratório a ser criado
     //Utilizar responsavel_cpf caso seja administrador que esteja criado laboratório, responsavel_id caso contrário
-    const { responsavel_cpf, nome, capacidade, projetor, quadro, televisao, ar_condicionado, computador, outro } = req.body;
-    let { responsavel_id } = req.body;
+    const parse = schemas_1.LabCreate.safeParse(req.body);
+    if (!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+    const tokenData = req.userData;
+    if (tokenData.tipo !== "Administrador" && tokenData.tipo !== "Responsável") {
+        return res.status(403).send("Função não permitida");
+    }
+    const { ar_condicionado, capacidade, computador, nome, projetor, quadro, televisao, outro, responsavel_cpf } = parse.data;
+    let { responsavel_id } = parse.data;
     try {
         if (responsavel_cpf) {
-            const user = yield prisma.user.findUniqueOrThrow({
+            const user = yield prisma_1.prisma.user.findUniqueOrThrow({
                 where: {
                     cpf: responsavel_cpf,
                     tipo: 'Responsável'
@@ -33,7 +44,10 @@ router.post("/lab", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             });
             responsavel_id = user.id;
         }
-        yield prisma.laboratorio.create({
+        if (!responsavel_id) {
+            return res.status(400).send("Id ou cpf do responsável pelo laboratório deve ser informado");
+        }
+        yield prisma_1.prisma.laboratorio.create({
             data: {
                 nome: nome,
                 capacidade: capacidade,
@@ -46,7 +60,7 @@ router.post("/lab", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 responsavel_id: responsavel_id
             }
         });
-        res.status(200).send('Laboratório criado');
+        res.status(201).send('Laboratório criado');
         return;
     }
     catch (error) {
@@ -63,13 +77,39 @@ router.post("/lab", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 }));
 //Atualizar laboratório
-router.patch("/lab", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    //Dados de busca e a serem atualizados
-    //novoResponsavel é o cpf do usuário que será responsável pelo laboratório (opcional)
-    const { nome, capacidade, projetor, quadro, televisao, ar_condicionado, computador, outro, novo_responsavel } = req.body;
+router.patch("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const parse = schemas_1.LabUpdateSchema.safeParse(req.body);
+    if (!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+    const tokenData = req.userData;
+    if (tokenData.tipo !== "Administrador" && tokenData.tipo !== "Responsável") {
+        return res.status(403).send("Função não permitida");
+    }
+    const { nome, capacidade, projetor, quadro, televisao, ar_condicionado, computador, outro, novo_responsavel } = parse.data;
     try {
+        if (tokenData.tipo === "Responsável") {
+            const user = yield prisma_1.prisma.user.findUnique({
+                where: {
+                    id: tokenData.id,
+                },
+                include: {
+                    laboratorios: {
+                        where: {
+                            nome: nome
+                        }
+                    }
+                }
+            });
+            if (user && !user.laboratorios.length) {
+                return res.status(403).send("Você não tem permissão para atualizar esse laboratório");
+            }
+        }
         if (novo_responsavel) {
-            yield prisma.user.update({
+            yield prisma_1.prisma.user.update({
                 where: {
                     cpf: novo_responsavel,
                     tipo: 'Responsável'
@@ -83,7 +123,7 @@ router.patch("/lab", (req, res) => __awaiter(void 0, void 0, void 0, function* (
                 }
             });
         }
-        yield prisma.laboratorio.update({
+        yield prisma_1.prisma.laboratorio.update({
             where: {
                 nome: nome
             },
@@ -110,11 +150,17 @@ router.patch("/lab", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 }));
 //Consultar laboratórios
-router.get("/labs", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    //Filtros de busca
-    const { nome, responsavel, capacidade_minima } = req.query;
+router.get("/all", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const parse = schemas_1.LabsGet.safeParse(req.query);
+    if (!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+    const { nome, responsavel, capacidade_minima } = parse.data;
     try {
-        const labs = yield prisma.laboratorio.findMany({
+        const labs = yield prisma_1.prisma.laboratorio.findMany({
             where: Object.assign(Object.assign(Object.assign({}, (nome && {
                 nome: { contains: String(nome) }
             })), (responsavel && {
@@ -153,10 +199,17 @@ router.get("/labs", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         return;
     }
 }));
-router.get("/lab", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nome } = req.query;
+router.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const parse = schemas_1.nomeSchema.safeParse(req.query);
+    if (!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errros: parse.error.flatten()
+        });
+    }
+    const { nome } = parse.data;
     try {
-        const lab = yield prisma.laboratorio.findUniqueOrThrow({
+        const lab = yield prisma_1.prisma.laboratorio.findUniqueOrThrow({
             where: {
                 nome: String(nome)
             },
@@ -188,11 +241,18 @@ router.get("/lab", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         return;
     }
 }));
-//Recupera nomes dos laboratórios de um usuário ou todos os laboratórios caso nenhum nome id seja passado
-router.post("/userLabs", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { user_id } = req.body;
+//Recupera nomes dos laboratórios de um usuário ou todos os laboratórios caso nenhum id seja passado
+router.post("/user", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const parse = schemas_1.LabNames.safeParse(req.body);
+    if (!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+    const { user_id } = parse.data;
     try {
-        const labs = yield prisma.laboratorio.findMany({
+        const labs = yield prisma_1.prisma.laboratorio.findMany({
             where: Object.assign({}, (user_id && {
                 responsavel_id: user_id
             })),
@@ -208,15 +268,22 @@ router.post("/userLabs", (req, res) => __awaiter(void 0, void 0, void 0, functio
         return;
     }
 }));
-router.get('/lab/reservasdia', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { nome, dia } = req.query;
+router.get('/reservasdia', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const parse = schemas_1.LabReserves.safeParse(req.query);
+    if (!parse.success) {
+        return res.status(422).send({
+            message: "Dados inválidos",
+            errors: parse.error.flatten()
+        });
+    }
+    const { nome, dia } = parse.data;
     let data = new Date(String(dia));
     let data1 = new Date(String(dia));
     data1.setUTCDate(data1.getUTCDate() + 1);
     data.setUTCHours(0, 0, 0, 0);
     data1.setUTCHours(0, 0, 0, 0);
     try {
-        const laboratorio = yield prisma.laboratorio.findUniqueOrThrow({
+        const laboratorio = yield prisma_1.prisma.laboratorio.findUniqueOrThrow({
             where: {
                 nome: String(nome)
             },
@@ -251,7 +318,7 @@ router.get('/lab/reservasdia', (req, res) => __awaiter(void 0, void 0, void 0, f
         const reservasHoje = [];
         for (const reservaInfo of laboratorio.reservas) {
             for (const reserva of reservaInfo.dias) {
-                let string_aux1 = (0, index_1.stringData)(reserva.data_inicio, true);
+                let string_aux1 = (0, formatDate_1.stringData)(reserva.data_inicio, true);
                 reservasHoje.push({
                     hora_inicio: string_aux1,
                     duracao: reserva.duracao,

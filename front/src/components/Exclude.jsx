@@ -1,7 +1,6 @@
 /* Packages */
 import { motion } from "framer-motion";
 import { useState, useEffect, useContext } from 'react';
-import { sha256 } from "js-sha256";
 
 /* Components */
 import Input from './Input';
@@ -42,11 +41,10 @@ export default function Exclude({ type, CloseModal, Id, updateView }) {
                 return;
             }
 
-            senha = sha256.hmac(import.meta.env.VITE_REACT_APP_SECRET_KEY, senha);
         }
 
         try {
-            await api.delete('user', { params: { id: Id, senha: senha, minhaConta: selfAccount } });
+            await api.delete('user', { params: { id: Id, senha: senha, minhaConta: selfAccount ? 1 : 0 } });
             setAlert('Success', 'Usuário excluído');
             if (selfAccount) {
                 logout();
@@ -73,7 +71,7 @@ export default function Exclude({ type, CloseModal, Id, updateView }) {
         try {
             const response = (await api.delete(link, {
                 params: {
-                    reserva_id: Id,
+                    id: Id,
                     ... (motivo && {
                         motivo: motivo
                     })
