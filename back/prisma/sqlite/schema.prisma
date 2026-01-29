@@ -6,12 +6,12 @@
 
 generator client {
   provider = "prisma-client-js"
+  output = "../../src/generated/sqlite/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url       = env("DATABASE_URL") // uses connection pooling
-  directUrl = env("DIRECT_URL")
+  provider = "sqlite"
+  url       = env("DATABASE_URL")
 }
 
 model user {

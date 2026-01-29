@@ -1,9 +1,10 @@
 import { Request, Response, Router } from 'express';
-import { prisma } from '../utils/prisma';
-import { stringData } from '../utils/formatDate';
-import { createReserveEmailText, sendEmail } from '../utils/sendEmail';
-import { DailyReserve, idSchema, PersonalizedReserves, ReserveInsert, ReserveRemove, Reserves, ReservesRespLab, ReservesUser, UniqueReserve, WeeklyReserves } from '../schemas';
-import { adm_authorization } from '../middlewares/adm_middleware';
+import { prisma } from '../utils/prisma.js';
+import { stringData } from '../utils/formatDate.js';
+import { createReserveEmailText, sendEmail } from '../utils/sendEmail.js';
+import { DailyReserve, PersonalizedReserves, ReserveInsert, ReserveRemove, Reserves, ReservesRespLab, ReservesUser, UniqueReserve, WeeklyReserves } from '../utils/validation/reserve.schema.js';
+import { idSchema } from 'src/utils/validation/default.schema.js';
+import { adm_authorization } from '../middlewares/adm_middleware.js';
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
-import { stringData } from './formatDate';
-import { env } from './env';
+import { stringData } from './formatDate.js';
+import { env } from './env.js';
 
 
 export function sendEmail(email: string, text: string, texthtml: string, type: string) {

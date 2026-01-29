@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { env } from "../utils/env";
+import { Response } from 'express';
+import { env } from "./env.js";
 
 export async function hashPassword(plainTextPassword: string) {
     const saltRounds = 10;

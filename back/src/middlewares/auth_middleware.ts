@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyJWTToken } from "../utils/auth";
+import { verifyJWTToken } from "../utils/auth.js";
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
     if(!req.cookies || !req.cookies.jwtToken) {

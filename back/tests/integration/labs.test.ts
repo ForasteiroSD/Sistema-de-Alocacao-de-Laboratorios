@@ -1,6 +1,6 @@
 import request from "supertest";
-import app from "../../index";
-import { generateJWTToken } from "../../utils/auth";
+import app from "../../src/index.js";
+import { generateJWTToken } from "../../src/utils/auth.js";
 
 let admToken: string, admId: string, userToken: string, userId: string, respToken: string, respId: string;
 

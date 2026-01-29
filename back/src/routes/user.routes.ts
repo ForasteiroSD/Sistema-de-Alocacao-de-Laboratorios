@@ -1,11 +1,12 @@
 import { Request, Response, Router } from 'express';
-import { stringData } from '../utils/formatDate';
-import { idSchema, UserCreateSchema, UserData, UserDelete, UserLoginSchema, UserRespGet, UsersGet, UserUpdateFirst, UserUpdateSchema } from '../schemas';
-import { comparePasswords, generateJWTToken, hashPassword } from '../utils/auth';
-import { prisma } from '../utils/prisma';
-import { env } from '../utils/env';
-import { authenticate } from '../middlewares/auth_middleware';
-import { adm_authorization } from '../middlewares/adm_middleware';
+import { stringData } from '../utils/formatDate.js';
+import { UserCreateSchema, UserData, UserDelete, UserLoginSchema, UserRespGet, UsersGet, UserUpdateFirst, UserUpdateSchema } from '../utils/validation/user.schema.js';
+import { idSchema } from 'src/utils/validation/default.schema.js';
+import { comparePasswords, generateJWTToken, hashPassword } from '../utils/auth.js';
+import { prisma } from '../utils/prisma.js';
+import { env } from '../utils/env.js';
+import { authenticate } from '../middlewares/auth_middleware.js';
+import { adm_authorization } from '../middlewares/adm_middleware.js';
 
 const router = Router();
 

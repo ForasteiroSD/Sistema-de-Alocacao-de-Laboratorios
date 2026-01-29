@@ -1,20 +1,17 @@
 import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
-import { prisma } from "../../utils/prisma";
-import { hashPassword } from "../../utils/auth";
+import { prisma } from "../../src/utils/prisma.js";
+import { hashPassword } from "../../src/utils/auth.js";
 
 const testDbPath = path.resolve(__dirname, "test.db");
 
 //faz configurações iniciais para testes
 beforeAll(async () => {
-    //apaga arquivo do banco
-    if (fs.existsSync(testDbPath)) {
-        fs.unlinkSync(testDbPath);
-    }
-
-    //cria arquivo do banco
-    execSync("npx prisma migrate deploy --schema=prisma/dev/schema.dev.prisma", { stdio: "inherit" });
+    await prisma.dia.deleteMany();
+    await prisma.reserva.deleteMany();
+    await prisma.laboratorio.deleteMany();
+    await prisma.user.deleteMany();
 
     const users = await prisma.user.createManyAndReturn({
         data: [
@@ -90,8 +87,4 @@ beforeAll(async () => {
 //apaga arquivo do banco
 afterAll(async () => {
     await prisma.$disconnect();
-
-    if (fs.existsSync(testDbPath)) {
-        fs.unlinkSync(testDbPath);
-    }
 });

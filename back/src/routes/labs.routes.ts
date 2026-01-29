@@ -1,7 +1,8 @@
 import { Request, Response, Router } from 'express';
-import { prisma } from '../utils/prisma';
-import { stringData } from '../utils/formatDate';
-import { LabCreate, LabNames, LabReserves, LabsGet, LabUpdateSchema, nomeSchema } from '../schemas';
+import { prisma } from '../utils/prisma.js';
+import { stringData } from '../utils/formatDate.js';
+import { LabCreate, LabNames, LabReserves, LabsGet, LabUpdateSchema } from '../utils/validation/lab.schema.js';
+import { nomeSchema } from 'src/utils/validation/default.schema.js';
 
 const router = Router();
 

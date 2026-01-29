@@ -1,10 +1,10 @@
 import express from "express";
 import cors from "cors";
-import user from "./routes/user";
-import labs from "./routes/labs";
-import reservas from "./routes/reservas";
-import { authenticate } from "./middlewares/auth_middleware";
-import { env } from "./utils/env";
+import user from "./routes/user.routes.js";
+import labs from "./routes/labs.routes.js";
+import reservas from "./routes/reserves.routes.js";
+import { authenticate } from "./middlewares/auth_middleware.js";
+import { env } from "./utils/env.js";
 import cookieParser from "cookie-parser";
 
 const app = express();
