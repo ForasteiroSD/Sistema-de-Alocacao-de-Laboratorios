@@ -1,23 +1,9 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const supertest_1 = __importDefault(require("supertest"));
-const index_1 = __importDefault(require("../../index"));
+import request from "supertest";
+import app from "../../src/index.js";
 let admToken, admId, userToken, userId, respToken, respId;
-beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+beforeAll(async () => {
     //salva tokens e ids para uso
-    const res = yield (0, supertest_1.default)(index_1.default)
+    const res = await request(app)
         .post("/user/login")
         .send({
         email: "adm@gmail.com",
@@ -25,7 +11,7 @@ beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     });
     admId = res.body.id;
     admToken = res.headers["set-cookie"][0].split(";")[0].replace("jwtToken=", "");
-    const res1 = yield (0, supertest_1.default)(index_1.default)
+    const res1 = await request(app)
         .post("/user/login")
         .send({
         email: "user@gmail.com",
@@ -33,7 +19,7 @@ beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     });
     userId = res1.body.id;
     userToken = res1.headers["set-cookie"][0].split(";")[0].replace("jwtToken=", "");
-    const res2 = yield (0, supertest_1.default)(index_1.default)
+    const res2 = await request(app)
         .post("/user/login")
         .send({
         email: "resp@gmail.com",
@@ -41,23 +27,23 @@ beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     });
     respId = res2.body.id;
     respToken = res2.headers["set-cookie"][0].split(";")[0].replace("jwtToken=", "");
-}));
+});
 describe("Create", () => {
-    it("deve retornar 401 - token não fornecido", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retornar 401 - token não fornecido", async () => {
+        const res = await request(app)
             .post("/reserva");
         expect(res.status).toBe(401);
         expect(res.text).toBe("Token não fornecido");
-    }));
-    it("deve retornar 401 - token inválido", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 401 - token inválido", async () => {
+        const res = await request(app)
             .post("/reserva")
             .set("Cookie", [`jwtToken=jgasgjjg1tadga`]);
         expect(res.status).toBe(401);
         expect(res.text).toBe("Usuário não autenticado");
-    }));
-    it("deve retornar 422 - dados incorretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 422 - dados incorretos", async () => {
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -68,9 +54,9 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 422 - dados incorretos (reserva Única)", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 422 - dados incorretos (reserva Única)", async () => {
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -81,11 +67,11 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 422 - dados incorretos (reserva Única) - data", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 422 - dados incorretos (reserva Única) - data", async () => {
         const date = new Date();
         date.setDate(date.getDate() - 7); //date 7 days before today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -99,11 +85,11 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 422 - dados incorretos (reserva Única) - hora e duracao", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 422 - dados incorretos (reserva Única) - hora e duracao", async () => {
         const date = new Date();
         date.setDate(date.getDate() + 7); //date 7 days from today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -117,11 +103,11 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 404 - laboratório inexistente", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 404 - laboratório inexistente", async () => {
         const date = new Date();
         date.setDate(date.getDate() + 7); //date 7 days from today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -135,11 +121,11 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(404);
         expect(res.text).toBe("Laboratório Inexistente");
-    }));
-    it("deve retornar 200 - dados corretos (reserva Única)", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 200 - dados corretos (reserva Única)", async () => {
         const date = new Date();
         date.setDate(date.getDate() + 7); //date 7 days from today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -153,11 +139,11 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(200);
         expect(res.text).toBe("Reserva realizada");
-    }));
-    it("deve retornar 409 - conflito entre horários", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 409 - conflito entre horários", async () => {
         const date = new Date();
         date.setDate(date.getDate() + 7); //date 7 days from today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -171,11 +157,11 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(409);
         expect(res.text).toContain("Conflito no dia");
-    }));
-    it("deve retornar 422 - dados incorretos (reserva Diária) - data_fim", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 422 - dados incorretos (reserva Diária) - data_fim", async () => {
         const date = new Date();
         date.setDate(date.getDate() + 7); //date 7 days from today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -190,12 +176,12 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 200 - dados corretos (reserva Diária)", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 200 - dados corretos (reserva Diária)", async () => {
         const initialDate = new Date(), finalDate = new Date();
         initialDate.setDate(initialDate.getDate() + 6); //date 6 days from today
         finalDate.setDate(finalDate.getDate() + 10); //date 10 days from today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -210,12 +196,12 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(200);
         expect(res.text).toBe("Reserva realizada");
-    }));
-    it("deve retornar 422 - dados incorretos (reserva Semanal) - horarios", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 422 - dados incorretos (reserva Semanal) - horarios", async () => {
         const initialDate = new Date(), finalDate = new Date();
         initialDate.setDate(initialDate.getDate() + 6); //date 6 days from today
         finalDate.setDate(finalDate.getDate() + 20); //date 20 days from today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -229,12 +215,12 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 422 - dados incorretos (reserva Semanal) - dia_semana", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 422 - dados incorretos (reserva Semanal) - dia_semana", async () => {
         const initialDate = new Date(), finalDate = new Date();
         initialDate.setDate(initialDate.getDate() + 6); //date 6 days from today
         finalDate.setDate(finalDate.getDate() + 20); //date 20 days from today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -254,12 +240,12 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 200 - dados corretos (reserva Semanal)", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 200 - dados corretos (reserva Semanal)", async () => {
         const initialDate = new Date(), finalDate = new Date();
         initialDate.setDate(initialDate.getDate() + 6); //date 6 days from today
         finalDate.setDate(finalDate.getDate() + 20); //date 20 days from today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -284,9 +270,9 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(200);
         expect(res.text).toBe("Reserva realizada");
-    }));
-    it("deve retornar 422 - dados incorretos (reserva Personalizada) - horarios", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 422 - dados incorretos (reserva Personalizada) - horarios", async () => {
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -298,11 +284,11 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 422 - dados incorretos (reserva Personalizada) - data", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 422 - dados incorretos (reserva Personalizada) - data", async () => {
         const date = new Date();
         date.setDate(date.getDate() - 7); //date 7 days before from today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -320,12 +306,12 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 200 - dados corretos (reserva Personalizada)", () => __awaiter(void 0, void 0, void 0, function* () {
+    });
+    it("deve retornar 200 - dados corretos (reserva Personalizada)", async () => {
         const firstDate = new Date(), secondDate = new Date();
         firstDate.setDate(firstDate.getDate() + 6); //date 6 days from today
         secondDate.setDate(secondDate.getDate() + 9); //date 9 days from today
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .post("/reserva")
             .send({
             userId: userId,
@@ -349,11 +335,11 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(200);
         expect(res.text).toBe("Reserva realizada");
-    }));
+    });
 });
 describe("Get reservas lab", () => {
-    it("deve retornar 422 - dados incorretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retornar 422 - dados incorretos", async () => {
+        const res = await request(app)
             .post("/reservas/lab")
             .send({
             resp_id: respId,
@@ -363,9 +349,9 @@ describe("Get reservas lab", () => {
             .set("Cookie", [`jwtToken=${respToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 200 - dados corretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 200 - dados corretos", async () => {
+        const res = await request(app)
             .post("/reservas/lab")
             .send({
             resp_id: respId,
@@ -375,11 +361,11 @@ describe("Get reservas lab", () => {
         expect(res.status).toBe(200);
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toBeGreaterThan(1);
-    }));
+    });
 });
 describe("Get reservas user", () => {
-    it("deve retonar 422 - dados incorretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retonar 422 - dados incorretos", async () => {
+        const res = await request(app)
             .post("/reservas/user")
             .send({
             userId: userId,
@@ -390,9 +376,9 @@ describe("Get reservas user", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retonar 200 - dados corretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retonar 200 - dados corretos", async () => {
+        const res = await request(app)
             .post("/reservas/user")
             .send({
             userId: userId,
@@ -402,18 +388,18 @@ describe("Get reservas user", () => {
         expect(res.status).toBe(200);
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toBe(1);
-    }));
+    });
 });
 describe("Get reservas", () => {
-    it("deve retonar 403 - token não é de adm", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retonar 403 - token não é de adm", async () => {
+        const res = await request(app)
             .get("/reservas")
             .set("Cookie", [`jwtToken=${respToken}`]);
         expect(res.status).toBe(403);
         expect(res.text).toBe("Função não permitida");
-    }));
-    it("deve retonar 422 - dados incorretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retonar 422 - dados incorretos", async () => {
+        const res = await request(app)
             .get("/reservas")
             .query({
             labName: "Lab 1",
@@ -424,9 +410,9 @@ describe("Get reservas", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retonar 200 - dados corretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retonar 200 - dados corretos", async () => {
+        const res = await request(app)
             .get("/reservas")
             .query({
             labName: "Lab",
@@ -435,11 +421,11 @@ describe("Get reservas", () => {
         expect(res.status).toBe(200);
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toBeGreaterThan(1);
-    }));
+    });
 });
 describe("Get reserva", () => {
-    it("deve retornar 422 - dados incorretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retornar 422 - dados incorretos", async () => {
+        const res = await request(app)
             .get("/reserva")
             .query({
             id: "iderrado"
@@ -447,16 +433,16 @@ describe("Get reserva", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 200 - dados corretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const reserves = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 200 - dados corretos", async () => {
+        const reserves = await request(app)
             .post("/reservas/user")
             .send({
             userId: userId,
         })
             .set("Cookie", [`jwtToken=${userToken}`]);
         for (const reserve of reserves.body) {
-            const res = yield (0, supertest_1.default)(index_1.default)
+            const res = await request(app)
                 .get("/reserva")
                 .query({
                 id: reserve.id
@@ -469,11 +455,11 @@ describe("Get reserva", () => {
             expect(res.body).toHaveProperty("data_inicio");
             expect(res.body).toHaveProperty("data_fim");
         }
-    }));
+    });
 });
 describe("Delete minha reserva", () => {
-    it("deve retornar 422 - dados incorretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retornar 422 - dados incorretos", async () => {
+        const res = await request(app)
             .delete("/minhareserva")
             .query({
             id: "iderrado"
@@ -481,9 +467,9 @@ describe("Delete minha reserva", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 404 - reserva inexistente", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 404 - reserva inexistente", async () => {
+        const res = await request(app)
             .delete("/minhareserva")
             .query({
             id: userId
@@ -491,15 +477,15 @@ describe("Delete minha reserva", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(404);
         expect(res.text).toBe("Reserva inexistente");
-    }));
-    it("deve retornar 200 - reserva removida", () => __awaiter(void 0, void 0, void 0, function* () {
-        const reserves = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 200 - reserva removida", async () => {
+        const reserves = await request(app)
             .post("/reservas/user")
             .send({
             userId: userId,
         })
             .set("Cookie", [`jwtToken=${userToken}`]);
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .delete("/minhareserva")
             .query({
             id: reserves.body[0].id
@@ -507,11 +493,11 @@ describe("Delete minha reserva", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(200);
         expect(res.text).toBe("Reserva removida");
-    }));
+    });
 });
 describe("Delete reserva", () => {
-    it("deve retornar 422 - dados incorretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retornar 422 - dados incorretos", async () => {
+        const res = await request(app)
             .delete("/reserva")
             .query({
             id: "iderrado"
@@ -519,9 +505,9 @@ describe("Delete reserva", () => {
             .set("Cookie", [`jwtToken=${respToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 403 - token não tem permissão", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 403 - token não tem permissão", async () => {
+        const res = await request(app)
             .delete("/reserva")
             .query({
             id: userId
@@ -529,9 +515,9 @@ describe("Delete reserva", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(403);
         expect(res.text).toBe("Você não pode excluir essa reserva");
-    }));
-    it("deve retornar 404 - reserva inexistente", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 404 - reserva inexistente", async () => {
+        const res = await request(app)
             .delete("/reserva")
             .query({
             id: userId
@@ -539,15 +525,15 @@ describe("Delete reserva", () => {
             .set("Cookie", [`jwtToken=${respToken}`]);
         expect(res.status).toBe(404);
         expect(res.text).toBe("Reserva não encontrada");
-    }));
-    it("deve retornar 200 - reserva removida", () => __awaiter(void 0, void 0, void 0, function* () {
-        const reserves = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 200 - reserva removida", async () => {
+        const reserves = await request(app)
             .post("/reservas/user")
             .send({
             userId: userId,
         })
             .set("Cookie", [`jwtToken=${userToken}`]);
-        const res = yield (0, supertest_1.default)(index_1.default)
+        const res = await request(app)
             .delete("/reserva")
             .query({
             id: reserves.body[0].id
@@ -555,5 +541,6 @@ describe("Delete reserva", () => {
             .set("Cookie", [`jwtToken=${respToken}`]);
         expect(res.status).toBe(200);
         expect(res.text).toBe("Reserva removida");
-    }));
+    });
 });
+//# sourceMappingURL=reservas.test.js.map

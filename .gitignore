@@ -126,3 +126,4 @@ out
 .pnp.*
 
 *.db
+/back/src/generated

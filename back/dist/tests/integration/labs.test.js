@@ -1,24 +1,10 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const supertest_1 = __importDefault(require("supertest"));
-const index_1 = __importDefault(require("../../index"));
-const auth_1 = require("../../utils/auth");
+import request from "supertest";
+import app from "../../src/index.js";
+import { generateJWTToken } from "../../src/utils/auth.js";
 let admToken, admId, userToken, userId, respToken, respId;
-beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+beforeAll(async () => {
     //salva tokens e ids para uso
-    const res = yield (0, supertest_1.default)(index_1.default)
+    const res = await request(app)
         .post("/user/login")
         .send({
         email: "adm@gmail.com",
@@ -26,7 +12,7 @@ beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     });
     admId = res.body.id;
     admToken = res.headers["set-cookie"][0].split(";")[0].replace("jwtToken=", "");
-    const res1 = yield (0, supertest_1.default)(index_1.default)
+    const res1 = await request(app)
         .post("/user/login")
         .send({
         email: "user@gmail.com",
@@ -34,7 +20,7 @@ beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     });
     userId = res1.body.id;
     userToken = res1.headers["set-cookie"][0].split(";")[0].replace("jwtToken=", "");
-    const res2 = yield (0, supertest_1.default)(index_1.default)
+    const res2 = await request(app)
         .post("/user/login")
         .send({
         email: "resp@gmail.com",
@@ -42,23 +28,23 @@ beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     });
     respId = res2.body.id;
     respToken = res2.headers["set-cookie"][0].split(";")[0].replace("jwtToken=", "");
-}));
+});
 describe("Create", () => {
-    it("deve retornar 401 - token não fornecido", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retornar 401 - token não fornecido", async () => {
+        const res = await request(app)
             .post("/lab");
         expect(res.status).toBe(401);
         expect(res.text).toBe("Token não fornecido");
-    }));
-    it("deve retornar 401 - token inválido", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 401 - token inválido", async () => {
+        const res = await request(app)
             .post("/lab")
             .set("Cookie", [`jwtToken=jgasgjjg1tadga`]);
         expect(res.status).toBe(401);
         expect(res.text).toBe("Usuário não autenticado");
-    }));
-    it("deve retornar 422 - dados inválidos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 422 - dados inválidos", async () => {
+        const res = await request(app)
             .post("/lab")
             .send({
             responsavel_id: userId,
@@ -74,9 +60,9 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 403 - token de usuário comum", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 403 - token de usuário comum", async () => {
+        const res = await request(app)
             .post("/lab")
             .send({
             responsavel_id: respId,
@@ -91,9 +77,9 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(403);
         expect(res.text).toBe("Função não permitida");
-    }));
-    it("deve retorar 400 - dados do responsável não informados", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retorar 400 - dados do responsável não informados", async () => {
+        const res = await request(app)
             .post("/lab")
             .send({
             nome: "Lab 1",
@@ -107,9 +93,9 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
         expect(res.status).toBe(400);
         expect(res.text).toBe("Id ou cpf do responsável pelo laboratório deve ser informado");
-    }));
-    it("deve retornar 404 - cpf invalido", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 404 - cpf invalido", async () => {
+        const res = await request(app)
             .post("/lab")
             .send({
             responsavel_cpf: "123.456.789-00",
@@ -124,9 +110,9 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
         expect(res.status).toBe(404);
         expect(res.text).toBe("Responsável não encontrado");
-    }));
-    it("deve retornar 201 - dados corretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 201 - dados corretos", async () => {
+        const res = await request(app)
             .post("/lab")
             .send({
             responsavel_cpf: "111.111.111-11",
@@ -141,9 +127,9 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
         expect(res.status).toBe(201);
         expect(res.text).toBe("Laboratório criado");
-    }));
-    it("deve retornar 409 - nome duplicado", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 409 - nome duplicado", async () => {
+        const res = await request(app)
             .post("/lab")
             .send({
             responsavel_id: respId,
@@ -156,11 +142,11 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
         expect(res.status).toBe(409);
         expect(res.text).toBe("Nome já cadastrado");
-    }));
+    });
 });
 describe("Update", () => {
-    it("deve retornar 422 - dados inválidos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retornar 422 - dados inválidos", async () => {
+        const res = await request(app)
             .patch("/lab")
             .send({
             capacidade: "aga",
@@ -173,9 +159,9 @@ describe("Update", () => {
             .set("Cookie", [`jwtToken=${respToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 403 - usuário comum", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 403 - usuário comum", async () => {
+        const res = await request(app)
             .patch("/lab")
             .send({
             nome: "Lab 1",
@@ -189,9 +175,9 @@ describe("Update", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(403);
         expect(res.text).toBe("Função não permitida");
-    }));
-    it("deve retornar 403 - usuário não é responsável pelo laboratório", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 403 - usuário não é responsável pelo laboratório", async () => {
+        const res = await request(app)
             .patch("/lab")
             .send({
             nome: "Lab 1",
@@ -202,12 +188,12 @@ describe("Update", () => {
             ar_condicionado: 3,
             computador: 20,
         })
-            .set("Cookie", [`jwtToken=${(0, auth_1.generateJWTToken)({ id: userId, tipo: "Responsável" })}`]);
+            .set("Cookie", [`jwtToken=${generateJWTToken({ id: userId, tipo: "Responsável" })}`]);
         expect(res.status).toBe(403);
         expect(res.text).toBe("Você não tem permissão para atualizar esse laboratório");
-    }));
-    it("deve retornar 404 - novo responsável não encontrado", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 404 - novo responsável não encontrado", async () => {
+        const res = await request(app)
             .patch("/lab")
             .send({
             novo_responsavel: "000.000.000-00",
@@ -222,9 +208,9 @@ describe("Update", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
         expect(res.status).toBe(404);
         expect(res.text).toBe("Responsável não encontrado");
-    }));
-    it("deve retornar 200 - dados corretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 200 - dados corretos", async () => {
+        const res = await request(app)
             .patch("/lab")
             .send({
             nome: "Lab 1",
@@ -238,11 +224,11 @@ describe("Update", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
         expect(res.status).toBe(200);
         expect(res.text).toBe("Laboratório atualizado");
-    }));
+    });
 });
 describe("Get All", () => {
-    it("deve retornar 422 - dados inválidos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retornar 422 - dados inválidos", async () => {
+        const res = await request(app)
             .get("/lab/all")
             .query({
             capacidade_minima: "-1"
@@ -250,9 +236,9 @@ describe("Get All", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 200 - dados corretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 200 - dados corretos", async () => {
+        const res = await request(app)
             .get("/lab/all")
             .query({
             nome: "Lab 1"
@@ -260,11 +246,11 @@ describe("Get All", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(200);
         expect(res.body).toBeInstanceOf(Array);
-    }));
+    });
 });
 describe("Get", () => {
-    it("deve retornar 422 - dados inválidos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retornar 422 - dados inválidos", async () => {
+        const res = await request(app)
             .get("/lab")
             .query({
             nome: ""
@@ -272,9 +258,9 @@ describe("Get", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retonar 404 - laboratório inexistente", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retonar 404 - laboratório inexistente", async () => {
+        const res = await request(app)
             .get("/lab")
             .query({
             nome: "Laboratório qualquer"
@@ -282,9 +268,9 @@ describe("Get", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(404);
         expect(res.text).toBe("Laboratório inexistente");
-    }));
-    it("deve retonar 200 - dados corretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retonar 200 - dados corretos", async () => {
+        const res = await request(app)
             .get("/lab")
             .query({
             nome: "Lab 1"
@@ -302,11 +288,11 @@ describe("Get", () => {
         expect(res.body).toHaveProperty("ar_condicionados");
         expect(res.body).toHaveProperty("computadores");
         expect(res.body).toHaveProperty("outro");
-    }));
+    });
 });
 describe("Get lab names", () => {
-    it("deve retornar 422 - dados inválidos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retornar 422 - dados inválidos", async () => {
+        const res = await request(app)
             .post("/lab/user")
             .send({
             user_id: "njhnkakjg"
@@ -314,19 +300,19 @@ describe("Get lab names", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 200 - dados corretos", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 200 - dados corretos", async () => {
+        const res = await request(app)
             .post("/lab/user")
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(200);
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toBe(2);
-    }));
+    });
 });
 describe("Get reservas", () => {
-    it("deve retornar 422", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    it("deve retornar 422", async () => {
+        const res = await request(app)
             .get("/lab/reservasdia")
             .query({
             nome: "Lab 1",
@@ -335,9 +321,9 @@ describe("Get reservas", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(422);
         expect(res.body.message).toBe("Dados inválidos");
-    }));
-    it("deve retornar 404 - laboratório inexistente", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 404 - laboratório inexistente", async () => {
+        const res = await request(app)
             .get("/lab/reservasdia")
             .query({
             nome: "Lab 2",
@@ -346,9 +332,9 @@ describe("Get reservas", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(404);
         expect(res.text).toBe("Laboratório inexistente");
-    }));
-    it("deve retornar 404 - nenhuma reserva no dia", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 404 - nenhuma reserva no dia", async () => {
+        const res = await request(app)
             .get("/lab/reservasdia")
             .query({
             nome: "Lab 1",
@@ -357,9 +343,9 @@ describe("Get reservas", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
         expect(res.status).toBe(404);
         expect(res.text).toBe("Não há reservas no dia");
-    }));
-    it("deve retornar 200 - dados corretos e reservas encontradas", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(index_1.default)
+    });
+    it("deve retornar 200 - dados corretos e reservas encontradas", async () => {
+        const res = await request(app)
             .get("/lab/reservasdia")
             .query({
             nome: "Lab",
@@ -369,5 +355,6 @@ describe("Get reservas", () => {
         expect(res.status).toBe(200);
         expect(res.body).toBeInstanceOf(Array);
         expect(res.body.length).toBe(1);
-    }));
+    });
 });
+//# sourceMappingURL=labs.test.js.map
