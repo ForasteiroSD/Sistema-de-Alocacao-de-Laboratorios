@@ -1,0 +1,91 @@
+import { Request, Response } from 'express';
+import { stringData } from 'src/utils/formatDate.js';
+import { prisma } from 'src/utils/prisma.js';
+import { LabReserves } from 'src/utils/validation/lab.schema.js';
+
+export async function labDayReserve(req: Request, res: Response) {
+    const parse = LabReserves.safeParse(req.query);
+
+    if(!parse.success) {
+        return res.status(422).json({
+            message: "Dados inválidos",
+            errors: parse.error.issues[0].message
+        })
+    }
+
+    const { nome, dia } = parse.data;
+
+    let data = new Date(String(dia));
+    let data1 = new Date(String(dia));
+    data1.setUTCDate(data1.getUTCDate() + 1);
+
+    data.setUTCHours(0, 0, 0, 0);
+    data1.setUTCHours(0, 0, 0, 0);
+
+    try {
+        const laboratorio = await prisma.laboratorio.findUnique({
+            where: {
+                nome: String(nome)
+            },
+            include: {
+                reservas: {
+                    where: {
+                        data_inicio: {
+                            lte: data
+                        },
+                        data_fim: {
+                            gte: data
+                        },
+                    },
+                    include: {
+                        dias: {
+                            where: {
+                                data_inicio: {
+                                    gte: data
+                                },
+                                data_fim: {
+                                    lte: data1
+                                },
+                            },
+                            orderBy: {
+                                data_inicio: 'asc'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!laboratorio) {
+            return res.status(404).send("Laboratório informado não encontrado.");
+        }
+
+        const reservasHoje = []
+        for (const reservaInfo of laboratorio.reservas) {
+            for (const reserva of reservaInfo.dias) {
+
+                let string_aux1 = stringData(reserva.data_inicio, true);
+                
+                reservasHoje.push({
+                    hora_inicio: string_aux1,
+                    duracao: reserva.duracao,
+                    hora: reserva.data_inicio
+                });
+            }
+        }
+
+        
+        if (reservasHoje.length === 0) {
+            return res.status(404).send('Não há reservas no dia.');
+        }
+
+        reservasHoje.sort((a, b) => a.hora.getTime() - b.hora.getTime());
+
+        return res.status(200).json(reservasHoje);
+
+    } catch (error: any) {
+        res.status(400).send('Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde.');
+        return;
+    }
+
+}

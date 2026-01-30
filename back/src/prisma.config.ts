@@ -1,4 +1,4 @@
-import { env } from "./src/utils/env.js";
+import { env } from "./utils/env.js";
 import { defineConfig } from "prisma/config";
 
 const directory = env.DB_PROVIDER === 'pg' ? "postgres" : "sqlite";

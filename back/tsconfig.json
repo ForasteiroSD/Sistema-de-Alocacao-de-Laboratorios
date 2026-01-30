@@ -9,7 +9,7 @@
     "moduleResolution": "nodenext",
     "target": "ESNext",
     "lib": ["ESNext"],
-    "rootDir": "./",
+    "rootDir": "./src",
     "types": ["vitest/globals", "node"],
 
     "esModuleInterop": true,
@@ -17,6 +17,9 @@
 
     // Path
     "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"]
+    },
 
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
@@ -25,5 +28,7 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "resolveJsonModule": true
-  }
+  },
+  "include": ["src/**/*", "generated"],
+  "exclude": ["tests", "dist", "node_modules"]
 }

@@ -1,11 +1,11 @@
 import path from "path";
 import { env } from "./env.js";
-import type { PrismaClient as PostgresClient } from "../generated/postgres/prisma/client.js";
+import type { PrismaClient as PostgresClient } from "../../generated/postgres/prisma/client.js";
 
 let prismaInstance: any;
 
 if (process.env.DB_PROVIDER === "sqlite") {
-    const { PrismaClient } = await import("../generated/sqlite/prisma/client.js");
+    const { PrismaClient } = await import("../../generated/sqlite/prisma/client.js");
     const { PrismaBetterSqlite3 } = await import("@prisma/adapter-better-sqlite3");
 
     const databaseUrlSplit = env.DATABASE_URL.split('file:');
@@ -20,7 +20,7 @@ if (process.env.DB_PROVIDER === "sqlite") {
     prismaInstance = new PrismaClient({ adapter }) as unknown as PostgresClient;
 
 } else {
-    const { PrismaClient } = await import("../generated/postgres/prisma/client.js");
+    const { PrismaClient } = await import("../../generated/postgres/prisma/client.js");
     const { PrismaPg } = await import("@prisma/adapter-pg");
     const pg = (await import("pg")).default;
 

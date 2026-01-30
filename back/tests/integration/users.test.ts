@@ -155,7 +155,7 @@ describe("Update", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
 
         expect(res.status).toBe(422);
-        expect(res.text).toBe("Tipo de usuário deve ser informado")
+        expect(res.text).toBe("Tipo de usuário deve ser informado.")
     });
 
     it("deve retornar 422 - dados inválidos (senha não informada)", async () => {
@@ -170,7 +170,7 @@ describe("Update", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
 
         expect(res.status).toBe(422);
-        expect(res.text).toBe("Senha deve ser informada")
+        expect(res.text).toBe("Senha deve ser informada.")
     });
 
     it("deve retornar 401 - senha incorreta", async () => {
@@ -186,7 +186,7 @@ describe("Update", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Senha inválida")
+        expect(res.text).toBe("Senha inválida.")
     });
 
     it("deve retornar 409 - email em uso", async () => {
@@ -202,7 +202,7 @@ describe("Update", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
 
         expect(res.status).toBe(409);
-        expect(res.text).toBe("Email já cadastrado")
+        expect(res.text).toBe("Este email já está cadastrado.")
     });
 
     it("deve retornar 200 - dados corretos", async () => {
@@ -304,7 +304,7 @@ describe("Get user data", () => {
             .set("Cookie", [`jwtToken=${admToken}`])
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Usuário inexistente");
+        expect(res.text).toBe("Usuário não encontrado.");
     });
 
     it("deve retornar 200 - dados corretos", async () => {

@@ -18,7 +18,7 @@ export function generateJWTToken(payload: object) {
     return jwt.sign(payload,
         env.JWT_SECRET,
         {
-            expiresIn: "1d"
+            expiresIn: "15m"
         }
     );
 }
@@ -29,4 +29,15 @@ export function verifyJWTToken(token: string) {
     } catch (error) {
         return false;
     }
+}
+
+export function createAuthCookie(res: Response, jwtToken: string) {
+    res.cookie("jwtToken", jwtToken, {
+        httpOnly: true,
+        ...(env.NODE_ENV?.toLowerCase().includes("production") && {
+            secure: true,
+            sameSite: "none",
+        }),
+        maxAge: 60*60*24*1000
+    });
 }

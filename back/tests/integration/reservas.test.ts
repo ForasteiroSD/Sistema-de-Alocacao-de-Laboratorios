@@ -144,7 +144,7 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Laboratório Inexistente");
+        expect(res.text).toBe("Laboratório informado não encontrado.");
     });
 
     it("deve retornar 200 - dados corretos (reserva Única)", async () => {
@@ -553,7 +553,7 @@ describe("Delete minha reserva", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Reserva inexistente");
+        expect(res.text).toBe("Reserva informada não encontrada.");
     });
 
     it("deve retornar 200 - reserva removida", async () => {

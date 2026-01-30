@@ -95,7 +95,7 @@ describe("Create", () => {
         expect(res.text).toBe("Função não permitida");
     });
 
-    it("deve retorar 400 - dados do responsável não informados", async () => {
+    it("deve retornar 400 - dados do responsável não informados", async () => {
         const res = await request(app)
             .post("/lab")
             .send({
@@ -110,7 +110,7 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
         
         expect(res.status).toBe(400);
-        expect(res.text).toBe("Id ou cpf do responsável pelo laboratório deve ser informado");
+        expect(res.text).toBe("Id ou cpf do responsável pelo laboratório deve ser informado.");
     });
 
     it("deve retornar 404 - cpf invalido", async () => {
@@ -129,7 +129,7 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Responsável não encontrado");
+        expect(res.text).toBe("Usuário informado não encontrado.");
     });
 
     it("deve retornar 201 - dados corretos", async () => {
@@ -165,7 +165,7 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
         
         expect(res.status).toBe(409);
-        expect(res.text).toBe("Nome já cadastrado");
+        expect(res.text).toBe("Nome de laboratório já cadastrado.");
     });
 });
 
@@ -220,7 +220,7 @@ describe("Update", () => {
             .set("Cookie", [`jwtToken=${generateJWTToken({id: userId, tipo: "Responsável"})}`]);
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Você não tem permissão para atualizar esse laboratório");
+        expect(res.text).toBe("Você não tem permissão para atualizar esse laboratório.");
     });
 
     it("deve retornar 404 - novo responsável não encontrado", async () => {
@@ -239,7 +239,7 @@ describe("Update", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Responsável não encontrado");
+        expect(res.text).toBe("Novo responsável não encontrado.");
     });
 
     it("deve retornar 200 - dados corretos", async () => {
@@ -257,7 +257,7 @@ describe("Update", () => {
             .set("Cookie", [`jwtToken=${admToken}`]);
 
         expect(res.status).toBe(200);
-        expect(res.text).toBe("Laboratório atualizado");
+        expect(res.text).toBe("Laboratório atualizado.");
     });
 });
 
@@ -383,7 +383,7 @@ describe("Get reservas", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Laboratório inexistente");
+        expect(res.text).toBe("Laboratório informado não encontrado.");
     });
 
     it("deve retornar 404 - nenhuma reserva no dia", async () => {
@@ -396,7 +396,7 @@ describe("Get reservas", () => {
             .set("Cookie", [`jwtToken=${userToken}`]);
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Não há reservas no dia");
+        expect(res.text).toBe("Não há reservas no dia.");
     });
 
     it("deve retornar 200 - dados corretos e reservas encontradas", async () => {
