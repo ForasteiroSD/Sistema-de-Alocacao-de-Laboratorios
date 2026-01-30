@@ -71,7 +71,6 @@ export async function userLogin (req: Request, res: Response) {
         });
 
     } catch (error: any) {
-        res.status(500).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
-        return;
+        return res.status(500).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
     }
 }

@@ -33,7 +33,7 @@ export async function deleteUser(req: Request, res: Response) {
         });
 
         if (!user) {
-            return res.status(400).send('Usuário não encontrado');
+            return res.status(404).send('Usuário não encontrado');
         }
 
         const labs = await prisma.laboratorio.findFirst({
@@ -63,7 +63,6 @@ export async function deleteUser(req: Request, res: Response) {
         return res.status(200).send("Usuário excluido");
 
     } catch (error) {
-        res.status(500).send('Desculpe, não foi possível remover o usuário. Tente novamente mais tarde');
-        return;
+        return res.status(500).send('Desculpe, não foi possível remover o usuário. Tente novamente mais tarde');
     }
 }

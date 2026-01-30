@@ -95,8 +95,6 @@ export async function deleteReserveAdm(req: Request, res: Response) {
         return;
 
     } catch (error: any) {
-        res.status(400).send('Desculpe, não foi possível remover a reserva. Tente novamente mais tarde');
-        return;
+        return res.status(500).send('Desculpe, não foi possível remover a reserva. Tente novamente mais tarde');
     }
-
 }

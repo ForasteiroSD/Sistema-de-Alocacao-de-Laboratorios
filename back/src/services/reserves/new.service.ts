@@ -290,7 +290,6 @@ export async function newReserve(req: Request, res: Response) {
         return res.status(200).send('Reserva realizada');
 
     } catch (error: any) {
-        res.status(400).send('Desculpe, não foi possível realizar a reserva. Tente novamente mais tarde');
-        return;
+        return res.status(500).send('Desculpe, não foi possível realizar a reserva. Tente novamente mais tarde');
     }
 }

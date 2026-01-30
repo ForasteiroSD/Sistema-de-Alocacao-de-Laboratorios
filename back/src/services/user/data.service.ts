@@ -47,7 +47,6 @@ export async function getUserData(req: Request, res: Response) {
         return res.status(200).json(user);
 
     } catch (error: any) {
-        res.status(400).send('Desculpe, não foi possível buscar os dados do usuário. Tente novamente mais tarde');
-        return;
+        return res.status(500).send('Desculpe, não foi possível buscar os dados do usuário. Tente novamente mais tarde');
     }
 }

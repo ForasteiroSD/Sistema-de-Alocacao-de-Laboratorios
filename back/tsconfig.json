@@ -29,6 +29,6 @@
     "noUncheckedSideEffectImports": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "generated"],
+  "include": ["src/**/*"],
   "exclude": ["tests", "dist", "node_modules"]
 }

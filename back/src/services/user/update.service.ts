@@ -77,7 +77,6 @@ export async function updateUser(req: Request, res: Response) {
         return res.status(200).json({ nome: nome });
 
     } catch (error: any) {
-        res.status(500).send('Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde.');
-        return;
+        return res.status(500).send('Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde.');
     }
 }

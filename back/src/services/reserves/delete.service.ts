@@ -32,8 +32,6 @@ export async function deleteReserve(req: Request, res: Response) {
         res.status(200).send('Reserva removida');
 
     } catch (error: any) {
-        res.status(400).send('Desculpe, não foi possível remover a reserva. Tente novamente mais tarde');
-        return;
+        return res.status(500).send('Desculpe, não foi possível remover a reserva. Tente novamente mais tarde');
     }
-
 }

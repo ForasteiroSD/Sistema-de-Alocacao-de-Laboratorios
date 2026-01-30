@@ -14,7 +14,7 @@ export const usuarioComum = {
 
 export const usuarioAdm = {
     nome: "Adm",
-    cpf: "511.767.640-80",
+    cpf: "Master",
     data_nasc: new Date("2000-01-01"),
     email: "adm@gmail.com",
     senha: "Senha1@123",
@@ -47,7 +47,7 @@ beforeAll(async () => {
                 email: usuarioAdm.email,
                 senha: await hashPassword(usuarioAdm.senha),
                 telefone: usuarioAdm.telefone,
-                tipo: usuarioAdm.tipo,
+                tipo: usuarioAdm.tipo as any,
             },
             {
                 nome: usuarioComum.nome,
@@ -56,7 +56,7 @@ beforeAll(async () => {
                 email: usuarioComum.email,
                 senha: await hashPassword(usuarioComum.senha),
                 telefone: usuarioComum.telefone,
-                tipo: usuarioComum.tipo,
+                tipo: usuarioComum.tipo as any,
             },
             {
                 nome: usuarioResp.nome,
@@ -65,7 +65,7 @@ beforeAll(async () => {
                 email: usuarioResp.email,
                 senha: await hashPassword(usuarioResp.senha),
                 telefone: usuarioResp.telefone,
-                tipo: usuarioResp.tipo,
+                tipo: usuarioResp.tipo as any,
             }
         ],
     });
