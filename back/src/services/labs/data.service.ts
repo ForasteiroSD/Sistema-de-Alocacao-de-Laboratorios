@@ -42,8 +42,7 @@ export async function labData(req: Request, res: Response) {
         });
 
     } catch (error: any) {
-        res.status(400).send('Não foi possível buscar os dados do laboratório. Tente novamente mais tarde.');
+        res.status(500).send('Não foi possível buscar os dados do laboratório. Tente novamente mais tarde.');
         return;
     }
-
 }

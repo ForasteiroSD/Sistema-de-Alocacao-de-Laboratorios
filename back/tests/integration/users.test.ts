@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../../src/index.js";
+import { beforeAll, describe, expect, it } from "vitest";
 
 let admToken: string, admId: string, userToken: string, userId: string;
 
@@ -401,7 +402,7 @@ describe("Create", () => {
             .post("/user/create")
             .send({
                 nome: "New User",
-                cpf: "000.000.000-00",
+                cpf: "222.523.820-07",
                 data_nasc: "2000-01-01",
                 telefone: "99999999999",
                 email: "email1@gmail.com",

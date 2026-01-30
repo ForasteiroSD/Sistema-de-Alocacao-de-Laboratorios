@@ -10,7 +10,7 @@
     "target": "ESNext",
     "lib": ["ESNext"],
     "rootDir": "./src",
-    "types": ["vitest/globals", "node"],
+    "types": ["node"],
 
     "esModuleInterop": true,
     "skipLibCheck": true,

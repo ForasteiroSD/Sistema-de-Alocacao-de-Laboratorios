@@ -90,7 +90,7 @@ export async function updateLab(req: Request, res: Response) {
             return res.status(404).send('Novo responsável não encontrado.');
         }
 
-        res.status(400).send('Desculpe, não foi possível atualizar o laboratório. Tente novamente mais tarde.');
+        res.status(500).send('Desculpe, não foi possível atualizar o laboratório. Tente novamente mais tarde.');
         return;
     }
 }

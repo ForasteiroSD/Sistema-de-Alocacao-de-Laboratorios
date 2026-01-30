@@ -66,6 +66,6 @@ export async function newLab(req: Request, res: Response) {
         return res.status(201).send('Laboratório criado');
 
     } catch (error: any) {
-        return res.status(400).send('Desculpe, não foi possível criar o laboratório. Tente novamente mais tarde');
+        return res.status(500).send('Desculpe, não foi possível criar o laboratório. Tente novamente mais tarde');
     }
 }

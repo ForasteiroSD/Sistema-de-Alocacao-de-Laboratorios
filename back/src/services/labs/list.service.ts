@@ -43,7 +43,7 @@ export async function listLabs(req: Request, res: Response) {
             ]
         });
 
-        res.status(200).json(
+        return res.status(200).json(
             labs.map(lab => {
                 return {
                     nome: lab.nome,
@@ -52,10 +52,9 @@ export async function listLabs(req: Request, res: Response) {
                 }
             })
         );
-        return;
 
     } catch (error) {
-        res.status(400).send('Desculpe, ocorreu um erro ao buscar os dados dos laboratórios.');
+        res.status(500).send('Desculpe, ocorreu um erro ao buscar os dados dos laboratórios.');
         return;
     }
 }

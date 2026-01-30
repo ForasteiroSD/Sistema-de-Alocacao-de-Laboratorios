@@ -9,7 +9,8 @@ export default defineConfig({
         reporters: ['default'],
         coverage: {
             provider: 'v8',
-            exclude: ['prisma', 'dist', 'generated', 'tests', 'utils/openapi', 'swagger.ts'],
+            include: ['src'],
+            exclude: ['server.ts', 'prisma.config.ts']
         },
         projects: [
         {

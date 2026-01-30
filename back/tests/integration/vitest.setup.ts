@@ -1,12 +1,37 @@
-import fs from "fs";
-import path from "path";
-import { execSync } from "child_process";
 import { prisma } from "../../src/utils/prisma.js";
 import { hashPassword } from "../../src/utils/auth.js";
+import { beforeAll, afterAll } from "vitest";
 
-const testDbPath = path.resolve(__dirname, "test.db");
+export const usuarioComum = {
+    nome: "User",
+    cpf: "222.523.820-07",
+    data_nasc: new Date("2000-01-01"),
+    email: "user@gmail.com",
+    senha: "Senha1@123",
+    telefone: "(71) 97459-4045",
+    tipo: "Usuário",
+};
 
-//faz configurações iniciais para testes
+export const usuarioAdm = {
+    nome: "Adm",
+    cpf: "511.767.640-80",
+    data_nasc: new Date("2000-01-01"),
+    email: "adm@gmail.com",
+    senha: "Senha1@123",
+    telefone: "(94) 99103-5132",
+    tipo: "Administrador",
+};
+
+export const usuarioResp = {
+    nome: "Resp",
+    cpf: "259.296.780-06",
+    data_nasc: new Date("2000-01-01"),
+    email: "resp@gmail.com",
+    senha: "Senha1@123",
+    telefone: "(61) 98513-9943",
+    tipo: "Responsável",
+};
+
 beforeAll(async () => {
     await prisma.dia.deleteMany();
     await prisma.reserva.deleteMany();
@@ -16,46 +41,58 @@ beforeAll(async () => {
     const users = await prisma.user.createManyAndReturn({
         data: [
             {
-                nome: "Adm",
-                cpf: "1",
-                data_nasc: new Date("2000-01-01"),
-                email: "adm@gmail.com",
-                senha: await hashPassword("Senha1@123"),
-                telefone: "1",
-                tipo: "Administrador",
+                nome: usuarioAdm.nome,
+                cpf: usuarioAdm.cpf,
+                data_nasc: usuarioAdm.data_nasc,
+                email: usuarioAdm.email,
+                senha: await hashPassword(usuarioAdm.senha),
+                telefone: usuarioAdm.telefone,
+                tipo: usuarioAdm.tipo,
             },
             {
-                nome: "User",
-                cpf: "000.000.000-00",
-                data_nasc: new Date("2000-01-01"),
-                email: "user@gmail.com",
-                senha: await hashPassword("Senha1@123"),
-                telefone: "1",
-                tipo: "Usuário",
+                nome: usuarioComum.nome,
+                cpf: usuarioComum.cpf,
+                data_nasc: usuarioComum.data_nasc,
+                email: usuarioComum.email,
+                senha: await hashPassword(usuarioComum.senha),
+                telefone: usuarioComum.telefone,
+                tipo: usuarioComum.tipo,
             },
             {
-                nome: "Resp",
-                cpf: "111.111.111-11",
-                data_nasc: new Date("2000-01-01"),
-                email: "resp@gmail.com",
-                senha: await hashPassword("Senha1@123"),
-                telefone: "2",
-                tipo: "Responsável",
+                nome: usuarioResp.nome,
+                cpf: usuarioResp.cpf,
+                data_nasc: usuarioResp.data_nasc,
+                email: usuarioResp.email,
+                senha: await hashPassword(usuarioResp.senha),
+                telefone: usuarioResp.telefone,
+                tipo: usuarioResp.tipo,
             }
         ],
     });
 
-    const lab = await prisma.laboratorio.create({
-        data: {
-            nome: "Lab",
-            capacidade: 30,
-            ar_contidionado: 1,
-            computador: 10,
-            projetor: 1,
-            quadro: 2,
-            televisao: 0,
-            responsavel_id: users[2].id
-        },
+    const labs = await prisma.laboratorio.createManyAndReturn({
+        data: [
+            {
+                nome: "Lab",
+                capacidade: 30,
+                ar_contidionado: 1,
+                computador: 10,
+                projetor: 1,
+                quadro: 2,
+                televisao: 0,
+                responsavel_id: users[2].id
+            },
+            {
+                nome: "Lab 2",
+                capacidade: 40,
+                ar_contidionado: 2,
+                computador: 40,
+                projetor: 1,
+                quadro: 1,
+                televisao: 1,
+                responsavel_id: users[2].id
+            },
+        ]
     });
 
     const dataReserva = new Date("2000-01-01");
@@ -66,7 +103,7 @@ beforeAll(async () => {
             tipo: "Única",
             data_fim: dataReserva,
             data_inicio: dataReserva,
-            laboratorio_id: lab.id,
+            laboratorio_id: labs[0].id,
             user_id: users[2].id
         }
     });
@@ -74,7 +111,7 @@ beforeAll(async () => {
     const dataReservaAux = new Date(dataReserva);
     dataReserva.setUTCHours(14, 0, 0, 0);
     dataReservaAux.setUTCHours(16, 0, 0, 0);
-    const dia = await prisma.dia.create({
+    await prisma.dia.create({
         data: {
             data_inicio: dataReserva,
             data_fim: dataReservaAux,

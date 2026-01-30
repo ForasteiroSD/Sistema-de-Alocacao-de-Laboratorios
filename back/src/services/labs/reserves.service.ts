@@ -60,20 +60,13 @@ export async function labDayReserve(req: Request, res: Response) {
             return res.status(404).send("Laboratório informado não encontrado.");
         }
 
-        const reservasHoje = []
-        for (const reservaInfo of laboratorio.reservas) {
-            for (const reserva of reservaInfo.dias) {
-
-                let string_aux1 = stringData(reserva.data_inicio, true);
-                
-                reservasHoje.push({
-                    hora_inicio: string_aux1,
-                    duracao: reserva.duracao,
-                    hora: reserva.data_inicio
-                });
-            }
-        }
-
+        const reservasHoje = laboratorio.reservas.flatMap(({ dias }) => 
+            dias.map(({ data_inicio, duracao }) => ({
+                hora_inicio: stringData(data_inicio, true),
+                duracao: duracao,
+                hora: data_inicio
+            }))
+        )
         
         if (reservasHoje.length === 0) {
             return res.status(404).send('Não há reservas no dia.');
@@ -84,8 +77,7 @@ export async function labDayReserve(req: Request, res: Response) {
         return res.status(200).json(reservasHoje);
 
     } catch (error: any) {
-        res.status(400).send('Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde.');
+        res.status(500).send('Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde.');
         return;
     }
-
 }
