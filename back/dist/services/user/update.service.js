@@ -65,8 +65,7 @@ export async function updateUser(req, res) {
         return res.status(200).json({ nome: nome });
     }
     catch (error) {
-        res.status(500).send('Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde.');
-        return;
+        return res.status(500).send('Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde.');
     }
 }
 //# sourceMappingURL=update.service.js.map

@@ -38,8 +38,7 @@ export async function getUserData(req, res) {
         return res.status(200).json(user);
     }
     catch (error) {
-        res.status(400).send('Desculpe, não foi possível buscar os dados do usuário. Tente novamente mais tarde');
-        return;
+        return res.status(500).send('Desculpe, não foi possível buscar os dados do usuário. Tente novamente mais tarde');
     }
 }
 //# sourceMappingURL=data.service.js.map

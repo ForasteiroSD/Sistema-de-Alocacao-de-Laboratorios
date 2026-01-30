@@ -1,14 +1,6 @@
 import { stringData } from '../../utils/formatDate.js';
 import { prisma } from '../../utils/prisma.js';
-import { idSchema } from '../../utils/validation/default.schema.js';
 export async function userNextReserves(req, res) {
-    const parse = idSchema.safeParse(req.query);
-    if (!parse.success) {
-        return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
-        });
-    }
     const { id } = req.userData;
     let today = new Date();
     if (today.getUTCHours() < 3)
@@ -27,9 +19,6 @@ export async function userNextReserves(req, res) {
                 }
             }
         });
-        if (!user) {
-            return res.status(404).send("Usuário não encontrado.");
-        }
         const reservas = await prisma.reserva.findMany({
             where: {
                 user_id: user.id,
@@ -91,8 +80,7 @@ export async function userNextReserves(req, res) {
         return res.status(200).json({ mainInfo: mainInfo, nextReserves: nextReservas.slice(0, 3) });
     }
     catch (error) {
-        res.status(400).send("Ocorreu um erro ao buscar as próximas reservas.");
-        return;
+        return res.status(500).send("Ocorreu um erro ao buscar as próximas reservas.");
     }
 }
 //# sourceMappingURL=mainPage.service.js.map

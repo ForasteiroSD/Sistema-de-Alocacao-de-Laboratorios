@@ -35,8 +35,7 @@ export async function labData(req, res) {
         });
     }
     catch (error) {
-        res.status(500).send('Não foi possível buscar os dados do laboratório. Tente novamente mais tarde.');
-        return;
+        return res.status(500).send('Não foi possível buscar os dados do laboratório. Tente novamente mais tarde.');
     }
 }
 //# sourceMappingURL=data.service.js.map

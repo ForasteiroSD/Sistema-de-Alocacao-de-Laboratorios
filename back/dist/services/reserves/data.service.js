@@ -97,8 +97,7 @@ export async function reserveData(req, res) {
         }
     }
     catch (error) {
-        res.status(400).send('Desculpe, não foi possível buscar os dados da reserva informada.');
-        return;
+        return res.status(500).send('Desculpe, não foi possível buscar os dados da reserva informada.');
     }
 }
 //# sourceMappingURL=data.service.js.map

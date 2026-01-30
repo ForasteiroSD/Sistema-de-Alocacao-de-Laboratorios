@@ -58,8 +58,7 @@ export async function userLogin(req, res) {
         });
     }
     catch (error) {
-        res.status(500).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
-        return;
+        return res.status(500).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
     }
 }
 //# sourceMappingURL=login.service.js.map

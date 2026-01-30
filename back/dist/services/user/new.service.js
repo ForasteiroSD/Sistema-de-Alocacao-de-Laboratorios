@@ -31,8 +31,7 @@ export async function newUser(req, res) {
             return res.status(409).send('CPF já cadastrado');
         else if (error.code === 'P2002' && error.meta.target[0] === 'email')
             return res.status(409).send('Email já cadastrado');
-        res.status(400).send('Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
-        return;
+        return res.status(500).send('Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
     }
 }
 //# sourceMappingURL=new.service.js.map

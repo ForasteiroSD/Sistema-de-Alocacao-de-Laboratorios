@@ -25,8 +25,7 @@ export async function getResponsibles(req, res) {
         return res.status(200).json(users);
     }
     catch (error) {
-        res.status(500).send('Desculpe, não foi recuperar os usuários. Tente novamente mais tarde');
-        return;
+        return res.status(500).send('Desculpe, não foi recuperar os usuários. Tente novamente mais tarde');
     }
 }
 //# sourceMappingURL=responsibles.service.js.map

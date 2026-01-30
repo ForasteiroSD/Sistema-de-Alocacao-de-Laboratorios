@@ -13,10 +13,10 @@ import { listUsers } from '../services/user/list.service.js';
 const router = Router();
 //Realizar login
 router.post("/login", userLogin);
-//Middleware de autênticação para próximas rotas
-router.use(authenticate);
 //Realizar logout
 router.get("/logout", userLogout);
+//Middleware de autênticação para próximas rotas
+router.use(authenticate);
 //Atualizar usuário
 router.patch("/", updateUser);
 //Deletar usuário

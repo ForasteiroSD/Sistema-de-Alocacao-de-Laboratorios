@@ -63,8 +63,7 @@ export async function labDayReserve(req, res) {
         return res.status(200).json(reservasHoje);
     }
     catch (error) {
-        res.status(500).send('Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde.');
-        return;
+        return res.status(500).send('Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde.');
     }
 }
 //# sourceMappingURL=reserves.service.js.map

@@ -82,8 +82,7 @@ export async function reservesList(req, res) {
         return res.status(200).json(reservasSend);
     }
     catch (error) {
-        res.status(400).send('Desculpe, não foi possível buscar os dados das reservas.');
-        return;
+        return res.status(500).send('Desculpe, não foi possível buscar os dados das reservas.');
     }
 }
 //# sourceMappingURL=list.service.js.map

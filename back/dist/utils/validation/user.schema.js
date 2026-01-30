@@ -65,6 +65,6 @@ export const UserRespGet = z.object({
 });
 export const UserData = idSchema
     .merge(z.object({
-    saveContext: z.number({ invalid_type_error: "saveContext deve ser 0 ou 1" }).min(0, "saveContext deve ser 0 ou 1").max(1, "saveContext deve ser 0 ou 1").default(0) //defaults to false
+    saveContext: z.coerce.number({ invalid_type_error: "saveContext deve ser 0 ou 1" }).min(0, "saveContext deve ser 0 ou 1").max(1, "saveContext deve ser 0 ou 1").default(0) //defaults to false
 }));
 //# sourceMappingURL=user.schema.js.map

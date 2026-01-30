@@ -45,8 +45,7 @@ export async function listUsers(req, res) {
         return res.status(200).json(users);
     }
     catch (error) {
-        res.status(400).send("Desculpe, não foi possível buscar os dados dos usuários.");
-        return;
+        return res.status(500).send("Desculpe, não foi possível buscar os dados dos usuários.");
     }
 }
 //# sourceMappingURL=list.service.js.map

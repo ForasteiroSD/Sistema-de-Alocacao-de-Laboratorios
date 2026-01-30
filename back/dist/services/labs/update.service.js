@@ -73,8 +73,7 @@ export async function updateLab(req, res) {
         if (error.code === 'P2025') {
             return res.status(404).send('Novo responsável não encontrado.');
         }
-        res.status(500).send('Desculpe, não foi possível atualizar o laboratório. Tente novamente mais tarde.');
-        return;
+        return res.status(500).send('Desculpe, não foi possível atualizar o laboratório. Tente novamente mais tarde.');
     }
 }
 //# sourceMappingURL=update.service.js.map
