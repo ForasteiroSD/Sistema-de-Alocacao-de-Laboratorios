@@ -3,7 +3,7 @@ import { prisma } from 'src/utils/prisma.js';
 import { UserData } from 'src/utils/validation/user.schema.js';
 
 export async function getUserData(req: Request, res: Response) {
-    const parse = UserData.safeParse(req.body);
+    const parse = UserData.safeParse(req.query);
 
     if(!parse.success) {
         return res.status(422).json({

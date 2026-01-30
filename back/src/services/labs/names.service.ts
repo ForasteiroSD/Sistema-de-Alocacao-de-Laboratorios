@@ -3,7 +3,7 @@ import { prisma } from 'src/utils/prisma.js';
 import { LabNames } from 'src/utils/validation/lab.schema.js';
 
 export async function labNames(req: Request, res: Response) {
-    const parse = LabNames.safeParse(req.body);
+    const parse = LabNames.safeParse(req.query);
 
     if(!parse.success) {
         return res.status(422).json({

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authenticate } from '../middlewares/auth_middleware.js';
 import { adm_authorization } from '../middlewares/adm_middleware.js';
 import { userLogin } from 'src/services/user/login.service.js';
+import { userLogout } from 'src/services/user/logout.service.js';
 import { updateUser } from 'src/services/user/update.service.js';
 import { deleteUser } from 'src/services/user/delete.service.js';
 import { getResponsibles } from 'src/services/user/responsibles.service.js';
@@ -18,6 +19,9 @@ router.post("/login", userLogin);
 //Middleware de autênticação para próximas rotas
 router.use(authenticate);
 
+//Realizar logout
+router.get("/logout", userLogout);
+
 //Atualizar usuário
 router.patch("/", updateUser);
 
@@ -28,7 +32,7 @@ router.delete("/", deleteUser);
 router.get("/responsaveis", getResponsibles);
 
 //Recuperar dados de um usuário
-router.post("/data", getUserData);
+router.get("/data", getUserData);
 
 //Recupera dados da página inicial
 router.get("/mainpageinfo", userNextReserves);

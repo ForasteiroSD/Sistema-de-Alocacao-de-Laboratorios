@@ -21,8 +21,8 @@ describe("Get Lab Names", () => {
 
     it("deve retornar 422 - dados inválidos", async () => {
         const res = await userAgent
-            .post("/lab/user")
-            .send({
+            .get("/lab/user")
+            .query({
                 user_id: "njhnkakjg"
             });
 
@@ -32,7 +32,7 @@ describe("Get Lab Names", () => {
 
     it("deve retornar 200 - dados corretos", async () => {
         const res = await userAgent
-            .post("/lab/user");
+            .get("/lab/user");
 
         expect(res.status).toBe(200);
         expect(res.body).toBeInstanceOf(Array);
@@ -44,8 +44,8 @@ describe("Get Lab Names", () => {
         await prisma.laboratorio.update({ where: { nome: "Lab 2" }, data: { responsavel_id: userId } });
 
         const res = await userAgent
-            .post("/lab/user")
-            .send({
+            .get("/lab/user")
+            .query({
                 user_id: userId
             });
 

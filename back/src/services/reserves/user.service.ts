@@ -5,7 +5,7 @@ import { ReservesUser } from 'src/utils/validation/reserve.schema.js';
 
 export async function userReserves(req: Request, res: Response) {
 
-    const parse = ReservesUser.safeParse(req.body);
+    const parse = ReservesUser.safeParse(req.query);
 
     if(!parse.success) {
         return res.status(422).json({

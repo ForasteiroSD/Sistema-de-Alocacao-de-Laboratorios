@@ -28,8 +28,10 @@ export default function UpdateUser({ CloseModal, UserId, updateView, myAccount =
     const [isAdm, setIsAdm] = useState(false);
 
     async function getUsersData() {
-        const response = (await api.post('user/data', {
-            id: UserId
+        const response = (await api.get('user/data', {
+            params: {
+                id: UserId
+            }
         })).data;
 
         if (response.tipo === 'Administrador') setIsAdm(true);

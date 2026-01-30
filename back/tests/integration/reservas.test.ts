@@ -396,8 +396,8 @@ describe("Create", () => {
 describe("Get reservas lab", () => {
     it("deve retornar 422 - dados incorretos", async () => {
         const res = await request(app)
-            .post("/reservas/lab")
-            .send({
+            .get("/reservas/lab")
+            .query({
                 resp_id: respId,
                 data_inicio: "2025-02-30",
                 tipo: "Diaria"
@@ -410,8 +410,8 @@ describe("Get reservas lab", () => {
 
     it("deve retornar 200 - dados corretos", async () => {
         const res = await request(app)
-            .post("/reservas/lab")
-            .send({
+            .get("/reservas/lab")
+            .query({
                 resp_id: respId,
                 data_inicio: new Date().toISOString()
             })
@@ -426,8 +426,8 @@ describe("Get reservas lab", () => {
 describe("Get reservas user", () => {
     it("deve retonar 422 - dados incorretos", async () => {
         const res = await request(app)
-            .post("/reservas/user")
-            .send({
+            .get("/reservas/user")
+            .query({
                 userId: userId,
                 data_inicio: "2025-11--1",
                 data_fim: "data",
@@ -441,8 +441,8 @@ describe("Get reservas user", () => {
 
     it("deve retonar 200 - dados corretos", async () => {
         const res = await request(app)
-            .post("/reservas/user")
-            .send({
+            .get("/reservas/user")
+            .query({
                 userId: userId,
                 tipo: "Única",
             })
@@ -508,8 +508,8 @@ describe("Get reserva", () => {
 
     it("deve retornar 200 - dados corretos", async () => {
         const reserves = await request(app)
-            .post("/reservas/user")
-            .send({
+            .get("/reservas/user")
+            .query({
                 userId: userId,
             })
             .set("Cookie", [`jwtToken=${userToken}`]);
@@ -559,8 +559,8 @@ describe("Delete minha reserva", () => {
 
     it("deve retornar 200 - reserva removida", async () => {
         const reserves = await request(app)
-            .post("/reservas/user")
-            .send({
+            .get("/reservas/user")
+            .query({
                 userId: userId,
             })
             .set("Cookie", [`jwtToken=${userToken}`]);
@@ -617,8 +617,8 @@ describe("Delete reserva", () => {
 
     it("deve retornar 200 - reserva removida", async () => {
         const reserves = await request(app)
-            .post("/reservas/user")
-            .send({
+            .get("/reservas/user")
+            .query({
                 userId: userId,
             })
             .set("Cookie", [`jwtToken=${userToken}`]);

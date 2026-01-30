@@ -4,7 +4,7 @@ import { prisma } from 'src/utils/prisma.js';
 import { ReservesRespLab } from 'src/utils/validation/reserve.schema.js';
 
 export async function userLabsReserves(req: Request, res: Response) {
-    const parse = ReservesRespLab.safeParse(req.body);
+    const parse = ReservesRespLab.safeParse(req.query);
 
     if(!parse.success) {
         return res.status(422).json({

@@ -29,8 +29,10 @@ export default function Configs() {
     
     async function GetUserData() {
         if(!user.id) return;
-        const response = (await api.post('user/data', {
-            id: user.id
+        const response = (await api.get('user/data', {
+            params: {
+                id: user.id
+            }
         })).data;
         const AnoMesDia = response.data_nasc.split('-');
         response.data_nasc = AnoMesDia[2].split('T')[0] + '/' + AnoMesDia[1] + '/' + AnoMesDia[0]

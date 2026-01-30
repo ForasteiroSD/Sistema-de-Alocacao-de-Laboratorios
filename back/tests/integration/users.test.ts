@@ -65,6 +65,26 @@ describe("Login", () => {
     });
 });
 
+describe("Logout", () => {
+    it("deve retornar 200 - logout correto", async () => {
+        const agent = request.agent(app);
+
+        const resLogin = await agent
+            .post("/user/login")
+            .send({
+                email: "adm@gmail.com",
+                senha: "Senha1@123"
+            });
+
+        expect(resLogin.status).toBe(200);
+
+        const resLogout = await agent
+        .get("/user/logout");
+        
+        expect(resLogout.status).toBe(200);
+    });
+});
+
 
 describe("Update", () => {
     it("deve retornar 401 - token não fornecido", async () => {
@@ -273,8 +293,8 @@ describe("Get responsaveis", () => {
 describe("Get user data", () => {
     it("deve retornar 422 - dados inválidos", async () => {
         const res = await request(app)
-            .post("/user/data")
-            .send({
+            .get("/user/data")
+            .query({
                 id: userId,
                 saveContext: 2
             })
@@ -286,8 +306,8 @@ describe("Get user data", () => {
 
     it("deve retornar 403 - token não é de adm", async () => {
         const res = await request(app)
-            .post("/user/data")
-            .send({
+            .get("/user/data")
+            .query({
                 id: admId
             })
             .set("Cookie", [`jwtToken=${userToken}`]);
@@ -298,8 +318,8 @@ describe("Get user data", () => {
 
     it("deve retornar 404 - usuário não encontrado", async () => {
         const res = await request(app)
-            .post("/user/data")
-            .send({
+            .get("/user/data")
+            .query({
                 id: "5b3c5675-d7ef-435a-88ef-e3781548e3cc",
             })
             .set("Cookie", [`jwtToken=${admToken}`])
@@ -310,8 +330,8 @@ describe("Get user data", () => {
 
     it("deve retornar 200 - dados corretos", async () => {
         const res = await request(app)
-            .post("/user/data")
-            .send({
+            .get("/user/data")
+            .query({
                 id: userId
             })
             .set("Cookie", [`jwtToken=${userToken}`]);

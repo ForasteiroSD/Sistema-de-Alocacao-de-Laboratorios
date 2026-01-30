@@ -21,7 +21,7 @@ router.get("/all", listLabs);
 router.get("/", labData);
 
 //Recupera nomes dos laboratórios de um usuário ou todos os laboratórios caso nenhum id seja passado
-router.post("/user", labNames);
+router.get("/user", labNames);
 
 //Consultar reservas de um dia específico no laboratório
 router.get('/reservasdia', labDayReserve);

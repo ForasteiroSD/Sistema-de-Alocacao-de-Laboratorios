@@ -48,7 +48,7 @@ export default function MyReserves({ Id }) {
     async function getData() {
 
         try {
-            const response = (await api.post('lab/user')).data;
+            const response = (await api.get('lab/user')).data;
 
             const inputValues = [{ value: '', name: 'Qualquer Laboratório' }];
             for (let lab of response) {
@@ -76,12 +76,14 @@ export default function MyReserves({ Id }) {
         }
 
         try {
-            const response = (await api.post('reservas/user', {
-                userId: Id,
-                labName: laboratorio,
-                data_inicio: data_inicial,
-                data_fim: data_final,
-                tipo: tipo
+            const response = (await api.get('reservas/user', {
+                params: {
+                    userId: Id,
+                    labName: laboratorio,
+                    data_inicio: data_inicial,
+                    data_fim: data_final,
+                    tipo: tipo
+                }
               })).data;
 
             let reservas = [];

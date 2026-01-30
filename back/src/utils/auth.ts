@@ -41,3 +41,13 @@ export function createAuthCookie(res: Response, jwtToken: string) {
         maxAge: 60*60*24*1000
     });
 }
+
+export function clearAuthCookie(res: Response) {
+    res.clearCookie("jwtToken", {
+        httpOnly: true,
+        ...(env.NODE_ENV?.toLowerCase().includes("production") && {
+            secure: true,
+            sameSite: "none",
+        })
+    });
+}

@@ -20,7 +20,7 @@ export default function Exclude({ type, CloseModal, Id, updateView }) {
     const selfAccount = Id === user.id;
 
     async function getUserData() {
-        const response = (await api.post('user/data', { id: Id })).data;
+        const response = (await api.get('user/data', { params: { id: Id } })).data;
         if (response.nome.length > 28) response.nome = response.nome.slice(0, 27) + '...';
         setUserData({ nome: response.nome, cpf: response.cpf });
     }
