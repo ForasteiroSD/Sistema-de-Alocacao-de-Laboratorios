@@ -11,9 +11,9 @@ const router = Router();
 //Inserir reservas
 router.post('/reserva', newReserve);
 //Recuperar reservas de laboratórios de um usuário específico
-router.post('/reservas/lab', userLabsReserves);
+router.get('/reservas/lab', userLabsReserves);
 //Recuperar reservas do usuário
-router.post('/reservas/user', userReserves);
+router.get('/reservas/user', userReserves);
 //Recuperar reservas do sistema
 router.get('/reservas', adm_authorization, reservesList);
 //Recuperar dados de uma reserva

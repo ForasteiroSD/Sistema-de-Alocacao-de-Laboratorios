@@ -1,7 +1,7 @@
 import { prisma } from '../../utils/prisma.js';
 import { UserData } from '../../utils/validation/user.schema.js';
 export async function getUserData(req, res) {
-    const parse = UserData.safeParse(req.body);
+    const parse = UserData.safeParse(req.query);
     if (!parse.success) {
         return res.status(422).json({
             message: "Dados inválidos",

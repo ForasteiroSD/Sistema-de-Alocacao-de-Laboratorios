@@ -44,7 +44,7 @@ export async function newLab(req, res) {
                 projetor: projetor,
                 quadro: quadro,
                 televisao: televisao,
-                ar_contidionado: ar_condicionado,
+                ar_condicionado: ar_condicionado,
                 computador: computador,
                 outro: outro,
                 responsavel_id: responsavel_id
@@ -53,7 +53,7 @@ export async function newLab(req, res) {
         return res.status(201).send('Laboratório criado');
     }
     catch (error) {
-        return res.status(400).send('Desculpe, não foi possível criar o laboratório. Tente novamente mais tarde');
+        return res.status(500).send('Desculpe, não foi possível criar o laboratório. Tente novamente mais tarde');
     }
 }
 //# sourceMappingURL=new.service.js.map

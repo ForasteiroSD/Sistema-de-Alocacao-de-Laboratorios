@@ -61,7 +61,7 @@ export async function updateLab(req, res) {
                     projetor: projetor,
                     quadro: quadro,
                     televisao: televisao,
-                    ar_contidionado: ar_condicionado,
+                    ar_condicionado: ar_condicionado,
                     computador: computador,
                     outro: outro
                 }
@@ -73,7 +73,7 @@ export async function updateLab(req, res) {
         if (error.code === 'P2025') {
             return res.status(404).send('Novo responsável não encontrado.');
         }
-        res.status(400).send('Desculpe, não foi possível atualizar o laboratório. Tente novamente mais tarde.');
+        res.status(500).send('Desculpe, não foi possível atualizar o laboratório. Tente novamente mais tarde.');
         return;
     }
 }

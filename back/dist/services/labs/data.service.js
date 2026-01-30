@@ -29,13 +29,13 @@ export async function labData(req, res) {
             projetores: lab.projetor ? lab.projetor : 'Não possui',
             quadros: lab.quadro ? lab.quadro : 'Não possui',
             televisoes: lab.televisao ? lab.televisao : 'Não possui',
-            ar_condicionados: lab.ar_contidionado ? lab.ar_contidionado : 'Não possui',
+            ar_condicionados: lab.ar_condicionado ? lab.ar_condicionado : 'Não possui',
             computadores: lab.computador ? lab.computador : 'Não possui',
             outro: lab.outro ? lab.outro : ''
         });
     }
     catch (error) {
-        res.status(400).send('Não foi possível buscar os dados do laboratório. Tente novamente mais tarde.');
+        res.status(500).send('Não foi possível buscar os dados do laboratório. Tente novamente mais tarde.');
         return;
     }
 }

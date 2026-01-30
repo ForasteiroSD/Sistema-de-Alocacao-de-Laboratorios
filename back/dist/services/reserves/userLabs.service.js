@@ -2,7 +2,7 @@ import { stringData } from '../../utils/formatDate.js';
 import { prisma } from '../../utils/prisma.js';
 import { ReservesRespLab } from '../../utils/validation/reserve.schema.js';
 export async function userLabsReserves(req, res) {
-    const parse = ReservesRespLab.safeParse(req.body);
+    const parse = ReservesRespLab.safeParse(req.query);
     if (!parse.success) {
         return res.status(422).json({
             message: "Dados inválidos",

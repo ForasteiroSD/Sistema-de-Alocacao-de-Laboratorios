@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authenticate } from '../middlewares/auth_middleware.js';
 import { adm_authorization } from '../middlewares/adm_middleware.js';
 import { userLogin } from '../services/user/login.service.js';
+import { userLogout } from '../services/user/logout.service.js';
 import { updateUser } from '../services/user/update.service.js';
 import { deleteUser } from '../services/user/delete.service.js';
 import { getResponsibles } from '../services/user/responsibles.service.js';
@@ -14,6 +15,8 @@ const router = Router();
 router.post("/login", userLogin);
 //Middleware de autênticação para próximas rotas
 router.use(authenticate);
+//Realizar logout
+router.get("/logout", userLogout);
 //Atualizar usuário
 router.patch("/", updateUser);
 //Deletar usuário
@@ -21,7 +24,7 @@ router.delete("/", deleteUser);
 //Recuperar nomes dos usuários responsáveis
 router.get("/responsaveis", getResponsibles);
 //Recuperar dados de um usuário
-router.post("/data", getUserData);
+router.get("/data", getUserData);
 //Recupera dados da página inicial
 router.get("/mainpageinfo", userNextReserves);
 //ROTAS DE ADMIN
