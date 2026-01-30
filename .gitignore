@@ -125,5 +125,6 @@ out
 .yarn/install-state.gz
 .pnp.*
 
-*.db
-/back/src/generated
+*.debug
+/back/generated
+back/prisma/sqlite/dev.db
