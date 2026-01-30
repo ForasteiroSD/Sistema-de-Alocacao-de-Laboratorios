@@ -14,6 +14,12 @@ datasource db {
   url       = env("DATABASE_URL")
 }
 
+enum USER_TYPE {
+  Responsável
+  Administrador
+  Usuário
+}
+
 model user {
   id String @id @default(uuid())
   email String @unique
@@ -22,7 +28,7 @@ model user {
   senha String
   data_nasc DateTime
   telefone String
-  tipo String
+  tipo USER_TYPE
   laboratorios laboratorio[]
   reservas reserva[]
 }
@@ -34,7 +40,7 @@ model laboratorio {
   projetor Int?
   quadro Int?
   televisao Int?
-  ar_contidionado Int?
+  ar_condicionado Int?
   computador Int?
   outro String?
   responsavel user @relation(fields: [responsavel_id], references: [id], onUpdate: Cascade)

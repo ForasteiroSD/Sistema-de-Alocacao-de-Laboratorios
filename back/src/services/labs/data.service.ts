@@ -36,7 +36,7 @@ export async function labData(req: Request, res: Response) {
             projetores: lab.projetor ? lab.projetor : 'Não possui',
             quadros: lab.quadro ? lab.quadro : 'Não possui',
             televisoes: lab.televisao ? lab.televisao : 'Não possui',
-            ar_condicionados: lab.ar_contidionado ? lab.ar_contidionado : 'Não possui',
+            ar_condicionados: lab.ar_condicionado ? lab.ar_condicionado : 'Não possui',
             computadores: lab.computador ? lab.computador : 'Não possui',
             outro: lab.outro ? lab.outro : ''
         });

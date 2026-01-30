@@ -28,7 +28,7 @@ export async function listUsers(req: Request, res: Response) {
                     email: { contains: String(email) }
                 }),
                 ... (tipo && {
-                    tipo: { contains: String(tipo) }
+                    tipo: String(tipo) as any
                 })
             },
             select: {

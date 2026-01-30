@@ -151,7 +151,7 @@ describe("Update Lab", () => {
         expect(updatedLab!.projetor).toBe(1);
         expect(updatedLab!.quadro).toBe(1);
         expect(updatedLab!.televisao).toBe(1);
-        expect(updatedLab!.ar_contidionado).toBe(3);
+        expect(updatedLab!.ar_condicionado).toBe(3);
         expect(updatedLab!.computador).toBe(20);
     });
 

@@ -56,7 +56,7 @@ export async function newLab(req: Request, res: Response) {
                 projetor: projetor,
                 quadro: quadro,
                 televisao: televisao,
-                ar_contidionado: ar_condicionado,
+                ar_condicionado: ar_condicionado,
                 computador: computador,
                 outro: outro,
                 responsavel_id: responsavel_id

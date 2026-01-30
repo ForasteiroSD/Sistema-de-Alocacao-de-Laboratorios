@@ -75,7 +75,7 @@ beforeAll(async () => {
             {
                 nome: "Lab",
                 capacidade: 30,
-                ar_contidionado: 1,
+                ar_condicionado: 1,
                 computador: 10,
                 projetor: 1,
                 quadro: 2,
@@ -85,7 +85,7 @@ beforeAll(async () => {
             {
                 nome: "Lab 2",
                 capacidade: 40,
-                ar_contidionado: 2,
+                ar_condicionado: 2,
                 computador: 40,
                 projetor: 1,
                 quadro: 1,

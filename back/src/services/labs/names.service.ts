@@ -30,8 +30,6 @@ export async function labNames(req: Request, res: Response) {
         return res.status(200).json(labs);
 
     } catch (error: any) {
-        res.status(500).send('Desculpe, ocorreu um erro ao buscar os dados dos laboratórios.');
-        return;
+        return res.status(500).send('Desculpe, ocorreu um erro ao buscar os dados dos laboratórios.');
     }
-
 }
