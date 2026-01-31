@@ -8,7 +8,7 @@ import { usuarioAdm, usuarioComum, usuarioResp } from "../vitest.setup.js";
 const userAgent = request.agent(app);
 const respAgent = request.agent(app);
 const admAgent = request.agent(app);
-let userId: string, respId: string;
+let userId: string;
 
 describe("Update Lab", () => {
     beforeAll(async () => {
@@ -28,14 +28,12 @@ describe("Update Lab", () => {
                 senha: usuarioAdm.senha
             }).expect(200);
 
-        const respRes = await respAgent
+        await respAgent
             .post("/user/login")
             .send({
                 email: usuarioResp.email,
                 senha: usuarioResp.senha
             }).expect(200);
-
-        respId = respRes.body.id;
     });
 
     it("deve retornar 422 - dados inválidos", async () => {

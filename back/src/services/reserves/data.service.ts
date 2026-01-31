@@ -34,7 +34,8 @@ export async function reserveData(req: Request, res: Response) {
                 dias: true,
                 laboratorio: {
                     select: {
-                        nome: true
+                        nome: true,
+                        responsavel_id: true
                     }
                 },
                 usuario: {
@@ -47,6 +48,16 @@ export async function reserveData(req: Request, res: Response) {
 
         if (!reserva) {
             return res.status(404).send("Reserva não encontrada.");
+        }
+
+        if (reserva.user_id !== (req as any).userData.id) {
+            if ((req as any).userData.tipo === "Usuário") {
+                return res.status(403).send("Você não pode visualizar essa reserva.");
+            }
+
+            if ((req as any).userData.tipo === "Responsável" && reserva.laboratorio.responsavel_id !== (req as any).userData.id) {
+                return res.status(403).send("Você não pode visualizar essa reserva.");
+            }
         }
 
         if (reserva.tipo === 'Única' || reserva.tipo === 'Diária') {

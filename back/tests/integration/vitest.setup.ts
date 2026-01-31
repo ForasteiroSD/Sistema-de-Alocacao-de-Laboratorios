@@ -104,7 +104,7 @@ beforeAll(async () => {
             data_fim: dataReserva,
             data_inicio: dataReserva,
             laboratorio_id: labs[0].id,
-            user_id: users[2].id
+            user_id: users[1].id
         }
     });
 
