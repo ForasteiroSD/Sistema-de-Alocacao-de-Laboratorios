@@ -28,21 +28,24 @@ export default function UpdateUser({ CloseModal, UserId, updateView, myAccount =
     const [isAdm, setIsAdm] = useState(false);
 
     async function getUsersData() {
-        const response = (await api.post('user/data', {
-            id: UserId
+        const response = (await api.get('user/data', {
+            params: {
+                id: UserId
+            }
         })).data;
 
-        if (response.tipo === 'Administrador') setIsAdm(true);
+        const userData = response.data;
+        if (userData.tipo === 'Administrador') setIsAdm(true);
 
-        document.querySelector('#name').value = response.nome;
-        document.querySelector('#cpf').value = response.cpf;
-        document.querySelector('#birthday').value = response.data_nasc.substr(0, 10);
+        document.querySelector('#name').value = userData.nome;
+        document.querySelector('#cpf').value = userData.cpf;
+        document.querySelector('#birthday').value = userData.data_nasc.substr(0, 10);
         document.querySelector('#birthday').click();
         document.querySelector('#birthday').blur();
-        document.querySelector('#phone').value = response.telefone;
-        document.querySelector('#email').value = response.email;
+        document.querySelector('#phone').value = userData.telefone;
+        document.querySelector('#email').value = userData.email;
         setTimeout(() => {
-            document.querySelector('#accoutType').value = response.tipo;
+            document.querySelector('#accoutType').value = userData.tipo;
             document.querySelector('#accoutType').style.color = '#000000'
         }, 100);
 
@@ -98,12 +101,12 @@ export default function UpdateUser({ CloseModal, UserId, updateView, myAccount =
         }
 
         try {
-            (await api.patch('user', params)).data;
+            await api.patch('user', params);
 
             setAlert('Success', 'Usuário alterado');
             updateView && updateView();
         } catch (e) {
-            const erro = e.response.data;
+            const erro = e.response.data.message ?? "Erro ao alterar usuário.";
             setAlert('Error', erro);
         }
     }

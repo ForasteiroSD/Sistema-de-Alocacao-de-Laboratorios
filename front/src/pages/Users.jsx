@@ -64,8 +64,8 @@ export default function Users() {
             
             let users = [];
             
-            if(response.length > 0) {
-                response.forEach(user => {
+            if(response.data.length > 0) {
+                response.data.forEach(user => {
                     users.push([user.id, user.nome, user.cpf, user.email, user.tipo]);
                 });
                 setEditable(true);

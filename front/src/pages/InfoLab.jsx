@@ -58,8 +58,8 @@ export default function InfoLab() {
 
     async function verifyUser() {
         try {
-            const response = (await api.post('lab/user', { user_id: user.id })).data;
-            if ((response.find((lab) => lab.nome === nome))) setShowEditButton(true)
+            const response = (await api.get('lab/user', { params: { user_id: user.id } })).data;
+            if ((response.data.find((lab) => lab.nome === nome))) setShowEditButton(true)
             else setShowEditButton(false);
 
         } catch (error) {
@@ -72,9 +72,10 @@ export default function InfoLab() {
             const response = (await api.get('lab', {
                 params: { nome: nome }
             })).data;
-            setLabData(response);
+            setLabData(response.data);
         } catch (error) {
-            setLabData(error.response.data)
+            const erro = error.response.data.message ?? "Erro ao buscar os dados do laboratório.";
+            setLabData(erro);
         }
     }
 
@@ -90,10 +91,11 @@ export default function InfoLab() {
 
             const response = (await api.get('lab/reservasdia', { params: { nome: nome, dia: data } })).data;
             const reservas = [];
-            for (let reserva of response) reservas.push([reserva.hora_inicio + ' hrs', reserva.duracao + ' hrs']);
+            for (let reserva of response.data) reservas.push([reserva.hora_inicio + ' hrs', reserva.duracao + ' hrs']);
             setReservasDia(reservas);
         } catch (error) {
-            setReservasDia([[error.response.data]]);
+            const erro = error.response.data.message ?? "Erro ao buscar as reservas do dia."
+            setReservasDia([[erro]]);
         }
     }
 

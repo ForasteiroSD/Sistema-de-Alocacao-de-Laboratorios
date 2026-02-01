@@ -26,7 +26,7 @@ export default function InfoReserve({ CloseModal, ReserveId, includeUser = true 
             }
         })).data;
 
-        setReserveData(response);
+        setReserveData(response.data);
 
     }
 

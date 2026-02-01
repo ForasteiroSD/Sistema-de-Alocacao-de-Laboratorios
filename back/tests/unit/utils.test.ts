@@ -1,4 +1,5 @@
-import { comparePasswords, generateJWTToken, hashPassword, verifyJWTToken } from "../../utils/auth";
+import { comparePasswords, generateJWTToken, hashPassword, verifyJWTToken } from "../../src/utils/auth.js";
+import { beforeAll, describe, expect, it } from "vitest";
 
 let hashedPassword: string, password: string = "Senha1@123";
 let jwtToken: string, randomToken: string = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30";

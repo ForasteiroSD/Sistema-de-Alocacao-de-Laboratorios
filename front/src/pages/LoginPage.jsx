@@ -53,10 +53,10 @@ const LoginPage = () => {
                 senha: senha
             })).data;
 
-            login({ id: response.id, nome: response.nome, tipo: response.tipo });
+            login({ id: response.data.id, nome: response.data.nome, tipo: response.data.tipo });
             navigate('/');
         } catch (e) {
-            const erro = e.response.data;
+            const erro = e.response.data.message ?? "Ocorreu um erro interno ao realizar o login.";
             setAlert('Error', erro);
         }
     };

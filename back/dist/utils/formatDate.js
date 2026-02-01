@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringData = void 0;
-function stringData(data, time) {
+export function stringData(data, time) {
     if (!time) {
         let string_aux1 = '';
         if (data.getUTCDate() < 10)
@@ -29,4 +26,4 @@ function stringData(data, time) {
         return `${string_hora}:${string_min}`;
     }
 }
-exports.stringData = stringData;
+//# sourceMappingURL=formatDate.js.map

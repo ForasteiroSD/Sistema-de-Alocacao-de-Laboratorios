@@ -18,14 +18,16 @@ export const UserProvider = ({ children }) => {
       setUser({id: userData, loading: true});
       async function buscaDados() {
         try {
-          const response = (await api.post('user/data', {
-            id: userData,
-            saveContext: 1
+          const response = (await api.get('user/data', {
+            params: {
+              id: userData,
+              saveContext: 1
+            }
           })).data;
 
-          response.id = userData;
-          response.loading = false;
-          setUser(response);
+          response.data.id = userData;
+          response.data.loading = false;
+          setUser(response.data);
 
         } catch (error) {
           logout();
@@ -42,7 +44,8 @@ export const UserProvider = ({ children }) => {
     Cookies.set('user', userData.id, { expires: 30 });
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await api.get("user/logout");
     setUser(null);
     Cookies.remove('user');
     Cookies.remove('jwtToken');

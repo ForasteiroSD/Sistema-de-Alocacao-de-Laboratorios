@@ -26,7 +26,7 @@ export default function NewLab({ CloseModal, updateView }) {
         const fetchUsers = async () => {
             try {
                 const response = (await api.get('user/responsaveis', { params: { cpf: 1 } })).data;
-                const users = response.map(user => ({
+                const users = response.data.map(user => ({
                     value: user.cpf,
                     name: `${user.cpf}-${user.nome}`,
                 }));

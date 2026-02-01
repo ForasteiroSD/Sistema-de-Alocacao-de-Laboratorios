@@ -48,10 +48,10 @@ export default function MyReserves({ Id }) {
     async function getData() {
 
         try {
-            const response = (await api.post('lab/user')).data;
+            const response = (await api.get('lab/user')).data;
 
             const inputValues = [{ value: '', name: 'Qualquer Laboratório' }];
-            for (let lab of response) {
+            for (let lab of response.data) {
                 inputValues.push({ value: `${lab.nome}`, name: `${lab.nome}` })
             }
             setLabNames(inputValues);
@@ -76,18 +76,20 @@ export default function MyReserves({ Id }) {
         }
 
         try {
-            const response = (await api.post('reservas/user', {
-                userId: Id,
-                labName: laboratorio,
-                data_inicio: data_inicial,
-                data_fim: data_final,
-                tipo: tipo
+            const response = (await api.get('reservas/user', {
+                params: {
+                    userId: Id,
+                    labName: laboratorio,
+                    data_inicio: data_inicial,
+                    data_fim: data_final,
+                    tipo: tipo
+                }
               })).data;
 
             let reservas = [];
 
-            if (response.length > 0) {
-                response.forEach(reserva => {
+            if (response.data.length > 0) {
+                response.data.forEach(reserva => {
                     reservas.push([reserva.id, reserva.lab, reserva.data_inicio, reserva.data_fim, reserva.tipo]);
                 });
                 setExpandable(true);
