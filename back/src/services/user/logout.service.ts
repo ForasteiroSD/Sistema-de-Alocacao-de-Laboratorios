@@ -5,5 +5,7 @@ export async function userLogout (req: Request, res: Response) {
 
     clearAuthCookie(res);
 
-    return res.sendStatus(200);
+    return res.status(200).send({
+        success: true
+    });
 }

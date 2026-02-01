@@ -70,6 +70,9 @@ beforeAll(async () => {
         ],
     });
 
+    const userResp = users.find(user => user.cpf === usuarioResp.cpf);
+
+    
     const labs = await prisma.laboratorio.createManyAndReturn({
         data: [
             {
@@ -80,7 +83,7 @@ beforeAll(async () => {
                 projetor: 1,
                 quadro: 2,
                 televisao: 0,
-                responsavel_id: users[2].id
+                responsavel_id: userResp!.id
             },
             {
                 nome: "Lab 2",
@@ -90,12 +93,15 @@ beforeAll(async () => {
                 projetor: 1,
                 quadro: 1,
                 televisao: 1,
-                responsavel_id: users[2].id
+                responsavel_id: userResp!.id
             },
         ]
     });
 
     const dataReserva = new Date("2000-01-01");
+
+    const reserveUser = users.find(user => user.cpf === usuarioComum.cpf);
+    const reserveLab = labs.find(lab => lab.nome === "Lab");
 
     dataReserva.setUTCHours(0, 0, 0, 0);
     const reserva = await prisma.reserva.create({
@@ -103,8 +109,8 @@ beforeAll(async () => {
             tipo: "Única",
             data_fim: dataReserva,
             data_inicio: dataReserva,
-            laboratorio_id: labs[0].id,
-            user_id: users[1].id
+            laboratorio_id: reserveLab!.id,
+            user_id: reserveUser!.id
         }
     });
 

@@ -28,45 +28,48 @@ export default function UpdateLab({ labId, CloseModal, updateView }) {
                 params: { nome: labId }
             })).data;
 
+            const labData = response.data;
+
             if (isAdm) {
-                document.querySelector('#responsible').value = response.responsavelCpf;
+                document.querySelector('#responsible').value = labData.responsavelCpf;
                 document.querySelector('#responsible').style.color = '#000000';
             }
-            document.querySelector('#name').value = response.nome;
-            document.querySelector('#capacity').value = response.capacidade;
+            document.querySelector('#name').value = labData.nome;
+            document.querySelector('#capacity').value = labData.capacidade;
 
-            if(response.projetores != 'Não possui') {
+            if(labData.projetores != 'Não possui') {
                 document.querySelector('#projetoresSim').click();
-                document.querySelector('#projetores').value = response.projetores
+                document.querySelector('#projetores').value = labData.projetores
             }
-            if(response.quadros != 'Não possui') {
+            if(labData.quadros != 'Não possui') {
                 document.querySelector('#quadrosSim').click();
-                document.querySelector('#quadros').value = response.quadros
+                document.querySelector('#quadros').value = labData.quadros
             }
-            if(response.televisoes != 'Não possui') {
+            if(labData.televisoes != 'Não possui') {
                 document.querySelector('#televisoesSim').click();
-                document.querySelector('#televisoes').value = response.televisoes
+                document.querySelector('#televisoes').value = labData.televisoes
             }
-            if(response.ar_condicionados != 'Não possui') {
+            if(labData.ar_condicionados != 'Não possui') {
                 document.querySelector('#ar_condicionadosSim').click();
-                document.querySelector('#ar_condicionados').value = response.ar_condicionados
+                document.querySelector('#ar_condicionados').value = labData.ar_condicionados
             }
-            if(response.computadores != 'Não possui') {
+            if(labData.computadores != 'Não possui') {
                 document.querySelector('#computadoresSim').click();
-                document.querySelector('#computadores').value = response.computadores
+                document.querySelector('#computadores').value = labData.computadores
             }
 
-            document.querySelector('#outro').value = response.outro;
+            document.querySelector('#outro').value = labData.outro;
 
         } catch (error) {
-            setAlert('Error', error.response.data);
+            const erro = error.response.data.message ?? "Erro ao buscar dados do laboratório.";
+            setAlert('Error', erro);
         }
     }
 
     async function getResponsaveis() {
         try {
             const response = (await api.get('user/responsaveis', { params: { cpf: 1 } })).data;
-            const users = response.map(user => ({
+            const users = response.data.map(user => ({
                 value: user.cpf,
                 name: `${user.cpf}-${user.nome}`,
             }));
@@ -110,13 +113,14 @@ export default function UpdateLab({ labId, CloseModal, updateView }) {
         };
 
         try {
-            (await api.patch('lab', data)).data;
+            await api.patch('lab', data);
 
             setAlert('Success', 'Laboratório alterado');
             updateView();
             CloseModal(false);
         } catch (e) {
-            setAlert('Error', e.response.data);
+            const erro = e.response.data.message ?? "Erro ao alterar laboratório.";
+            setAlert('Error', erro);
         }
     };
 

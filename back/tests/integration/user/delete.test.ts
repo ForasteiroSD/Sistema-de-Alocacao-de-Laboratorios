@@ -17,7 +17,7 @@ describe("Delete User", () => {
                 senha: usuarioComum.senha
             });
 
-        userId = resUser.body.id;
+        userId = resUser.body.data.id;
 
         const resAdm = await admAgent
             .post("/user/login")
@@ -26,7 +26,7 @@ describe("Delete User", () => {
                 senha: usuarioAdm.senha
             });
 
-        admId = resAdm.body.id;
+        admId = resAdm.body.data.id;
     });
 
     it("deve retornar 422 - dados inválidos", async () => {
@@ -38,7 +38,8 @@ describe("Delete User", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 403 - token não é de adm", async () => {
@@ -51,7 +52,8 @@ describe("Delete User", () => {
             });
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Função não permitida");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Função não permitida.");
     });
 
     it("deve retornar 422 - dados inválidos (senha não informada)", async () => {
@@ -62,7 +64,8 @@ describe("Delete User", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.text).toBe("A senha da conta deve ser informada");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("A senha da conta deve ser informada.");
     });
 
     it("deve retornar 401 - senha errada", async () => {
@@ -74,7 +77,8 @@ describe("Delete User", () => {
             });
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Senha inválida");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Senha inválida.");
     });
 
     it("deve retornar 200 - dados corretos", async () => {
@@ -86,7 +90,8 @@ describe("Delete User", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.text).toBe("Usuário excluido");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toBe("Usuário excluido.");
         
         const user = await prisma.user.findFirst({ where: { id: userId } });
 
@@ -102,7 +107,8 @@ describe("Delete User", () => {
             });
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Usuário não encontrado");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Usuário não encontrado.");
     });
 
     it("deve retornar 400 - tentando excluir conta master", async () => {
@@ -114,7 +120,8 @@ describe("Delete User", () => {
             });
 
         expect(res.status).toBe(400);
-        expect(res.text).toBe("Você não pode excluir essa conta");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Você não pode excluir essa conta.");
     });
 
     it("deve retornar 400 - usuário ainda é responsável por laboratórios", async () => {
@@ -128,7 +135,8 @@ describe("Delete User", () => {
             });
 
         expect(res.status).toBe(400);
-        expect(res.text).toBe("Usuário ainda é responsável por laboratórios");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Usuário ainda é responsável por laboratórios.");
     });
 
     it("deve retornar 200 - dados corretos e adm excluindo conta", async () => {
@@ -143,7 +151,8 @@ describe("Delete User", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.text).toBe("Usuário excluido");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toBe("Usuário excluido.");
         
         const user = await prisma.user.findFirst({ where: { id: respUser!.id } });
 
@@ -155,6 +164,7 @@ describe("Delete User", () => {
             .delete("/user");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

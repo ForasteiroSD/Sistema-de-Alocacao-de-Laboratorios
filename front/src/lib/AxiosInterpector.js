@@ -11,7 +11,6 @@ export default function useAxiosInterceptor() {
             error => {
                 if (error.response?.status === 401) {
                     if(user && !user.loading) {
-                        
                         logout();
                     }
                 }

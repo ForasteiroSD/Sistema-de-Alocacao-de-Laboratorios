@@ -17,7 +17,7 @@ describe("Create Lab", () => {
                 senha: usuarioComum.senha
             }).expect(200);
 
-        userId = userRes.body.id;
+        userId = userRes.body.data.id;
 
         await admAgent
             .post("/user/login")
@@ -33,7 +33,7 @@ describe("Create Lab", () => {
                 senha: usuarioResp.senha
             }).expect(200);
 
-        respId = respRes.body.id;
+        respId = respRes.body.data.id;
     });
 
     it("deve retornar 422 - dados inválidos", async () => {
@@ -52,7 +52,8 @@ describe("Create Lab", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 403 - token de usuário comum", async () => {
@@ -70,7 +71,8 @@ describe("Create Lab", () => {
             });
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Função não permitida");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Função não permitida.");
     });
 
     it("deve retornar 400 - dados do responsável não informados", async () => {
@@ -87,7 +89,8 @@ describe("Create Lab", () => {
             });
         
         expect(res.status).toBe(400);
-        expect(res.text).toBe("Id ou cpf do responsável pelo laboratório deve ser informado.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Id ou cpf do responsável pelo laboratório deve ser informado.");
     });
 
     it("deve retornar 404 - cpf invalido", async () => {
@@ -105,7 +108,8 @@ describe("Create Lab", () => {
             });
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Usuário informado não encontrado.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Usuário informado não encontrado.");
     });
 
     it("deve retornar 201 - dados corretos", async () => {
@@ -123,7 +127,8 @@ describe("Create Lab", () => {
             });
 
         expect(res.status).toBe(201);
-        expect(res.text).toBe("Laboratório criado");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toBe("Laboratório criado.");
     });
 
     it("deve retornar 409 - nome duplicado", async () => {
@@ -139,7 +144,8 @@ describe("Create Lab", () => {
             });
         
         expect(res.status).toBe(409);
-        expect(res.text).toBe("Nome de laboratório já cadastrado.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Nome de laboratório já cadastrado.");
     });
 
     it("deve retornar 401 - token não fornecido", async () => {
@@ -147,7 +153,8 @@ describe("Create Lab", () => {
             .post("/lab");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 
     it("deve retornar 401 - token inválido", async () => {
@@ -156,6 +163,7 @@ describe("Create Lab", () => {
             .set("Cookie", [`jwtToken=jgasgjjg1tadga`]);
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Usuário não autenticado");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Usuário não autenticado.");
     });
 });

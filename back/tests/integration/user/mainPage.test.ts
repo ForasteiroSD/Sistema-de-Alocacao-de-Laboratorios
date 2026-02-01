@@ -16,7 +16,7 @@ describe("User main page info", () => {
                 senha: usuarioComum.senha
             });
 
-        userId = resUser.body.id;
+        userId = resUser.body.data.id;
     });
 
     it("deve retornar 200 - dados corretos", async () => {
@@ -63,6 +63,7 @@ describe("User main page info", () => {
             .get("/user/mainpageinfo");
 
         expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
         expect(res.body).toBeInstanceOf(Object);
         expect(res.body.mainInfo).toHaveLength(4);
         expect(res.body.nextReserves).toBeInstanceOf(Array);
@@ -103,6 +104,7 @@ describe("User main page info", () => {
             .get("/user/mainpageinfo");
 
         expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
         expect(res.body).toBeInstanceOf(Object);
         expect(res.body.mainInfo[0].name).toBe("Meus Laboratórios");
         expect(res.body.mainInfo[0].value).toBe(2);
@@ -114,6 +116,7 @@ describe("User main page info", () => {
             .get("/user/mainpageinfo");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

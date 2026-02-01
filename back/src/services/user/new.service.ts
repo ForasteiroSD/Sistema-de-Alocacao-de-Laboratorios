@@ -8,8 +8,8 @@ export async function newUser(req: Request, res: Response) {
 
     if (!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         })
     }
 
@@ -31,11 +31,23 @@ export async function newUser(req: Request, res: Response) {
             }
         });
 
-        return res.status(201).send('Usuário cadastrado');
+        return res.status(201).json({
+            success: true,
+            message: "Usuário cadastrado."
+        });
     } catch (error: any) {
-        if (error.code === 'P2002' && error.meta.target[0] === 'cpf') return res.status(409).send('CPF já cadastrado');
-        else if (error.code === 'P2002' && error.meta.target[0] === 'email') return res.status(409).send('Email já cadastrado');
+        if (error.code === 'P2002' && error.meta.target[0] === 'cpf') return res.status(409).json({
+            success: false,
+            message: "CPF já cadastrado."
+        });
+        else if (error.code === 'P2002' && error.meta.target[0] === 'email') return res.status(409).json({
+            success: false,
+            message: "Email já cadastrado."
+        });
 
-        return res.status(500).send('Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, não foi possível cadastrar o usuário. Tente novamente mais tarde."
+        });
     }
 }

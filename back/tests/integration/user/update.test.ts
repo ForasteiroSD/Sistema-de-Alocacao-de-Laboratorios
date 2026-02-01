@@ -17,7 +17,7 @@ describe("Update", () => {
                 senha: usuarioComum.senha
             });
 
-        userId = userRes.body.id;
+        userId = userRes.body.data.id;
 
         const admRes = await admAgent
             .post("/user/login")
@@ -26,7 +26,7 @@ describe("Update", () => {
                 senha: usuarioAdm.senha
             });
 
-        admId = admRes.body.id;
+        admId = admRes.body.data.id;
     });
 
     it("deve retornar 401 - token não fornecido", async () => {
@@ -46,7 +46,8 @@ describe("Update", () => {
             });
         
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 
     it("deve retornar 422 - dados inválidos (parse falha)", async () => {
@@ -66,7 +67,8 @@ describe("Update", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos")
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 403 - token não é de administrador", async () => {
@@ -81,7 +83,8 @@ describe("Update", () => {
             });
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Função não permitida")
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Função não permitida.");
     });
 
     it("deve retornar 422 - dados inválidos (tipo não informado)", async () => {
@@ -96,7 +99,8 @@ describe("Update", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.text).toBe("Tipo de usuário deve ser informado.")
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Tipo de usuário deve ser informado.");
     });
 
     it("deve retornar 422 - dados inválidos (senha não informada)", async () => {
@@ -110,7 +114,8 @@ describe("Update", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.text).toBe("Senha deve ser informada.")
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Senha deve ser informada.");
     });
 
     it("deve retornar 401 - senha incorreta", async () => {
@@ -125,7 +130,8 @@ describe("Update", () => {
             });
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Senha inválida.")
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Senha inválida.");
     });
 
     it("deve retornar 409 - email em uso", async () => {
@@ -140,7 +146,8 @@ describe("Update", () => {
             });
 
         expect(res.status).toBe(409);
-        expect(res.text).toBe("Este email já está cadastrado.")
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Este email já está cadastrado.");
     });
 
     it("deve retornar 200 - dados corretos", async () => {
@@ -159,6 +166,7 @@ describe("Update", () => {
             });
 
         expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
         expect(res.body.nome).toBe(novoNome);
 
         const user = await prisma.user.findFirst({ where: { id: userId } });
@@ -184,6 +192,7 @@ describe("Update", () => {
             });
 
         expect(res.status).toBe(200);
+        expect(res.body.success).toBe(true);
         expect(res.body.nome).toBe(novoNome);
 
         const user = await prisma.user.findFirst({ where: { id: userId } });

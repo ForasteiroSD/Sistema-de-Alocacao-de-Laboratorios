@@ -18,8 +18,8 @@ export async function reserveData(req: Request, res: Response) {
 
     if(!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         })
     }
 
@@ -47,16 +47,25 @@ export async function reserveData(req: Request, res: Response) {
         });
 
         if (!reserva) {
-            return res.status(404).send("Reserva não encontrada.");
+            return res.status(404).json({
+                success: false,
+                message: "Reserva não encontrada."
+            });
         }
 
         if (reserva.user_id !== (req as any).userData.id) {
             if ((req as any).userData.tipo === "Usuário") {
-                return res.status(403).send("Você não pode visualizar essa reserva.");
+                return res.status(403).json({
+                    success: false,
+                    message: "Você não pode visualizar essa reserva."
+                });
             }
 
             if ((req as any).userData.tipo === "Responsável" && reserva.laboratorio.responsavel_id !== (req as any).userData.id) {
-                return res.status(403).send("Você não pode visualizar essa reserva.");
+                return res.status(403).json({
+                    success: false,
+                    message: "Você não pode visualizar essa reserva."
+                });
             }
         }
 
@@ -65,13 +74,16 @@ export async function reserveData(req: Request, res: Response) {
             let string_aux1 = stringData(reserva.dias[0].data_inicio, true);
 
             return res.status(200).json({
-                usuario: reserva.usuario.nome,
-                laboratorio: reserva.laboratorio.nome,
-                tipo: reserva.tipo,
-                data_inicio: stringData(reserva.data_inicio, false),
-                data_fim: stringData(reserva.data_fim, false),
-                hora_inicio: string_aux1,
-                duracao: reserva.dias[0].duracao
+                success: true,
+                data: {
+                    usuario: reserva.usuario.nome,
+                    laboratorio: reserva.laboratorio.nome,
+                    tipo: reserva.tipo,
+                    data_inicio: stringData(reserva.data_inicio, false),
+                    data_fim: stringData(reserva.data_fim, false),
+                    hora_inicio: string_aux1,
+                    duracao: reserva.dias[0].duracao
+                }
             });
 
         } else if (reserva.tipo === 'Semanal') {
@@ -93,13 +105,16 @@ export async function reserveData(req: Request, res: Response) {
                 });
             }
 
-            return res.status(200).send({
-                usuario: reserva.usuario.nome,
-                laboratorio: reserva.laboratorio.nome,
-                tipo: reserva.tipo,
-                data_inicio: stringData(reserva.data_inicio, false),
-                data_fim: stringData(reserva.data_fim, false),
-                dias_semana: reservas
+            return res.status(200).json({
+                success: true,
+                data: {
+                    usuario: reserva.usuario.nome,
+                    laboratorio: reserva.laboratorio.nome,
+                    tipo: reserva.tipo,
+                    data_inicio: stringData(reserva.data_inicio, false),
+                    data_fim: stringData(reserva.data_fim, false),
+                    dias_semana: reservas
+                }
             });
 
         } else {
@@ -116,16 +131,22 @@ export async function reserveData(req: Request, res: Response) {
             });
 
             return res.status(200).json({
-                usuario: reserva.usuario.nome,
-                laboratorio: reserva.laboratorio.nome,
-                tipo: reserva.tipo,
-                data_inicio: stringData(reserva.data_inicio, false),
-                data_fim: stringData(reserva.data_fim, false),
-                horarios: reservas
+                success: true,
+                data: {
+                    usuario: reserva.usuario.nome,
+                    laboratorio: reserva.laboratorio.nome,
+                    tipo: reserva.tipo,
+                    data_inicio: stringData(reserva.data_inicio, false),
+                    data_fim: stringData(reserva.data_fim, false),
+                    horarios: reservas
+                }
             });
         }
 
     } catch (error) {
-        return res.status(500).send('Desculpe, não foi possível buscar os dados da reserva informada.');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, não foi possível buscar os dados da reserva informada."
+        });
     }
 }

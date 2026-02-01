@@ -8,8 +8,8 @@ export async function userLogin (req: Request, res: Response) {
 
     if(!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         });
     }
 
@@ -48,16 +48,22 @@ export async function userLogin (req: Request, res: Response) {
                 createAuthCookie(res, jwtToken);
 
                 return res.status(201).json({
-                    id: user.id,
-                    nome: user.nome,
-                    tipo: user.tipo,
-                    first: true
+                    success: true,
+                    data: {
+                        id: user.id,
+                        nome: user.nome,
+                        tipo: user.tipo,
+                        first: true
+                    }
                 });                
             }
         }
 
         if(!user || !(await comparePasswords(senha, user.senha))) {
-            return res.status(401).send('Email ou senha incorretos');
+            return res.status(401).json({
+                success: false,
+                message: "Email ou senha incorretos."
+            });
         }
 
         const jwtToken = generateJWTToken({id: user.id, tipo: user.tipo});
@@ -65,12 +71,18 @@ export async function userLogin (req: Request, res: Response) {
         createAuthCookie(res, jwtToken);
 
         return res.status(200).json({
-            id: user.id,
-            nome: user.nome,
-            tipo: user.tipo
+            success: true,
+            data: {
+                id: user.id,
+                nome: user.nome,
+                tipo: user.tipo
+            }
         });
 
     } catch (error: any) {
-        return res.status(500).send('Desculpe, não foi possível realizar o login. Tente novamente mais tarde');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, não foi possível realizar o login. Tente novamente mais tarde."
+        });
     }
 }

@@ -8,8 +8,8 @@ export async function updateUser(req: Request, res: Response) {
 
     if(!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         });
     }
 
@@ -22,20 +22,32 @@ export async function updateUser(req: Request, res: Response) {
 
     //Valida se usuário realmente é um administrador
     if((adm || id != tokenData.id) && tokenData.tipo !== "Administrador") {
-        return res.status(403).send("Função não permitida");
+        return res.status(403).json({
+            success: false,
+            message: "Função não permitida."
+        });
     }
 
     if(mudarSenha) {
-        if(!novasenha) return res.status(422).send("Nova senha deve ser informada.");
+        if(!novasenha) return res.status(422).json({
+            success: false,
+            message: "Nova senha deve ser informada."
+        });
         else novasenhaHash = await hashPassword(novasenha);
     }
 
     if(changeType && !tipo) {
-        return res.status(422).send("Tipo de usuário deve ser informado.");
+        return res.status(422).json({
+            success: false,
+            message: "Tipo de usuário deve ser informado."
+        });
     }
     
     if(!adm && !senha) {
-        return res.status(422).send("Senha deve ser informada.");
+        return res.status(422).json({
+            success: false,
+            message: "Senha deve ser informada."
+        });
     }
 
     try {
@@ -47,14 +59,20 @@ export async function updateUser(req: Request, res: Response) {
             });
 
             if(!user || !(await comparePasswords(senha || "", user.senha))) {
-                return res.status(401).send('Senha inválida.');
+                return res.status(401).json({
+                    success: false,
+                    message: "Senha inválida."
+                });
             }
         }
 
         const emailEmUso = await prisma.user.findFirst({ where: { id: { not: id }, email: email } });
 
         if (emailEmUso) {
-            return res.status(409).send("Este email já está cadastrado.");
+            return res.status(409).json({
+                success: false,
+                message: "Este email já está cadastrado."
+            });
         }
 
         await prisma.user.update({
@@ -74,9 +92,12 @@ export async function updateUser(req: Request, res: Response) {
             }
         });
 
-        return res.status(200).json({ nome: nome });
+        return res.status(200).json({ success: true, nome: nome });
 
     } catch (error: any) {
-        return res.status(500).send('Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde.');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, não foi possível alterar o usuário. Tente novamente mais tarde."
+        });
     }
 }

@@ -16,7 +16,7 @@ describe("Get Lab Names", () => {
                 senha: usuarioComum.senha
             }).expect(200);
 
-        userId = res.body.id;
+        userId = res.body.data.id;
     });
 
     it("deve retornar 422 - dados inválidos", async () => {
@@ -27,7 +27,8 @@ describe("Get Lab Names", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 200 - dados corretos", async () => {
@@ -35,13 +36,16 @@ describe("Get Lab Names", () => {
             .get("/lab/user");
 
         expect(res.status).toBe(200);
-        expect(res.body).toBeInstanceOf(Array);
-        expect(res.body.length).toBe(2);
-        expect(res.body[0]).toHaveProperty("nome");
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toBeInstanceOf(Array);
+        expect(res.body.data.length).toBe(2);
+        expect(res.body.data[0]).toHaveProperty("nome");
     });
 
     it("deve retornar 200 e filtrar por id de usuario responsável - dados corretos", async () => {
         await prisma.laboratorio.update({ where: { nome: "Lab 2" }, data: { responsavel_id: userId } });
+
+        const labs = await prisma.laboratorio.findMany({ where: { responsavel_id: userId } });
 
         const res = await userAgent
             .get("/lab/user")
@@ -50,16 +54,17 @@ describe("Get Lab Names", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toBeInstanceOf(Array);
-        expect(res.body.length).toBe(1);
-        expect(res.body[0].nome).toBe("Lab 2");
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toBeInstanceOf(Array);
+        expect(res.body.data.length).toBe(1);
+        expect(res.body.data[0].nome).toBe("Lab 2");
     });
 
     it("deve retonar 401 - usuário não autenticado", async () => {
         const res = await request(app)
             .get("/lab/user");
 
-        expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

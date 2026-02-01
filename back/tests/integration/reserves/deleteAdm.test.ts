@@ -20,7 +20,7 @@ describe("Delete reserva", () => {
             senha: usuarioComum.senha,
         }).expect(200);
         
-        userId = userRes.body.id;
+        userId = userRes.body.data.id;
         
         await respAgent
         .post("/user/login")
@@ -38,7 +38,8 @@ describe("Delete reserva", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 403 - token não tem permissão", async () => {
@@ -49,7 +50,8 @@ describe("Delete reserva", () => {
             });
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Você não pode excluir essa reserva");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Você não pode excluir essa reserva.");
     });
 
     it("deve retornar 404 - reserva inexistente", async () => {
@@ -60,7 +62,8 @@ describe("Delete reserva", () => {
             });
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Reserva não encontrada");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Reserva não encontrada.");
     });
 
     it("deve retornar 400 - reserva não pode ser removida", async () => {
@@ -100,7 +103,8 @@ describe("Delete reserva", () => {
             });
 
         expect(res.status).toBe(400);
-        expect(res.text).toBe("Não é possível remover nenhum dia da reserva");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Não é possível remover nenhum dia da reserva.");
     });
 
     it("deve retornar 200 - reserva removida e dias próximos mantidos", async () => {
@@ -155,7 +159,8 @@ describe("Delete reserva", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.text).toContain("Dias da reserva removidos, as reservas que iriam ocorrer até");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toContain("Dias da reserva removidos, as reservas que iriam ocorrer até");
     });
 
     it("deve retornar 200 - reserva removida", async () => {
@@ -168,7 +173,8 @@ describe("Delete reserva", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.text).toBe("Reserva removida");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toBe("Reserva removida.");
     });
 
     it("deve retornar 401 - token não fornecido", async () => {
@@ -176,6 +182,7 @@ describe("Delete reserva", () => {
             .delete("/reserva");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

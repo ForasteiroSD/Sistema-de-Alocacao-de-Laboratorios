@@ -21,8 +21,8 @@ export default function Exclude({ type, CloseModal, Id, updateView }) {
 
     async function getUserData() {
         const response = (await api.get('user/data', { params: { id: Id } })).data;
-        if (response.nome.length > 28) response.nome = response.nome.slice(0, 27) + '...';
-        setUserData({ nome: response.nome, cpf: response.cpf });
+        if (response.nome.length > 28) response.data.nome = response.data.nome.slice(0, 27) + '...';
+        setUserData({ nome: response.data.nome, cpf: response.data.cpf });
     }
 
     useEffect(() => {
@@ -52,7 +52,7 @@ export default function Exclude({ type, CloseModal, Id, updateView }) {
             }
             updateView && updateView();
         } catch (error) {
-            const erro = error.response.data;
+            const erro = error.response.data.message ?? "Erro ao excluir usuário";
             setAlert('Error', erro);
         }
     }
@@ -77,10 +77,10 @@ export default function Exclude({ type, CloseModal, Id, updateView }) {
                     })
                 }
             })).data;
-            setAlert('Success', response);
+            setAlert('Success', response.message);
             updateView && updateView();
         } catch (error) {
-            const erro = error.response.data;
+            const erro = error.response.data.message ?? "Erro ao excluir reserva";
             setAlert('Error', erro);
         }
     }

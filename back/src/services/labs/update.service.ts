@@ -7,14 +7,17 @@ export async function updateLab(req: Request, res: Response) {
 
     if(!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         })
     }
 
     const tokenData = (req as any).userData;
     if(tokenData.tipo !== "Administrador" && tokenData.tipo !== "Responsável") {
-        return res.status(403).send("Função não permitida");
+        return res.status(403).json({
+            success: false,
+            message: "Função não permitida."
+        });
     }
 
     const { nome, capacidade, projetor, quadro, televisao, ar_condicionado, computador, outro, novo_responsavel } = parse.data;
@@ -23,7 +26,10 @@ export async function updateLab(req: Request, res: Response) {
         const laboratorioExiste = await prisma.laboratorio.count({ where: { nome } });
 
         if (!laboratorioExiste) {
-            return res.status(404).send("Laboratório informado não encontrado.");
+            return res.status(404).json({
+                success: false,
+                message: "Laboratório informado não encontrado."
+            });
         }
 
         if(tokenData.tipo === "Responsável") {
@@ -41,7 +47,10 @@ export async function updateLab(req: Request, res: Response) {
             });
 
             if(user && !user.laboratorios.length) {
-                return res.status(403).send("Você não tem permissão para atualizar esse laboratório.");
+                return res.status(403).json({
+                    success: false,
+                    message: "Você não tem permissão para atualizar esse laboratório."
+                });
             }
         }
         
@@ -82,14 +91,23 @@ export async function updateLab(req: Request, res: Response) {
 
         });
 
-        return res.status(200).send('Laboratório atualizado.');
+        return res.status(200).json({
+            success: true,
+            message: "Laboratório atualizado."
+        });
 
     } catch (error: any) {
 
         if (error.code === 'P2025') {
-            return res.status(404).send('Novo responsável não encontrado.');
+            return res.status(404).json({
+                success: false,
+                message: "Novo responsável não encontrado."
+            });
         }
 
-        return res.status(500).send('Desculpe, não foi possível atualizar o laboratório. Tente novamente mais tarde.');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, não foi possível atualizar o laboratório. Tente novamente mais tarde."
+        });
     }
 }

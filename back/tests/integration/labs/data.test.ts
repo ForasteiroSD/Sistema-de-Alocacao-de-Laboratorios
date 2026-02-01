@@ -23,7 +23,8 @@ describe("Get Lab Data", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retonar 404 - laboratório inexistente", async () => {
@@ -34,7 +35,8 @@ describe("Get Lab Data", () => {
             });
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Laboratório inexistente");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Laboratório inexistente.");
     });
 
     it("deve retonar 200 - dados corretos", async () => {
@@ -45,29 +47,30 @@ describe("Get Lab Data", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toBeInstanceOf(Object);
-        expect(res.body).toHaveProperty("nome");
-        expect(res.body).toHaveProperty("responsavelNome");
-        expect(res.body).toHaveProperty("responsavelCpf");
-        expect(res.body).toHaveProperty("capacidade");
-        expect(res.body).toHaveProperty("projetores");
-        expect(res.body).toHaveProperty("quadros");
-        expect(res.body).toHaveProperty("televisoes");
-        expect(res.body).toHaveProperty("ar_condicionados");
-        expect(res.body).toHaveProperty("computadores");
-        expect(res.body).toHaveProperty("outro");
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toBeInstanceOf(Object);
+        expect(res.body.data).toHaveProperty("nome");
+        expect(res.body.data).toHaveProperty("responsavelNome");
+        expect(res.body.data).toHaveProperty("responsavelCpf");
+        expect(res.body.data).toHaveProperty("capacidade");
+        expect(res.body.data).toHaveProperty("projetores");
+        expect(res.body.data).toHaveProperty("quadros");
+        expect(res.body.data).toHaveProperty("televisoes");
+        expect(res.body.data).toHaveProperty("ar_condicionados");
+        expect(res.body.data).toHaveProperty("computadores");
+        expect(res.body.data).toHaveProperty("outro");
 
-        expect(res.body).toBeInstanceOf(Object);
-        expect(res.body.nome).toBe("Lab");
-        expect(res.body.responsavelNome).toBe(usuarioResp.nome);
-        expect(res.body.responsavelCpf).toBe(usuarioResp.cpf);
-        expect(res.body.capacidade).toBe(30);
-        expect(res.body.projetores).toBe(1);
-        expect(res.body.quadros).toBe(2);
-        expect(res.body.televisoes).toBe("Não possui");
-        expect(res.body.ar_condicionados).toBe(1);
-        expect(res.body.computadores).toBe(10);
-        expect(res.body.outro).toBe("");
+        expect(res.body.data).toBeInstanceOf(Object);
+        expect(res.body.data.nome).toBe("Lab");
+        expect(res.body.data.responsavelNome).toBe(usuarioResp.nome);
+        expect(res.body.data.responsavelCpf).toBe(usuarioResp.cpf);
+        expect(res.body.data.capacidade).toBe(30);
+        expect(res.body.data.projetores).toBe(1);
+        expect(res.body.data.quadros).toBe(2);
+        expect(res.body.data.televisoes).toBe("Não possui");
+        expect(res.body.data.ar_condicionados).toBe(1);
+        expect(res.body.data.computadores).toBe(10);
+        expect(res.body.data.outro).toBe("");
     });
 
     it("deve retonar 401 - usuário não autenticado", async () => {
@@ -78,6 +81,7 @@ describe("Get Lab Data", () => {
             });
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

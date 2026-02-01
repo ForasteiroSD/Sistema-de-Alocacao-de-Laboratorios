@@ -25,7 +25,7 @@ describe("Get reservas", () => {
                 senha: usuarioResp.senha,
             }).expect(200);
 
-        respId = respRes.body.id;
+        respId = respRes.body.data.id;
     });
 
     it("deve retornar 401 - token não fornecido", async () => {
@@ -33,7 +33,8 @@ describe("Get reservas", () => {
             .get("/reservas");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 
     it("deve retonar 403 - token não é de adm", async () => {
@@ -41,7 +42,8 @@ describe("Get reservas", () => {
             .get("/reservas");
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Função não permitida");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Função não permitida.");
     });
 
     it("deve retonar 422 - dados incorretos", async () => {
@@ -55,7 +57,8 @@ describe("Get reservas", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retonar 200 - dados corretos", async () => {
@@ -94,21 +97,22 @@ describe("Get reservas", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toBeInstanceOf(Array);
-        expect(res.body.length).toBe(1);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toBeInstanceOf(Array);
+        expect(res.body.data.length).toBe(1);
 
-        expect(res.body[0]).toHaveProperty("id");
-        expect(res.body[0]).toHaveProperty("responsavel");
-        expect(res.body[0]).toHaveProperty("lab");
-        expect(res.body[0]).toHaveProperty("data_inicio");
-        expect(res.body[0]).toHaveProperty("data_fim");
-        expect(res.body[0]).toHaveProperty("tipo");
+        expect(res.body.data[0]).toHaveProperty("id");
+        expect(res.body.data[0]).toHaveProperty("responsavel");
+        expect(res.body.data[0]).toHaveProperty("lab");
+        expect(res.body.data[0]).toHaveProperty("data_inicio");
+        expect(res.body.data[0]).toHaveProperty("data_fim");
+        expect(res.body.data[0]).toHaveProperty("tipo");
 
-        expect(res.body[0].id).toBe(reserva.id);
-        expect(res.body[0].responsavel).toBe(usuarioResp.nome);
-        expect(res.body[0].lab).toBe(laboratorio!.nome);
-        expect(res.body[0].data_inicio).toBe(stringData(dataReserva, false));
-        expect(res.body[0].data_fim).toBe(stringData(dataReserva, false));
-        expect(res.body[0].tipo).toBe("Única");
+        expect(res.body.data[0].id).toBe(reserva.id);
+        expect(res.body.data[0].responsavel).toBe(usuarioResp.nome);
+        expect(res.body.data[0].lab).toBe(laboratorio!.nome);
+        expect(res.body.data[0].data_inicio).toBe(stringData(dataReserva, false));
+        expect(res.body.data[0].data_fim).toBe(stringData(dataReserva, false));
+        expect(res.body.data[0].tipo).toBe("Única");
     });
 });

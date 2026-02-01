@@ -8,8 +8,8 @@ export async function labDayReserve(req: Request, res: Response) {
 
     if(!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         })
     }
 
@@ -57,7 +57,10 @@ export async function labDayReserve(req: Request, res: Response) {
         });
 
         if (!laboratorio) {
-            return res.status(404).send("Laboratório informado não encontrado.");
+            return res.status(404).json({
+                success: false,
+                message: "Laboratório informado não encontrado."
+            });
         }
 
         const reservasHoje = laboratorio.reservas.flatMap(({ dias }) => 
@@ -69,14 +72,23 @@ export async function labDayReserve(req: Request, res: Response) {
         )
         
         if (reservasHoje.length === 0) {
-            return res.status(404).send('Não há reservas no dia.');
+            return res.status(404).json({
+                success: false,
+                message: "Não há reservas no dia."
+            });
         }
 
         reservasHoje.sort((a, b) => a.hora.getTime() - b.hora.getTime());
 
-        return res.status(200).json(reservasHoje);
+        return res.status(200).json({
+            success: true,
+            data: reservasHoje
+        });
 
     } catch (error: any) {
-        return res.status(500).send('Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde.');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde."
+        });
     }
 }

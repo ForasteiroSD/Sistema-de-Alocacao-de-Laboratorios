@@ -7,8 +7,8 @@ export async function labData(req: Request, res: Response) {
 
     if(!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errros: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         });
     }
 
@@ -25,23 +25,32 @@ export async function labData(req: Request, res: Response) {
         });
 
         if (!lab) {
-            return res.status(404).send('Laboratório inexistente');
+            return res.status(404).json({
+                success: false,
+                message: "Laboratório inexistente."
+            });
         }
 
         return res.status(200).json({
-            nome: lab.nome,
-            responsavelNome: lab.responsavel.nome,
-            responsavelCpf: lab.responsavel.cpf,
-            capacidade: lab.capacidade,
-            projetores: lab.projetor ? lab.projetor : 'Não possui',
-            quadros: lab.quadro ? lab.quadro : 'Não possui',
-            televisoes: lab.televisao ? lab.televisao : 'Não possui',
-            ar_condicionados: lab.ar_condicionado ? lab.ar_condicionado : 'Não possui',
-            computadores: lab.computador ? lab.computador : 'Não possui',
-            outro: lab.outro ? lab.outro : ''
+            success: true,
+            data: {
+                nome: lab.nome,
+                responsavelNome: lab.responsavel.nome,
+                responsavelCpf: lab.responsavel.cpf,
+                capacidade: lab.capacidade,
+                projetores: lab.projetor ? lab.projetor : 'Não possui',
+                quadros: lab.quadro ? lab.quadro : 'Não possui',
+                televisoes: lab.televisao ? lab.televisao : 'Não possui',
+                ar_condicionados: lab.ar_condicionado ? lab.ar_condicionado : 'Não possui',
+                computadores: lab.computador ? lab.computador : 'Não possui',
+                outro: lab.outro ? lab.outro : ''
+            }
         });
 
     } catch (error: any) {
-        return res.status(500).send('Não foi possível buscar os dados do laboratório. Tente novamente mais tarde.');
+        return res.status(500).json({
+            success: false,
+            message: "Não foi possível buscar os dados do laboratório. Tente novamente mais tarde."
+        });
     }
 }

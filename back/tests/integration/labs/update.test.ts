@@ -19,7 +19,7 @@ describe("Update Lab", () => {
                 senha: usuarioComum.senha
             }).expect(200);
 
-        userId = userRes.body.id;
+        userId = userRes.body.data.id;
 
         await admAgent
             .post("/user/login")
@@ -49,7 +49,8 @@ describe("Update Lab", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 403 - usuário comum", async () => {
@@ -66,7 +67,8 @@ describe("Update Lab", () => {
             });
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Função não permitida");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Função não permitida.");
     });
 
     it("deve retornar 403 - usuário não é responsável pelo laboratório", async () => {
@@ -84,7 +86,8 @@ describe("Update Lab", () => {
             .set("Cookie", [`jwtToken=${generateJWTToken({id: userId, tipo: "Responsável"})}`]);
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Você não tem permissão para atualizar esse laboratório.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Você não tem permissão para atualizar esse laboratório.");
     });
 
     it("deve retornar 404 - laboratório não encontrado", async () => {
@@ -102,7 +105,8 @@ describe("Update Lab", () => {
             });
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Laboratório informado não encontrado.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Laboratório informado não encontrado.");
     });
 
     it("deve retornar 404 - novo responsável não encontrado", async () => {
@@ -120,7 +124,8 @@ describe("Update Lab", () => {
             });
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Novo responsável não encontrado.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Novo responsável não encontrado.");
     });
 
     it("deve retornar 200 - dados corretos", async () => {
@@ -137,7 +142,8 @@ describe("Update Lab", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.text).toBe("Laboratório atualizado.");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toBe("Laboratório atualizado.");
 
         const updatedLab = await prisma.laboratorio.findFirst({
             where: {
@@ -183,7 +189,8 @@ describe("Update Lab", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.text).toBe("Laboratório atualizado.");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toBe("Laboratório atualizado.");
 
         const updatedLab = await prisma.laboratorio.findFirst({
             where: {
@@ -199,6 +206,7 @@ describe("Update Lab", () => {
             .patch("/lab");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

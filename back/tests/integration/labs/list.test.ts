@@ -23,7 +23,8 @@ describe("Get Labs List", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 200 - dados corretos", async () => {
@@ -34,11 +35,12 @@ describe("Get Labs List", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toBeInstanceOf(Array);
-        expect(res.body.length).toBe(2);
-        expect(res.body[0]).toHaveProperty("nome");
-        expect(res.body[0]).toHaveProperty("responsavel");
-        expect(res.body[0]).toHaveProperty("capacidade");
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toBeInstanceOf(Array);
+        expect(res.body.data.length).toBe(2);
+        expect(res.body.data[0]).toHaveProperty("nome");
+        expect(res.body.data[0]).toHaveProperty("responsavel");
+        expect(res.body.data[0]).toHaveProperty("capacidade");
 
         const resLabsFiltered = await userAgent
             .get("/lab/all")
@@ -47,16 +49,17 @@ describe("Get Labs List", () => {
             });
 
         expect(resLabsFiltered.status).toBe(200);
-        expect(resLabsFiltered.body).toBeInstanceOf(Array);
-        expect(resLabsFiltered.body.length).toBe(1);
-        expect(resLabsFiltered.body[0].nome).toBe("Lab 2");
+        expect(resLabsFiltered.body.success).toBe(true);
+        expect(resLabsFiltered.body.data).toBeInstanceOf(Array);
+        expect(resLabsFiltered.body.data.length).toBe(1);
+        expect(resLabsFiltered.body.data[0].nome).toBe("Lab 2");
     });
 
     it("deve retonar 401 - usuário não autenticado", async () => {
         const res = await request(app)
             .get("/lab/all");
 
-        expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

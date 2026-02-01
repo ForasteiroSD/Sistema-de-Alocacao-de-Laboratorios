@@ -14,7 +14,8 @@ describe("Login", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 401 - login inválido", async () => {
@@ -26,6 +27,8 @@ describe("Login", () => {
             });
 
         expect(res.status).toBe(401);
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Email ou senha incorretos.");
     });
 
     it("deve retornar 200 e um token - login válido", async () => {
@@ -37,8 +40,13 @@ describe("Login", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.text).toBeDefined();
+        expect(res.body.success).toBe(true);
         expect(res.headers["set-cookie"][0]).toBeDefined();
+        expect(res.body.data).toHaveProperty("id");
+        expect(res.body.data).toHaveProperty("nome");
+        expect(res.body.data).toHaveProperty("tipo");
+        expect(res.body.data.nome).toBe(usuarioAdm.nome);
+        expect(res.body.data.tipo).toBe(usuarioAdm.tipo);
     });
 
     it("deve retornar 200 e criar novo usuário", async () => {
@@ -53,8 +61,15 @@ describe("Login", () => {
             });
 
         expect(res.status).toBe(201);
-        expect(res.text).toBeDefined();
+        expect(res.body.success).toBe(true);
         expect(res.headers["set-cookie"][0]).toBeDefined();
+        expect(res.body.data).toHaveProperty("id");
+        expect(res.body.data).toHaveProperty("nome");
+        expect(res.body.data).toHaveProperty("tipo");
+        expect(res.body.data).toHaveProperty("first");
+        expect(res.body.data.nome).toBe("Master");
+        expect(res.body.data.tipo).toBe(usuarioAdm.tipo);
+        expect(res.body.data.first).toBe(true);
 
         const newUser = await prisma.user.findFirst();
 
@@ -80,5 +95,6 @@ describe("Logout", () => {
             .get("/user/logout");
         
         expect(resLogout.status).toBe(200);
+        expect(resLogout.body.success).toBe(true);
     });
 });

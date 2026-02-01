@@ -58,8 +58,8 @@ export default function Labs() {
 
             let labs = [];
 
-            if (response.length > 0) {
-                response.forEach(lab => {
+            if (response.data.length > 0) {
+                response.data.forEach(lab => {
                     labs.push([
                         lab.nome,
                         lab.nome,
@@ -74,8 +74,9 @@ export default function Labs() {
             }
 
             setLabs(labs);
-        } catch {
-            setLabs([['Desculpe, não foi possível realizar a pesquisa. Tente novamente mais tarde.']]);
+        } catch (error) {
+            const erro = error.response.data.message ?? "Desculpe, não foi possível realizar a pesquisa. Tente novamente mais tarde.";
+            setLabs([[erro]]);
             setExpandable(false);
         }
     };
@@ -84,7 +85,7 @@ export default function Labs() {
         try {
             const users = [{ value: '', name: 'Qualquer Responsável' }];
             const response = (await api.get('user/responsaveis')).data;
-            for (let user of response) {
+            for (let user of response.data) {
                 users.push({ value: user.nome, name: user.nome });
             }
             setResponsaveis(users);

@@ -7,15 +7,18 @@ export async function getUserData(req: Request, res: Response) {
 
     if(!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         });
     }
 
     const tokenData = (req as any).userData;
     if(parse.data.id != tokenData.id && tokenData.tipo !== "Administrador")
     {
-        return res.status(403).send("Função não permitida");
+        return res.status(403).json({
+            success: false,
+            message: "Função não permitida."
+        });
     }
 
     //Filtros para busca de usuário
@@ -41,12 +44,21 @@ export async function getUserData(req: Request, res: Response) {
         });
 
         if (!user) {
-            return res.status(404).send("Usuário não encontrado.");
+            return res.status(404).json({
+                success: false,
+                message: "Usuário não encontrado."
+            });
         }
 
-        return res.status(200).json(user);
+        return res.status(200).json({
+            success: true,
+            data: user
+        });
 
     } catch (error: any) {
-        return res.status(500).send('Desculpe, não foi possível buscar os dados do usuário. Tente novamente mais tarde');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, não foi possível buscar os dados do usuário. Tente novamente mais tarde."
+        });
     }
 }

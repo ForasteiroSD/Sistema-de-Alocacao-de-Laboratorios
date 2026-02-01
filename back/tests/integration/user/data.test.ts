@@ -16,7 +16,7 @@ describe("Get user data", () => {
                 senha: usuarioComum.senha
             });
 
-        userId = resUser.body.id;
+        userId = resUser.body.data.id;
 
         const resAdm = await admAgent
             .post("/user/login")
@@ -25,7 +25,7 @@ describe("Get user data", () => {
                 senha: usuarioAdm.senha
             });
 
-        admId = resAdm.body.id;
+        admId = resAdm.body.data.id;
     });
 
     it("deve retornar 422 - dados inválidos", async () => {
@@ -37,7 +37,8 @@ describe("Get user data", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 403 - token não é de adm", async () => {
@@ -48,7 +49,8 @@ describe("Get user data", () => {
             });
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Função não permitida");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Função não permitida.");
     });
 
     it("deve retornar 404 - usuário não encontrado", async () => {
@@ -59,7 +61,8 @@ describe("Get user data", () => {
             });
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Usuário não encontrado.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Usuário não encontrado.");
     });
 
     it("deve retornar 200 - dados corretos", async () => {
@@ -70,19 +73,20 @@ describe("Get user data", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toBeInstanceOf(Object);
-        expect(res.body).toHaveProperty("nome");
-        expect(res.body).toHaveProperty("tipo");
-        expect(res.body).toHaveProperty("email");
-        expect(res.body).toHaveProperty("cpf");
-        expect(res.body).toHaveProperty("data_nasc");
-        expect(res.body).toHaveProperty("telefone");
-        expect(res.body.nome).toBe(usuarioComum.nome);
-        expect(res.body.tipo).toBe(usuarioComum.tipo);
-        expect(res.body.email).toBe(usuarioComum.email);
-        expect(res.body.cpf).toBe(usuarioComum.cpf);
-        expect(res.body.data_nasc).toBe(usuarioComum.data_nasc.toISOString());
-        expect(res.body.telefone).toBe(usuarioComum.telefone);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toBeInstanceOf(Object);
+        expect(res.body.data).toHaveProperty("nome");
+        expect(res.body.data).toHaveProperty("tipo");
+        expect(res.body.data).toHaveProperty("email");
+        expect(res.body.data).toHaveProperty("cpf");
+        expect(res.body.data).toHaveProperty("data_nasc");
+        expect(res.body.data).toHaveProperty("telefone");
+        expect(res.body.data.nome).toBe(usuarioComum.nome);
+        expect(res.body.data.tipo).toBe(usuarioComum.tipo);
+        expect(res.body.data.email).toBe(usuarioComum.email);
+        expect(res.body.data.cpf).toBe(usuarioComum.cpf);
+        expect(res.body.data.data_nasc).toBe(usuarioComum.data_nasc.toISOString());
+        expect(res.body.data.telefone).toBe(usuarioComum.telefone);
     });
 
     it("deve retornar 200 - dados corretos com somente nome e tipo", async () => {
@@ -94,15 +98,16 @@ describe("Get user data", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toBeInstanceOf(Object);
-        expect(res.body).toHaveProperty("nome");
-        expect(res.body).toHaveProperty("tipo");
-        expect(res.body).not.toHaveProperty("email");
-        expect(res.body).not.toHaveProperty("cpf");
-        expect(res.body).not.toHaveProperty("data_nasc");
-        expect(res.body).not.toHaveProperty("telefone");
-        expect(res.body.nome).toBe(usuarioComum.nome);
-        expect(res.body.tipo).toBe(usuarioComum.tipo);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toBeInstanceOf(Object);
+        expect(res.body.data).toHaveProperty("nome");
+        expect(res.body.data).toHaveProperty("tipo");
+        expect(res.body.data).not.toHaveProperty("email");
+        expect(res.body.data).not.toHaveProperty("cpf");
+        expect(res.body.data).not.toHaveProperty("data_nasc");
+        expect(res.body.data).not.toHaveProperty("telefone");
+        expect(res.body.data.nome).toBe(usuarioComum.nome);
+        expect(res.body.data.tipo).toBe(usuarioComum.tipo);
     });
 
     it("deve retornar 200 - dados corretos de outro usuário", async () => {
@@ -113,19 +118,20 @@ describe("Get user data", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toBeInstanceOf(Object);
-        expect(res.body).toHaveProperty("nome");
-        expect(res.body).toHaveProperty("tipo");
-        expect(res.body).toHaveProperty("email");
-        expect(res.body).toHaveProperty("cpf");
-        expect(res.body).toHaveProperty("data_nasc");
-        expect(res.body).toHaveProperty("telefone");
-        expect(res.body.nome).toBe(usuarioComum.nome);
-        expect(res.body.tipo).toBe(usuarioComum.tipo);
-        expect(res.body.email).toBe(usuarioComum.email);
-        expect(res.body.cpf).toBe(usuarioComum.cpf);
-        expect(res.body.data_nasc).toBe(usuarioComum.data_nasc.toISOString());
-        expect(res.body.telefone).toBe(usuarioComum.telefone);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toBeInstanceOf(Object);
+        expect(res.body.data).toHaveProperty("nome");
+        expect(res.body.data).toHaveProperty("tipo");
+        expect(res.body.data).toHaveProperty("email");
+        expect(res.body.data).toHaveProperty("cpf");
+        expect(res.body.data).toHaveProperty("data_nasc");
+        expect(res.body.data).toHaveProperty("telefone");
+        expect(res.body.data.nome).toBe(usuarioComum.nome);
+        expect(res.body.data.tipo).toBe(usuarioComum.tipo);
+        expect(res.body.data.email).toBe(usuarioComum.email);
+        expect(res.body.data.cpf).toBe(usuarioComum.cpf);
+        expect(res.body.data.data_nasc).toBe(usuarioComum.data_nasc.toISOString());
+        expect(res.body.data.telefone).toBe(usuarioComum.telefone);
     });
 
     it("deve retornar 401 - token não fornecido", async () => {
@@ -133,6 +139,7 @@ describe("Get user data", () => {
             .get("/user/data");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

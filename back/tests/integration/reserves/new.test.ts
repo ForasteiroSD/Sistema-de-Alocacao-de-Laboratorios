@@ -15,7 +15,7 @@ describe("Create", () => {
             senha: usuarioComum.senha,
         }).expect(200);
         
-        userId = userRes.body.id;
+        userId = userRes.body.data.id;
     });
 
     it("deve retornar 401 - token não fornecido", async () => {
@@ -23,7 +23,8 @@ describe("Create", () => {
             .post("/reserva");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 
     it("deve retornar 401 - token inválido", async () => {
@@ -32,7 +33,8 @@ describe("Create", () => {
             .set("Cookie", [`jwtToken=jgasgjjg1tadga`]);
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Usuário não autenticado");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Usuário não autenticado.");
     });
 
     it("deve retornar 422 - dados incorretos", async () => {
@@ -46,7 +48,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 422 - dados incorretos (reserva Única)", async () => {
@@ -60,7 +63,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 422 - dados incorretos (reserva Única) - data", async () => {
@@ -80,7 +84,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 422 - dados incorretos (reserva Única) - hora e duracao", async () => {
@@ -100,7 +105,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 404 - laboratório inexistente", async () => {
@@ -120,7 +126,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Laboratório informado não encontrado.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Laboratório informado não encontrado.");
     });
 
     it("deve retornar 200 - dados corretos (reserva Única)", async () => {
@@ -140,7 +147,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.text).toBe("Reserva realizada");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toBe("Reserva realizada.");
     });
 
     it("deve retornar 409 - conflito entre horários", async () => {
@@ -160,7 +168,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(409);
-        expect(res.text).toContain("Conflito no dia");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toContain("Conflito no dia");
     });
 
     it("deve retornar 422 - dados incorretos (reserva Diária) - data_fim", async () => {
@@ -181,7 +190,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 200 - dados corretos (reserva Diária)", async () => {
@@ -203,7 +213,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.text).toBe("Reserva realizada");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toBe("Reserva realizada.");
     });
 
     it("deve retornar 422 - dados incorretos (reserva Semanal) - horarios", async () => {
@@ -224,7 +235,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 422 - dados incorretos (reserva Semanal) - dia_semana", async () => {
@@ -251,7 +263,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 200 - dados corretos (reserva Semanal)", async () => {
@@ -283,7 +296,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.text).toBe("Reserva realizada");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toBe("Reserva realizada.");
     });
 
     it("deve retornar 422 - dados incorretos (reserva Personalizada) - horarios", async () => {
@@ -298,7 +312,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 422 - dados incorretos (reserva Personalizada) - data", async () => {
@@ -322,7 +337,8 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 200 - dados corretos (reserva Personalizada)", async () => {
@@ -353,6 +369,7 @@ describe("Create", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.text).toBe("Reserva realizada");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toBe("Reserva realizada.");
     });
 });

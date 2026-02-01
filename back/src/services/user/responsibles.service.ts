@@ -7,8 +7,8 @@ export async function getResponsibles(req: Request, res: Response) {
 
     if(!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         });
     }
 
@@ -28,9 +28,15 @@ export async function getResponsibles(req: Request, res: Response) {
             }
         });
 
-        return res.status(200).json(users);
+        return res.status(200).json({
+            success: true,
+            data: users
+        });
         
     } catch (error) {
-        return res.status(500).send('Desculpe, não foi recuperar os usuários. Tente novamente mais tarde');
+        return res.status(500).send({
+            success: false,
+            message: "Desculpe, não foi recuperar os usuários. Tente novamente mais tarde."
+        });
     }
 }

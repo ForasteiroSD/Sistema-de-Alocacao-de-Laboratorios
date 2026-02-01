@@ -34,9 +34,9 @@ export default function Configs() {
                 id: user.id
             }
         })).data;
-        const AnoMesDia = response.data_nasc.split('-');
-        response.data_nasc = AnoMesDia[2].split('T')[0] + '/' + AnoMesDia[1] + '/' + AnoMesDia[0]
-        setUserData(response);
+        const AnoMesDia = response.data.data_nasc.split('-');
+        response.data.data_nasc = AnoMesDia[2].split('T')[0] + '/' + AnoMesDia[1] + '/' + AnoMesDia[0]
+        setUserData(response.data);
     }
 
     const CallbackUpdateUser = () => {

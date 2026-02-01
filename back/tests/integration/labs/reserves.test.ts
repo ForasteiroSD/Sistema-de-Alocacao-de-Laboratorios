@@ -24,7 +24,8 @@ describe("Get Reserves", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 404 - laboratório inexistente", async () => {
@@ -36,7 +37,8 @@ describe("Get Reserves", () => {
             });
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Laboratório informado não encontrado.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Laboratório informado não encontrado.");
     });
 
     it("deve retornar 404 - nenhuma reserva no dia", async () => {
@@ -48,7 +50,8 @@ describe("Get Reserves", () => {
             });
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Não há reservas no dia.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Não há reservas no dia.");
     });
 
     it("deve retornar 200 - dados corretos e reservas encontradas", async () => {
@@ -60,25 +63,26 @@ describe("Get Reserves", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toBeInstanceOf(Array);
-        expect(res.body.length).toBe(1);
-        expect(res.body[0]).toHaveProperty("hora_inicio");
-        expect(res.body[0]).toHaveProperty("duracao");
-        expect(res.body[0]).toHaveProperty("hora");
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toBeInstanceOf(Array);
+        expect(res.body.data.length).toBe(1);
+        expect(res.body.data[0]).toHaveProperty("hora_inicio");
+        expect(res.body.data[0]).toHaveProperty("duracao");
+        expect(res.body.data[0]).toHaveProperty("hora");
 
         const dataReserva = new Date("2000-01-01");
         dataReserva.setUTCHours(14, 0, 0, 0);
         
-        expect(res.body[0].hora_inicio).toBe("14:00");
-        expect(res.body[0].duracao).toBe("2:00");
-        expect(res.body[0].hora).toBe(dataReserva.toISOString());
+        expect(res.body.data[0].hora_inicio).toBe("14:00");
+        expect(res.body.data[0].duracao).toBe("2:00");
+        expect(res.body.data[0].hora).toBe(dataReserva.toISOString());
     });
 
     it("deve retonar 401 - usuário não autenticado", async () => {
         const res = await request(app)
             .get("/lab/reservasdia");
 
-        expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

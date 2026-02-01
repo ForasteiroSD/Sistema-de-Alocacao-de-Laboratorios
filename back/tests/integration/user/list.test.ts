@@ -16,7 +16,7 @@ describe("Get all users", () => {
                 senha: usuarioComum.senha
             });
 
-        userId = resUser.body.id;
+        userId = resUser.body.data.id;
 
         const resAdm = await admAgent
             .post("/user/login")
@@ -25,7 +25,7 @@ describe("Get all users", () => {
                 senha: usuarioAdm.senha
             });
 
-        admId = resAdm.body.id;
+        admId = resAdm.body.data.id;
     });
 
     it("deve retornar 403 - token não é de adm", async () => {
@@ -33,7 +33,8 @@ describe("Get all users", () => {
             .get("/user/all");
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Função não permitida");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Função não permitida.");
     });
 
     it("deve retornar 200 - dados corretos", async () => {
@@ -41,15 +42,16 @@ describe("Get all users", () => {
             .get("/user/all");
 
         expect(res.status).toBe(200);
-        expect(res.body).toBeInstanceOf(Array);
-        expect(res.body.length).toBe(3);
-        expect(res.body[0]).toHaveProperty("id");
-        expect(res.body[0]).toHaveProperty("nome");
-        expect(res.body[0]).toHaveProperty("cpf");
-        expect(res.body[0]).toHaveProperty("email");
-        expect(res.body[0]).toHaveProperty("tipo");
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toBeInstanceOf(Array);
+        expect(res.body.data.length).toBe(3);
+        expect(res.body.data[0]).toHaveProperty("id");
+        expect(res.body.data[0]).toHaveProperty("nome");
+        expect(res.body.data[0]).toHaveProperty("cpf");
+        expect(res.body.data[0]).toHaveProperty("email");
+        expect(res.body.data[0]).toHaveProperty("tipo");
         
-        const userNames = res.body.map((user: any) => user.nome);
+        const userNames = res.body.data.map((user: any) => user.nome);
 
         expect(userNames).toContain(usuarioComum.nome);
         expect(userNames).toContain(usuarioAdm.nome);
@@ -61,6 +63,7 @@ describe("Get all users", () => {
             .get("/user/all");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

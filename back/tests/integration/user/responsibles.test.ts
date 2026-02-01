@@ -23,7 +23,8 @@ describe("Get responsaveis", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 200 - dados corretos", async () => {
@@ -34,12 +35,13 @@ describe("Get responsaveis", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toBeInstanceOf(Array);
-        expect(res.body.length).toBe(1);
-        expect(res.body[0]).toHaveProperty("nome");
-        expect(res.body[0]).toHaveProperty("cpf");
-        expect(res.body[0].nome).toBe(usuarioResp.nome);
-        expect(res.body[0].cpf).toBe(usuarioResp.cpf);
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toBeInstanceOf(Array);
+        expect(res.body.data.length).toBe(1);
+        expect(res.body.data[0]).toHaveProperty("nome");
+        expect(res.body.data[0]).toHaveProperty("cpf");
+        expect(res.body.data[0].nome).toBe(usuarioResp.nome);
+        expect(res.body.data[0].cpf).toBe(usuarioResp.cpf);
     });
 
     it("deve retornar 401 - token não fornecido", async () => {
@@ -47,6 +49,7 @@ describe("Get responsaveis", () => {
             .get("/user/responsaveis");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

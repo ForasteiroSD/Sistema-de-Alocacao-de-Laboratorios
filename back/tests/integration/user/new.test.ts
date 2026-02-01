@@ -29,7 +29,8 @@ describe("Create new user", () => {
             .post("/user/create");
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Função não permitida");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Função não permitida.");
     });
 
     it("deve retornar 401 - token não fornecido", async () => {
@@ -37,7 +38,8 @@ describe("Create new user", () => {
             .post("/user/create");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 
     it("deve retornar 422 - dados inválidos", async () => {
@@ -54,7 +56,8 @@ describe("Create new user", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 409 - dados conflitantes (email)", async () => {
@@ -71,7 +74,8 @@ describe("Create new user", () => {
             });
 
         expect(res.status).toBe(409);
-        expect(res.text).toBe("Email já cadastrado");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Email já cadastrado.");
     });
 
     it("deve retornar 409 - dados conflitantes (cpf)", async () => {
@@ -88,7 +92,8 @@ describe("Create new user", () => {
             });
 
         expect(res.status).toBe(409);
-        expect(res.text).toBe("CPF já cadastrado");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("CPF já cadastrado.");
     });
 
     it("deve retornar 201 - dados corretos", async () => {
@@ -108,7 +113,8 @@ describe("Create new user", () => {
 
             
         expect(res.status).toBe(201);
-        expect(res.text).toBe("Usuário cadastrado");
+        expect(res.body.success).toBe(true);
+        expect(res.body.message).toBe("Usuário cadastrado.");
 
         const user = await prisma.user.findFirst({ where: { cpf: newUserData.cpf } });
 

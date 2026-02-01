@@ -57,7 +57,7 @@ export default function Reserves({ Id }) {
       })).data;
 
       const inputValues = [{ value: '', name: 'Qualquer Laboratório' }];
-      for (let lab of response) {
+      for (let lab of response.data) {
         inputValues.push({ value: `${lab.nome}`, name: `${lab.nome}` })
       }
       setLabNames(inputValues);
@@ -112,8 +112,8 @@ export default function Reserves({ Id }) {
 
       let reservas = [];
 
-      if (response.length > 0) {
-        response.forEach(reserva => {
+      if (response.data.length > 0) {
+        response.data.forEach(reserva => {
           reservas.push([reserva.id, reserva.responsavel, reserva.lab, reserva.data_inicio, reserva.data_fim, reserva.tipo]);
         });
         setExpandable(true);

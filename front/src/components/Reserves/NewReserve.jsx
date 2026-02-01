@@ -61,7 +61,8 @@ export default function NewReserve({ CloseModal, labName, updateView }) {
             updateView();
             CloseModal(false);
         } catch (error) {
-            setAlert('Error', error.response.data);
+            const erro = error.response.data.message ?? "Erro ao cadastrar reserva.";
+            setAlert('Error', erro);
         }
     }
 

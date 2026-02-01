@@ -30,7 +30,7 @@ describe("Get reserva", () => {
             senha: usuarioComum.senha,
         }).expect(200);
         
-        userId = userRes.body.id;
+        userId = userRes.body.data.id;
         
         await respAgent
         .post("/user/login")
@@ -50,7 +50,8 @@ describe("Get reserva", () => {
             });
 
         expect(res.status).toBe(422);
-        expect(res.body.message).toBe("Dados inválidos");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBeDefined();
     });
 
     it("deve retornar 404 - reserva inexistente", async () => {
@@ -61,7 +62,8 @@ describe("Get reserva", () => {
             });
 
         expect(res.status).toBe(404);
-        expect(res.text).toBe("Reserva não encontrada.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Reserva não encontrada.");
     });
 
     it("deve retornar 403 - sem permissão para visualizar reserva de outro usuário", async () => {
@@ -86,7 +88,8 @@ describe("Get reserva", () => {
             });
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Você não pode visualizar essa reserva.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Você não pode visualizar essa reserva.");
 
         await prisma.reserva.update({ where: { id: reserva!.id }, data: { user_id: userId } });
     });
@@ -111,7 +114,8 @@ describe("Get reserva", () => {
             });
 
         expect(res.status).toBe(403);
-        expect(res.text).toBe("Você não pode visualizar essa reserva.");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Você não pode visualizar essa reserva.");
 
         await prisma.reserva.update({ where: { id: reserva!.id }, data: { laboratorio_id: reserva!.laboratorio_id } });
     });
@@ -124,21 +128,22 @@ describe("Get reserva", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty("usuario");
-        expect(res.body).toHaveProperty("laboratorio");
-        expect(res.body).toHaveProperty("tipo");
-        expect(res.body).toHaveProperty("data_inicio");
-        expect(res.body).toHaveProperty("data_fim");
-        expect(res.body).toHaveProperty("hora_inicio");
-        expect(res.body).toHaveProperty("duracao");
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toHaveProperty("usuario");
+        expect(res.body.data).toHaveProperty("laboratorio");
+        expect(res.body.data).toHaveProperty("tipo");
+        expect(res.body.data).toHaveProperty("data_inicio");
+        expect(res.body.data).toHaveProperty("data_fim");
+        expect(res.body.data).toHaveProperty("hora_inicio");
+        expect(res.body.data).toHaveProperty("duracao");
 
-        expect(res.body.usuario).toBe(usuarioComum.nome);
-        expect(res.body.laboratorio).toBe(reserva!.laboratorio.nome);
-        expect(res.body.tipo).toBe(reserva!.tipo);
-        expect(res.body.data_inicio).toBe(stringData(reserva!.data_inicio, false));
-        expect(res.body.data_fim).toBe(stringData(reserva!.data_fim, false));
-        expect(res.body.hora_inicio).toBe("14:00");
-        expect(res.body.duracao).toBe("2:00");
+        expect(res.body.data.usuario).toBe(usuarioComum.nome);
+        expect(res.body.data.laboratorio).toBe(reserva!.laboratorio.nome);
+        expect(res.body.data.tipo).toBe(reserva!.tipo);
+        expect(res.body.data.data_inicio).toBe(stringData(reserva!.data_inicio, false));
+        expect(res.body.data.data_fim).toBe(stringData(reserva!.data_fim, false));
+        expect(res.body.data.hora_inicio).toBe("14:00");
+        expect(res.body.data.duracao).toBe("2:00");
     });
 
     it("deve retornar 200 - dados corretos (reserva semanal)", async () => {
@@ -195,29 +200,30 @@ describe("Get reserva", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty("usuario");
-        expect(res.body).toHaveProperty("laboratorio");
-        expect(res.body).toHaveProperty("tipo");
-        expect(res.body).toHaveProperty("data_inicio");
-        expect(res.body).toHaveProperty("data_fim");
-        expect(res.body).toHaveProperty("dias_semana");
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toHaveProperty("usuario");
+        expect(res.body.data).toHaveProperty("laboratorio");
+        expect(res.body.data).toHaveProperty("tipo");
+        expect(res.body.data).toHaveProperty("data_inicio");
+        expect(res.body.data).toHaveProperty("data_fim");
+        expect(res.body.data).toHaveProperty("dias_semana");
 
-        expect(res.body.usuario).toBe(usuarioComum.nome);
-        expect(res.body.laboratorio).toBe(reserva!.laboratorio.nome);
-        expect(res.body.tipo).toBe(reservaSemanal!.tipo);
-        expect(res.body.data_inicio).toBe(stringData(reservaSemanal!.data_inicio, false));
-        expect(res.body.data_fim).toBe(stringData(reservaSemanal!.data_fim, false));
-        expect(res.body.dias_semana).toBeInstanceOf(Array);
-        expect(res.body.dias_semana.length).toBe(2);
+        expect(res.body.data.usuario).toBe(usuarioComum.nome);
+        expect(res.body.data.laboratorio).toBe(reserva!.laboratorio.nome);
+        expect(res.body.data.tipo).toBe(reservaSemanal!.tipo);
+        expect(res.body.data.data_inicio).toBe(stringData(reservaSemanal!.data_inicio, false));
+        expect(res.body.data.data_fim).toBe(stringData(reservaSemanal!.data_fim, false));
+        expect(res.body.data.dias_semana).toBeInstanceOf(Array);
+        expect(res.body.data.dias_semana.length).toBe(2);
 
-        const nomesDias = res.body.dias_semana.map((dia: any) => dia.dia);
+        const nomesDias = res.body.data.dias_semana.map((dia: any) => dia.dia);
         expect(nomesDias).toContain("Domingo");
         expect(nomesDias).toContain("Terça");
 
-        expect(res.body.dias_semana[0].hora_inicio).toBe("10:00");
-        expect(res.body.dias_semana[0].duracao).toBe("4:00");
-        expect(res.body.dias_semana[1].hora_inicio).toBe("10:00");
-        expect(res.body.dias_semana[1].duracao).toBe("4:00");
+        expect(res.body.data.dias_semana[0].hora_inicio).toBe("10:00");
+        expect(res.body.data.dias_semana[0].duracao).toBe("4:00");
+        expect(res.body.data.dias_semana[1].hora_inicio).toBe("10:00");
+        expect(res.body.data.dias_semana[1].duracao).toBe("4:00");
     });
 
     it("deve retornar 200 - dados corretos (reserva personalizada)", async () => {
@@ -273,22 +279,23 @@ describe("Get reserva", () => {
             });
 
         expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty("usuario");
-        expect(res.body).toHaveProperty("laboratorio");
-        expect(res.body).toHaveProperty("tipo");
-        expect(res.body).toHaveProperty("data_inicio");
-        expect(res.body).toHaveProperty("data_fim");
-        expect(res.body).toHaveProperty("horarios");
+        expect(res.body.success).toBe(true);
+        expect(res.body.data).toHaveProperty("usuario");
+        expect(res.body.data).toHaveProperty("laboratorio");
+        expect(res.body.data).toHaveProperty("tipo");
+        expect(res.body.data).toHaveProperty("data_inicio");
+        expect(res.body.data).toHaveProperty("data_fim");
+        expect(res.body.data).toHaveProperty("horarios");
 
-        expect(res.body.usuario).toBe(usuarioComum.nome);
-        expect(res.body.laboratorio).toBe(reserva!.laboratorio.nome);
-        expect(res.body.tipo).toBe(reservaPersonalizada!.tipo);
-        expect(res.body.data_inicio).toBe(stringData(reservaPersonalizada!.data_inicio, false));
-        expect(res.body.data_fim).toBe(stringData(reservaPersonalizada!.data_fim, false));
-        expect(res.body.horarios).toBeInstanceOf(Array);
-        expect(res.body.horarios.length).toBe(2);
+        expect(res.body.data.usuario).toBe(usuarioComum.nome);
+        expect(res.body.data.laboratorio).toBe(reserva!.laboratorio.nome);
+        expect(res.body.data.tipo).toBe(reservaPersonalizada!.tipo);
+        expect(res.body.data.data_inicio).toBe(stringData(reservaPersonalizada!.data_inicio, false));
+        expect(res.body.data.data_fim).toBe(stringData(reservaPersonalizada!.data_fim, false));
+        expect(res.body.data.horarios).toBeInstanceOf(Array);
+        expect(res.body.data.horarios.length).toBe(2);
 
-        const horarios = res.body.horarios;
+        const horarios = res.body.data.horarios;
 
         expect(horarios[0].data).toBe(stringData(diaFimReserva1, false));
         expect(horarios[0].hora_inicio).toBe("15:00");
@@ -303,6 +310,7 @@ describe("Get reserva", () => {
             .get("/reserva");
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe("Token não fornecido");
+        expect(res.body.success).toBe(false);
+        expect(res.body.message).toBe("Token não fornecido.");
     });
 });

@@ -25,9 +25,9 @@ export const UserProvider = ({ children }) => {
             }
           })).data;
 
-          response.id = userData;
-          response.loading = false;
-          setUser(response);
+          response.data.id = userData;
+          response.data.loading = false;
+          setUser(response.data);
 
         } catch (error) {
           logout();

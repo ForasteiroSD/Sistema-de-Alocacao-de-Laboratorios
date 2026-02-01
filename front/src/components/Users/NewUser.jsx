@@ -46,7 +46,7 @@ export default function NewUser({ CloseModal, updateView }) {
             setAlert('Success', 'Usuário criado');
             updateView && updateView();
         } catch (e) {
-            const erro = e.response.data;
+            const erro = e.response.data.message ?? "Erro ao criar usuário.";
 
             setAlert('Error', erro);
         }
