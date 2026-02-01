@@ -4,8 +4,8 @@ export async function getResponsibles(req, res) {
     const parse = UserRespGet.safeParse(req.query);
     if (!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         });
     }
     //Caso também queira retornar cpf dos responsáveis
@@ -22,10 +22,16 @@ export async function getResponsibles(req, res) {
                 })
             }
         });
-        return res.status(200).json(users);
+        return res.status(200).json({
+            success: true,
+            data: users
+        });
     }
     catch (error) {
-        return res.status(500).send('Desculpe, não foi recuperar os usuários. Tente novamente mais tarde');
+        return res.status(500).send({
+            success: false,
+            message: "Desculpe, não foi recuperar os usuários. Tente novamente mais tarde."
+        });
     }
 }
 //# sourceMappingURL=responsibles.service.js.map

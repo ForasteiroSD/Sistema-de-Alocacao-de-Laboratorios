@@ -5,8 +5,8 @@ export async function userReserves(req, res) {
     const parse = ReservesUser.safeParse(req.query);
     if (!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         });
     }
     const { labName, data_inicio, data_fim, tipo } = parse.data;
@@ -65,10 +65,16 @@ export async function userReserves(req, res) {
                 tipo: reserva.tipo
             };
         });
-        return res.status(200).json(reservasSend);
+        return res.status(200).json({
+            success: true,
+            data: reservasSend
+        });
     }
     catch (error) {
-        return res.status(500).send('Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, não foi possível buscar as reservas. Tente novamente mais tarde."
+        });
     }
 }
 //# sourceMappingURL=user.service.js.map

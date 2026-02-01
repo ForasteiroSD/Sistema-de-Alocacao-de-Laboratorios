@@ -77,10 +77,17 @@ export async function userNextReserves(req, res) {
                 value: reservasCount
             }
         ];
-        return res.status(200).json({ mainInfo: mainInfo, nextReserves: nextReservas.slice(0, 3) });
+        return res.status(200).json({
+            success: true,
+            mainInfo: mainInfo,
+            nextReserves: nextReservas.slice(0, 3)
+        });
     }
     catch (error) {
-        return res.status(500).send("Ocorreu um erro ao buscar as próximas reservas.");
+        return res.status(500).json({
+            success: false,
+            message: "Ocorreu um erro ao buscar as próximas reservas."
+        });
     }
 }
 //# sourceMappingURL=mainPage.service.js.map

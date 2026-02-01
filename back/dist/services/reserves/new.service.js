@@ -22,8 +22,8 @@ export async function newReserve(req, res) {
     const parse = ReserveInsert.safeParse(req.body);
     if (!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         });
     }
     const { userName, labName, tipo, data_inicio, data_fim, hora_inicio, duracao, horarios } = req.body;
@@ -34,8 +34,8 @@ export async function newReserve(req, res) {
                 : WeeklyReserves.safeParse(req.body);
     if (!newParse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: newParse.error.issues[0].message
+            success: false,
+            message: newParse.error.issues[0].message
         });
     }
     let dataSearch1, dataSearch2;
@@ -48,9 +48,9 @@ export async function newReserve(req, res) {
         for (let dia of horarios) {
             dia.data = new Date(dia.data);
             if (dia.data.getTime() < today.getTime()) {
-                return res.status(422).send({
-                    message: "Dados inválidos",
-                    errors: "Data da reserva não pode ser inferior ao dia de hoje"
+                return res.status(422).json({
+                    success: false,
+                    message: "Data da reserva não pode ser inferior ao dia de hoje"
                 });
             }
         }
@@ -64,15 +64,15 @@ export async function newReserve(req, res) {
         dataSearch1.setUTCHours(23, 59, 0, 0);
         dataSearch2.setUTCHours(23, 59, 0, 0);
         if (dataSearch1.getTime() < today.getTime()) {
-            return res.status(422).send({
-                message: "Dados inválidos",
-                errors: "Data inicial não pode ser inferior ao dia de hoje"
+            return res.status(422).json({
+                success: false,
+                message: "Data inicial não pode ser inferior ao dia de hoje"
             });
         }
         if (dataSearch1.getTime() > dataSearch2.getTime()) {
-            return res.status(422).send({
-                message: "Dados inválidos",
-                errors: "Data final deve ser após data inicial"
+            return res.status(422).json({
+                success: false,
+                message: "Data final deve ser após data inicial"
             });
         }
         dataSearch1.setUTCHours(0, 0, 0, 0);
@@ -102,7 +102,10 @@ export async function newReserve(req, res) {
             }
         });
         if (!labReservas) {
-            return res.status(404).send("Laboratório informado não encontrado.");
+            return res.status(404).json({
+                success: false,
+                message: "Laboratório informado não encontrado."
+            });
         }
         const dias_reserva = [];
         const diaInicio = new Date(data_inicio);
@@ -182,7 +185,10 @@ export async function newReserve(req, res) {
                         //Horário conflitante entre reservas
                         if (verificaConflito(inicio1, fim1, reservaIns.inicio, reservaIns.fim)) {
                             let string = `Conflito no dia ${stringData(reserva.data_inicio, false)}`;
-                            res.status(409).send(string);
+                            res.status(409).send({
+                                success: false,
+                                message: string
+                            });
                             return;
                         }
                     }
@@ -222,10 +228,16 @@ export async function newReserve(req, res) {
             }
         });
         createReserveEmailText(tipo, labName, userName, data_inicio, data_fim, hora_inicio, duracao, horarios, labReservas.responsavel.email);
-        return res.status(200).send('Reserva realizada');
+        return res.status(200).json({
+            success: true,
+            message: "Reserva realizada."
+        });
     }
     catch (error) {
-        return res.status(500).send('Desculpe, não foi possível realizar a reserva. Tente novamente mais tarde');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, não foi possível realizar a reserva. Tente novamente mais tarde."
+        });
     }
 }
 //# sourceMappingURL=new.service.js.map

@@ -5,18 +5,24 @@ export async function deleteUser(req, res) {
     const parse = UserDelete.safeParse(req.query);
     if (!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         });
     }
     const tokenData = req.userData;
     const { id, senha } = parse.data;
     const minhaConta = parse.data.minhaConta === 1;
     if ((!minhaConta || id != tokenData.id) && tokenData.tipo !== "Administrador") {
-        return res.status(403).send("Função não permitida");
+        return res.status(403).json({
+            success: false,
+            message: "Função não permitida."
+        });
     }
     if (minhaConta && !senha) {
-        return res.status(422).send("A senha da conta deve ser informada");
+        return res.status(422).json({
+            success: false,
+            message: "A senha da conta deve ser informada."
+        });
     }
     try {
         const user = await prisma.user.findFirst({
@@ -25,7 +31,10 @@ export async function deleteUser(req, res) {
             }
         });
         if (!user) {
-            return res.status(404).send('Usuário não encontrado');
+            return res.status(404).json({
+                success: false,
+                message: "Usuário não encontrado."
+            });
         }
         const labs = await prisma.laboratorio.findFirst({
             where: {
@@ -33,23 +42,38 @@ export async function deleteUser(req, res) {
             }
         });
         if (labs) {
-            return res.status(400).send('Usuário ainda é responsável por laboratórios');
+            return res.status(400).json({
+                success: false,
+                message: "Usuário ainda é responsável por laboratórios."
+            });
         }
         if (user.cpf === "Master") {
-            return res.status(400).send('Você não pode excluir essa conta');
+            return res.status(400).json({
+                success: false,
+                message: "Você não pode excluir essa conta."
+            });
         }
         if (minhaConta && !(await comparePasswords(senha || "", user.senha))) {
-            return res.status(401).send("Senha inválida");
+            return res.status(401).json({
+                success: false,
+                message: "Senha inválida."
+            });
         }
         await prisma.user.delete({
             where: {
                 id: user.id
             }
         });
-        return res.status(200).send("Usuário excluido");
+        return res.status(200).json({
+            success: true,
+            message: "Usuário excluido."
+        });
     }
     catch (error) {
-        return res.status(500).send('Desculpe, não foi possível remover o usuário. Tente novamente mais tarde');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, não foi possível remover o usuário. Tente novamente mais tarde."
+        });
     }
 }
 //# sourceMappingURL=delete.service.js.map

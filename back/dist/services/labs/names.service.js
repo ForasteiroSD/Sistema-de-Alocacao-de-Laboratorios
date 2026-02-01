@@ -4,8 +4,8 @@ export async function labNames(req, res) {
     const parse = LabNames.safeParse(req.query);
     if (!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         });
     }
     const { user_id } = parse.data;
@@ -20,10 +20,16 @@ export async function labNames(req, res) {
                 nome: true
             }
         });
-        return res.status(200).json(labs);
+        return res.status(200).json({
+            success: true,
+            data: labs
+        });
     }
     catch (error) {
-        return res.status(500).send('Desculpe, ocorreu um erro ao buscar os dados dos laboratórios.');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, ocorreu um erro ao buscar os dados dos laboratórios."
+        });
     }
 }
 //# sourceMappingURL=names.service.js.map

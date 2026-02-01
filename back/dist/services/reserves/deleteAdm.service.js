@@ -6,13 +6,16 @@ export async function deleteReserveAdm(req, res) {
     const parse = ReserveRemove.safeParse(req.query);
     if (!parse.success) {
         return res.status(422).json({
-            message: "Dados inválidos",
-            errors: parse.error.issues[0].message
+            success: false,
+            message: parse.error.issues[0].message
         });
     }
     const tokenData = req.userData;
     if (tokenData.tipo !== "Administrador" && tokenData.tipo !== "Responsável") {
-        return res.status(403).send("Você não pode excluir essa reserva");
+        return res.status(403).json({
+            success: false,
+            message: "Você não pode excluir essa reserva."
+        });
     }
     const { id, motivo } = parse.data;
     let dia_min = new Date();
@@ -41,11 +44,17 @@ export async function deleteReserveAdm(req, res) {
             }
         });
         if (!reserva) {
-            return res.status(404).send('Reserva não encontrada');
+            return res.status(404).json({
+                success: false,
+                message: "Reserva não encontrada."
+            });
         }
         const diasRemoviveis = reserva.dias.filter(dia => (dia.data_inicio > dia_min || dia.data_inicio < today));
         if (diasRemoviveis.length === 0) {
-            return res.status(400).send('Não é possível remover nenhum dia da reserva');
+            return res.status(400).json({
+                success: false,
+                message: "Não é possível remover nenhum dia da reserva."
+            });
         }
         await prisma.dia.deleteMany({
             where: {
@@ -67,17 +76,26 @@ export async function deleteReserveAdm(req, res) {
                     id: String(id)
                 },
             });
-            res.status(200).send('Reserva removida');
+            res.status(200).json({
+                success: true,
+                message: "Reserva removida."
+            });
         }
         else {
-            res.status(200).send(`Dias da reserva removidos, as reservas que iriam ocorrer até ${stringData(dia_min, false)} ainda estão marcadas`);
+            res.status(200).json({
+                success: true,
+                message: `Dias da reserva removidos, as reservas que iriam ocorrer até ${stringData(dia_min, false)} ainda estão marcadas.`
+            });
             text += `\n\nAs reservas que iriam ocorrer até ${stringData(dia_min, false)} ainda estão marcadas`;
         }
         sendEmail(reserva.usuario.email, text, '', 'Remoção de Reserva');
         return;
     }
     catch (error) {
-        return res.status(500).send('Desculpe, não foi possível remover a reserva. Tente novamente mais tarde');
+        return res.status(500).json({
+            success: false,
+            message: "Desculpe, não foi possível remover a reserva. Tente novamente mais tarde."
+        });
     }
 }
 //# sourceMappingURL=deleteAdm.service.js.map
