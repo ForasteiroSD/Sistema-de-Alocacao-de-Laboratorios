@@ -1,5 +1,5 @@
 import z from "zod";
-import { cpfSchema, idSchema, nomeSchema } from "./default.schema.js";
+import { cpfSchema, defaultResponse, idSchema, nomeSchema } from "./default.schema.js";
 
 const capacidadeSchema = z.object({
     capacidade: z.coerce.number({error: "Capacidade deve ser informada"})
@@ -73,9 +73,45 @@ export const LabsGet = z.object({
         })
 });
 
+export const LabsGetResponse = defaultResponse
+    .extend({
+        data: z.array(
+            z.object({
+                nome: z.string(),
+                responsavel: z.string(),
+                capacidade: z.number()
+            })
+        )
+    });
+
+export const LabDataResponse = defaultResponse
+    .extend({
+        data: z.object({
+            nome: z.string(),
+            responsavelNome: z.string(),
+            responsavelCpf: z.string(),
+            capacidade: z.number().or(z.string()),
+            projetores: z.number().or(z.string()),
+            quadros: z.number().or(z.string()),
+            televisoes: z.number().or(z.string()),
+            ar_condicionados: z.number().or(z.string()),
+            computadores: z.number().or(z.string()),
+            outro: z.string()
+        })
+    });
+
 export const LabNames = z.object({
     user_id: idSchema.shape.id.optional()
 });
+
+export const LabsNamesResponse = defaultResponse
+    .extend({
+        data: z.array(
+            z.object({
+                nome: z.string()
+            })
+        )
+    });
 
 export const LabReserves = nomeSchema
     .extend({
@@ -83,3 +119,14 @@ export const LabReserves = nomeSchema
             error: "Data inválida"
         })
     });
+
+export const LabReservesResponse = defaultResponse
+    .extend({
+        data: z.array(
+            z.object({
+                hora_inicio: z.string(),
+                duracao: z.string(),
+                hora: z.date()
+            })
+        )
+    })
