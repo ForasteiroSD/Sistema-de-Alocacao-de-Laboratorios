@@ -1,5 +1,5 @@
 import z from "zod";
-import { idSchema, nomeSchema } from "./default.schema.js";
+import { defaultResponse, idSchema, nomeSchema } from "./default.schema.js";
 
 const reserveTypeSchema = z.object({
     tipo: z.enum(["Única", "Semanal", "Personalizada", "Diária"], {message: "Tipo de reserva deve ser: Única, Semanal, Personalizada ou Diária"})
@@ -141,6 +141,20 @@ export const ReservesRespLab = z.object({
         }).optional()
 });
 
+export const ReservesRespLabResponse = defaultResponse
+    .extend({
+        data: z.array(
+            z.object({
+                id: z.string(),
+                responsavel: z.string(),
+                lab: z.string(),
+                data_inicio: z.string(),
+                data_fim: z.string(),
+                tipo: z.string()
+            })
+        )
+    });
+
 export const ReservesUser = z.object({
     userId: idSchema.shape.id,
     labName: z.string().optional(),
@@ -163,6 +177,19 @@ export const ReservesUser = z.object({
         }).optional()
 });
 
+export const ReservesUserResponse = defaultResponse
+    .extend({
+        data: z.array(
+            z.object({
+                id: z.string(),
+                lab: z.string(),
+                data_inicio: z.string(),
+                data_fim: z.string(),
+                tipo: z.string()
+            })
+        )
+    });
+
 export const Reserves = z.object({
     userName: z.string().optional(),
     labName: z.string().optional(),
@@ -184,6 +211,63 @@ export const Reserves = z.object({
             error: "Tipo de reserva deve ser: Única, Semanal, Personalizada ou Diária",
         }).optional()
 });
+
+export const ReservesResponse = defaultResponse
+    .extend({
+        data: z.array(
+            z.object({
+                id: z.string(),
+                responsavel: z.string(),
+                lab: z.string(),
+                data_inicio: z.string(),
+                data_fim: z.string(),
+                tipo: z.string()
+            })
+        )
+    })
+
+export const ReserveDataResponse = defaultResponse
+    .extend({
+        data: z.object({
+            usuario: z.string(),
+            laboratorio: z.string(),
+            tipo: z.string(),
+            data_inicio: z.string(),
+            data_fim: z.string(),
+            hora_inicio: z.string(),
+            duracao: z.string()
+        }).or(
+            z.object({
+                usuario: z.string(),
+                laboratorio: z.string(),
+                tipo: z.string(),
+                data_inicio: z.string(),
+                data_fim: z.string(),
+                dias_semana: z.array(
+                    z.object({
+                        dia: z.string(),
+                        hora_inicio: z.string(),
+                        duracao: z.string()
+                    })
+                )
+            })
+        ).or(
+            z.object({
+                usuario: z.string(),
+                laboratorio: z.string(),
+                tipo: z.string(),
+                data_inicio: z.string(),
+                data_fim: z.string(),
+                horarios: z.array(
+                    z.object({
+                        data: z.string(),
+                        hora_inicio: z.string(),
+                        duracao: z.string(),
+                    })
+                )
+            })
+        )
+    });
 
 export const ReserveRemove = idSchema
     .extend({

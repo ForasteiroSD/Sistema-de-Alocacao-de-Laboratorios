@@ -9,7 +9,7 @@ export const openApiDocument = new OpenApiGeneratorV3(openApiDefinitions).genera
         version: "1.0.0",
     },
     servers: [
-        { url: "http://localhost:" + env.PORT },
+        { url: env.HOST },
     ],
     security: [{ cookieAuth: [] }],
 });
