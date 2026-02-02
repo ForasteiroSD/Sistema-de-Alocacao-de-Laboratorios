@@ -1,5 +1,5 @@
 import z from "zod";
-import { cpfSchema, idSchema, nomeSchema } from "./default.schema.js";
+import { cpfSchema, defaultResponse, idSchema, nomeSchema } from "./default.schema.js";
 
 const dataNascSchema = z.object({
     data_nasc: z.string({error: "Data de nascimento deve ser informada"}).refine(val => !isNaN(Date.parse(val)), {
@@ -36,6 +36,25 @@ export const UserCreateSchema = nomeSchema
 export const UserLoginSchema = emailSchema
     .extend(senhaSchema.shape);
 
+export const UserLoginResponse = defaultResponse
+    .extend({
+        data: z.object({
+            id: z.uuidv4(),
+            nome: z.string(),
+            tipo: z.string(),
+        })
+    });
+
+export const UserCreatedLoginResponse = defaultResponse
+    .extend({
+        data: z.object({
+            id: z.uuidv4(),
+            nome: z.string(),
+            tipo: z.string(),
+            first: z.boolean()
+        })
+    });
+
 //adm = true não precisa informar senha
 //mudarSenha indica se vai mudar a senha ou não
 export const UserUpdateSchema = idSchema
@@ -49,6 +68,11 @@ export const UserUpdateSchema = idSchema
         adm: z.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0), //defaults to false
         mudarSenha: z.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0), //defaults to false
         changeType: z.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0) //defaults to false
+    });
+
+export const UserUpdateResponse = defaultResponse
+    .extend({
+        nome: z.string()
     });
 
 export const UserUpdateFirst = idSchema
@@ -66,6 +90,56 @@ export const UserDelete = idSchema
         minhaConta: z.coerce.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(1) //defaults to true
     });
 
+export const UserRespGet = z.object({
+    cpf: z.coerce.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0) //defaults to false
+});
+
+export const UserRespGetResponse = defaultResponse
+    .extend({
+        data: z.array(
+            z.object({
+                nome: z.string(),
+                cpf: z.string()
+            })
+        )
+    });
+
+export const UserData = idSchema
+    .extend({
+        saveContext: z.coerce.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0) //defaults to false
+    });
+
+export const UserDataResponse = defaultResponse
+    .extend({
+        data: z.object({
+            nome: z.string(),
+            telefone: z.string(),
+            email: z.string(),
+            tipo: z.string(),
+            cpf:  z.string(),
+            data_nasc: z.date()
+        })
+    });
+
+export const UserMainPageInfoResponse = defaultResponse
+    .extend({
+        mainInfo: z.array(
+            z.object({
+                name: z.string(),
+                value: z.number()
+            })
+        ),
+        nextReserves: z.array(
+            z.object({
+                name: z.string(),
+                date: z.string(),
+                begin: z.string(),
+                duration: z.string(),
+                dataTotal: z.number()
+            })
+        )
+    });
+
 export const UsersGet = z.object({
     nome: z.string().optional(),
     cpf: z.string().optional(),
@@ -73,11 +147,15 @@ export const UsersGet = z.object({
     tipo: z.string().optional()
 });
 
-export const UserRespGet = z.object({
-    cpf: z.coerce.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0) //defaults to false
-});
-
-export const UserData = idSchema
+export const UsersGetResponse = defaultResponse
     .extend({
-        saveContext: z.coerce.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0) //defaults to false
+        data: z.array(
+            z.object({
+                id: z.string(),
+                cpf: z.string(),
+                email: z.string(),
+                nome: z.string(),
+                tipo: z.string()
+            })
+        )
     });
