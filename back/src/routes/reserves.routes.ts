@@ -13,7 +13,7 @@ const router = Router();
 //Inserir reservas
 router.post('/reserva', newReserve);
 
-//Recuperar reservas de laboratórios de um usuário específico
+//Recuperar reservas nos laboratórios de um usuário específico
 router.get('/reservas/lab', userLabsReserves);
 
 //Recuperar reservas do usuário

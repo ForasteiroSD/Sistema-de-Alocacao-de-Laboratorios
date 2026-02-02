@@ -1,11 +1,13 @@
 import express from "express";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
 import user from "./routes/user.routes.js";
 import labs from "./routes/labs.routes.js";
 import reservas from "./routes/reserves.routes.js";
 import { authenticate } from "./middlewares/auth_middleware.js";
 import { env } from "./utils/env.js";
 import cookieParser from "cookie-parser";
+import { openApiDocument } from "./swagger.js";
 const app = express();
 const whitelist = env.ALLOWED_LINKS.split(",");
 app.use(cors({
@@ -31,6 +33,7 @@ app.use(express.urlencoded({ extended: true, limit: "2mb", parameterLimit: 5000 
 app.get("/", (req, res) => {
     res.send("Vercel server");
 });
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
 app.use("/user", user);
 app.use(authenticate);
 app.use("/lab", labs);
