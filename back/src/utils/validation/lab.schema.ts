@@ -35,31 +35,31 @@ const outroSchema = z.object({
 
 //Utilizar responsavel_cpf caso seja administrador que esteja criado laboratório, responsavel_id caso contrário
 export const LabCreate = nomeSchema
-    .extend(capacidadeSchema)
-    .extend(projetorSchema)
-    .extend(quadroSchema)
-    .extend(televisaoSchema)
-    .extend(ar_condicionadoSchema)
-    .extend(computadorSchema)
-    .extend(outroSchema)
-    .extend(z.object({
+    .extend(capacidadeSchema.shape)
+    .extend(projetorSchema.shape)
+    .extend(quadroSchema.shape)
+    .extend(televisaoSchema.shape)
+    .extend(ar_condicionadoSchema.shape)
+    .extend(computadorSchema.shape)
+    .extend(outroSchema.shape)
+    .extend({
             responsavel_cpf: cpfSchema.shape.cpf.optional(),
             responsavel_id: idSchema.shape.id.optional()
-        })
+        }
     );
 
 //novoResponsavel é o cpf do usuário que será responsável pelo laboratório (opcional)
 export const LabUpdateSchema = nomeSchema
-    .extend(capacidadeSchema)
-    .extend(projetorSchema)
-    .extend(quadroSchema)
-    .extend(televisaoSchema)
-    .extend(ar_condicionadoSchema)
-    .extend(computadorSchema)
-    .extend(outroSchema)
-    .extend(z.object({
+    .extend(capacidadeSchema.shape)
+    .extend(projetorSchema.shape)
+    .extend(quadroSchema.shape)
+    .extend(televisaoSchema.shape)
+    .extend(ar_condicionadoSchema.shape)
+    .extend(computadorSchema.shape)
+    .extend(outroSchema.shape)
+    .extend({
         novo_responsavel: cpfSchema.shape.cpf.optional()
-    }));
+    });
 
 export const LabsGet = z.object({
     nome: z.string().optional(),
@@ -78,8 +78,8 @@ export const LabNames = z.object({
 });
 
 export const LabReserves = nomeSchema
-    .extend(z.object({
+    .extend({
         dia: z.string({error: "Data deve ser informada"}).refine(val => !isNaN(Date.parse(val)), {
             error: "Data inválida"
         })
-    }));
+    });

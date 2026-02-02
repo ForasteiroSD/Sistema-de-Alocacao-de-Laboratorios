@@ -84,39 +84,39 @@ const duracaoSchema = z.object({
 //----------------- Reserves Schemas ----------------- //
 
 const WeeklyReserve = horaInicioSchema
-    .extend(duracaoSchema)
-    .extend(z.object({
+    .extend(duracaoSchema.shape)
+    .extend({
             dia_semana: z.enum(["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"], {error: "Dia da semana deve ser informado"}),
-        }));
+        });
 
 export const WeeklyReserves = initialDateSchema
-    .extend(finalDateSchema)
-    .extend(z.object({
+    .extend(finalDateSchema.shape)
+    .extend({
         horarios: z.array(WeeklyReserve).min(1, "Pelo menos uma reserva deve ser feita")
-    }));
+    });
 
 const PersonalizedReserve = horaInicioSchema
-    .extend(duracaoSchema)
-    .extend(z.object({
+    .extend(duracaoSchema.shape)
+    .extend({
         data: z.string({error: "Data deve ser informada"}).refine(val => !isNaN(Date.parse(val)), {
             message: "Data inválida"
         }),
-    }));
+    });
 
 export const PersonalizedReserves = z.object({
     horarios: z.array(PersonalizedReserve).min(1, "Pelo menos uma reserva deve ser feita")
 });
 
-export const UniqueReserve = initialDateSchema.extend(horaInicioSchema).extend(duracaoSchema);
+export const UniqueReserve = initialDateSchema.extend(horaInicioSchema.shape).extend(duracaoSchema.shape);
 
-export const DailyReserve = initialDateSchema.extend(finalDateSchema).extend(horaInicioSchema).extend(duracaoSchema);
+export const DailyReserve = initialDateSchema.extend(finalDateSchema.shape).extend(horaInicioSchema.shape).extend(duracaoSchema.shape);
 
 export const ReserveInsert = reserveTypeSchema
-    .extend(labNameSchema)
-    .extend(z.object({
+    .extend(labNameSchema.shape)
+    .extend({
         userId: idSchema.shape.id,
         userName: nomeSchema.shape.nome,
-    }));
+    });
 
 export const ReservesRespLab = z.object({
     resp_id: idSchema.shape.id,
@@ -186,6 +186,6 @@ export const Reserves = z.object({
 });
 
 export const ReserveRemove = idSchema
-    .extend(z.object({
+    .extend({
         motivo: z.string({error: "Motivo deve ser informado"}).min(1, "Motivo de remoção da reserva deve ser informado").optional()
-    }));
+    });

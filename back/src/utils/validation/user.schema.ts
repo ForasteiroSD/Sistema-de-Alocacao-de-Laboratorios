@@ -26,45 +26,45 @@ const tipoSchema = z.object({
 //----------------- User Schemas ----------------- //
 
 export const UserCreateSchema = nomeSchema
-    .extend(cpfSchema)
-    .extend(dataNascSchema)
-    .extend(telefoneSchema)
-    .extend(emailSchema)
-    .extend(senhaSchema)
-    .extend(tipoSchema);
+    .extend(cpfSchema.shape)
+    .extend(dataNascSchema.shape)
+    .extend(telefoneSchema.shape)
+    .extend(emailSchema.shape)
+    .extend(senhaSchema.shape)
+    .extend(tipoSchema.shape);
 
 export const UserLoginSchema = emailSchema
-    .extend(senhaSchema);
+    .extend(senhaSchema.shape);
 
 //adm = true não precisa informar senha
 //mudarSenha indica se vai mudar a senha ou não
 export const UserUpdateSchema = idSchema
-    .extend(nomeSchema)
-    .extend(telefoneSchema)
-    .extend(emailSchema)
-    .extend(z.object({
+    .extend(nomeSchema.shape)
+    .extend(telefoneSchema.shape)
+    .extend(emailSchema.shape)
+    .extend({
         novasenha: z.string({error: "Nova senha deve ser informada"}).min(8, "Nova senha deve ter pelo menos 8 caracteres").optional(),
         tipo: tipoSchema.shape.tipo.optional(),
         senha: senhaSchema.shape.senha.optional(),
         adm: z.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0), //defaults to false
         mudarSenha: z.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0), //defaults to false
         changeType: z.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0) //defaults to false
-    }));
+    });
 
 export const UserUpdateFirst = idSchema
-    .extend(cpfSchema)
-    .extend(cpfSchema)
-    .extend(dataNascSchema)
-    .extend(emailSchema)
-    .extend(nomeSchema)
-    .extend(senhaSchema)
-    .extend(telefoneSchema);
+    .extend(cpfSchema.shape)
+    .extend(cpfSchema.shape)
+    .extend(dataNascSchema.shape)
+    .extend(emailSchema.shape)
+    .extend(nomeSchema.shape)
+    .extend(senhaSchema.shape)
+    .extend(telefoneSchema.shape);
 
 export const UserDelete = idSchema
-    .extend(z.object({
+    .extend({
         senha: senhaSchema.shape.senha.optional(),
         minhaConta: z.coerce.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(1) //defaults to true
-    }));
+    });
 
 export const UsersGet = z.object({
     nome: z.string().optional(),
@@ -78,6 +78,6 @@ export const UserRespGet = z.object({
 });
 
 export const UserData = idSchema
-    .extend(z.object({
+    .extend({
         saveContext: z.coerce.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0) //defaults to false
-    }));
+    });
