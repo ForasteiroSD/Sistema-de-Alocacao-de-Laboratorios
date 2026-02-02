@@ -2,68 +2,68 @@ import z from "zod";
 import { cpfSchema, idSchema, nomeSchema } from "./default.schema.js";
 
 const dataNascSchema = z.object({
-    data_nasc: z.string({required_error: "Data de nascimento deve ser informada", invalid_type_error: "Data de nascimento deve ser uma string"}).refine(val => !isNaN(Date.parse(val)), {
-        message: "Data de nascimento inválida"
+    data_nasc: z.string({error: "Data de nascimento deve ser informada"}).refine(val => !isNaN(Date.parse(val)), {
+        error: "Data de nascimento inválida"
     })
 });
 
 const telefoneSchema = z.object({
-    telefone: z.string({required_error: "Telefone deve ser informado", invalid_type_error: "Telefone deve ser uma string"}).min(8, "Telefone deve ter pelo menos 8 caracteres")
+    telefone: z.string({error: "Telefone deve ser informado"}).min(8, "Telefone deve ter pelo menos 8 caracteres")
 });
 
 const emailSchema = z.object({
-    email: z.string({required_error: "Email deve ser informado", invalid_type_error: "Email deve ser uma string"}).email({message: "Email inválido"})
+    email: z.email({error: "Email deve ser informado"})
 });
 
 const senhaSchema = z.object({
-    senha: z.string({required_error: "Senha deve ser informada", invalid_type_error: "Senha deve ser uma string"}).min(8, "Senha deve ter pelo menos caracteres")
+    senha: z.string({error: "Senha deve ser informada"}).min(8, "Senha deve ter pelo menos caracteres")
 });
 
 const tipoSchema = z.object({
-    tipo: z.enum(["Administrador", "Responsável", "Usuário"], {message: "Tipo de usuário inválido. Deve ser Administrador, Responsável ou Usuário"})
+    tipo: z.enum(["Administrador", "Responsável", "Usuário"], {error: "Tipo de usuário inválido. Deve ser Administrador, Responsável ou Usuário"})
 });
 
 //----------------- User Schemas ----------------- //
 
 export const UserCreateSchema = nomeSchema
-    .merge(cpfSchema)
-    .merge(dataNascSchema)
-    .merge(telefoneSchema)
-    .merge(emailSchema)
-    .merge(senhaSchema)
-    .merge(tipoSchema);
+    .extend(cpfSchema)
+    .extend(dataNascSchema)
+    .extend(telefoneSchema)
+    .extend(emailSchema)
+    .extend(senhaSchema)
+    .extend(tipoSchema);
 
 export const UserLoginSchema = emailSchema
-    .merge(senhaSchema);
+    .extend(senhaSchema);
 
 //adm = true não precisa informar senha
 //mudarSenha indica se vai mudar a senha ou não
 export const UserUpdateSchema = idSchema
-    .merge(nomeSchema)
-    .merge(telefoneSchema)
-    .merge(emailSchema)
-    .merge(z.object({
-        novasenha: z.string({required_error: "Nova senha deve ser informada", invalid_type_error: "Nova senha deve ser uma string"}).min(8, "Nova senha deve ter pelo menos 8 caracteres").optional(),
+    .extend(nomeSchema)
+    .extend(telefoneSchema)
+    .extend(emailSchema)
+    .extend(z.object({
+        novasenha: z.string({error: "Nova senha deve ser informada"}).min(8, "Nova senha deve ter pelo menos 8 caracteres").optional(),
         tipo: tipoSchema.shape.tipo.optional(),
         senha: senhaSchema.shape.senha.optional(),
-        adm: z.number({invalid_type_error: "adm deve ser 0 ou 1"}).min(0, "adm deve ser 0 ou 1").max(1, "adm deve ser 0 ou 1").default(0), //defaults to false
-        mudarSenha: z.number({invalid_type_error: "mudanSenha deve ser 0 ou 1"}).min(0, "mudanSenha deve ser 0 ou 1").max(1, "mudanSenha deve ser 0 ou 1").default(0), //defaults to false
-        changeType: z.number({invalid_type_error: "changeType deve ser 0 ou 1"}).min(0, "changeType deve ser 0 ou 1").max(1, "changeType deve ser 0 ou 1").default(0) //defaults to false
+        adm: z.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0), //defaults to false
+        mudarSenha: z.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0), //defaults to false
+        changeType: z.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0) //defaults to false
     }));
 
 export const UserUpdateFirst = idSchema
-    .merge(cpfSchema)
-    .merge(cpfSchema)
-    .merge(dataNascSchema)
-    .merge(emailSchema)
-    .merge(nomeSchema)
-    .merge(senhaSchema)
-    .merge(telefoneSchema);
+    .extend(cpfSchema)
+    .extend(cpfSchema)
+    .extend(dataNascSchema)
+    .extend(emailSchema)
+    .extend(nomeSchema)
+    .extend(senhaSchema)
+    .extend(telefoneSchema);
 
 export const UserDelete = idSchema
-    .merge(z.object({
+    .extend(z.object({
         senha: senhaSchema.shape.senha.optional(),
-        minhaConta: z.coerce.number({invalid_type_error: "minhaConta deve ser 0 ou 1"}).min(0, "minhaConta deve ser 0 ou 1").max(1, "minhaConta deve ser 0 ou 1").default(1) //defaults to true
+        minhaConta: z.coerce.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(1) //defaults to true
     }));
 
 export const UsersGet = z.object({
@@ -74,10 +74,10 @@ export const UsersGet = z.object({
 });
 
 export const UserRespGet = z.object({
-    cpf: z.coerce.number({invalid_type_error: "cpf deve ser 0 ou 1"}).min(0, "cpf deve ser 0 ou 1").max(1, "cpf deve ser 0 ou 1").default(0) //defaults to false
+    cpf: z.coerce.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0) //defaults to false
 });
 
 export const UserData = idSchema
-    .merge(z.object({
-        saveContext: z.coerce.number({invalid_type_error: "saveContext deve ser 0 ou 1"}).min(0, "saveContext deve ser 0 ou 1").max(1, "saveContext deve ser 0 ou 1").default(0) //defaults to false
+    .extend(z.object({
+        saveContext: z.coerce.number({error: "Valor inválido"}).min(0, "Valor inválido").max(1, "Valor inválido").default(0) //defaults to false
     }));
